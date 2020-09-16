@@ -1,0 +1,7 @@
+git+https://github.com/botswana-harvard/django-revision.git@develop#egg=django_revision
+git+https://github.com/botswana-harvard/edc-base.git@develop#egg=edc_base
+git+https://github.com/botswana-harvard/edc-constants.git@develop#egg=edc_constants
+git+https://github.com/botswana-harvard/edc-dashboard.git@develop#egg=edc_dashboard
+git+https://github.com/botswana-harvard/edc-device.git@develop#egg=edc_device
+git+https://github.com/botswana-harvard/edc-model-wrapper.git@develop#egg=edc_model_wrapper
+git+https://github.com/botswana-harvard/edc-navbar.git@develop#egg=edc_navbar

@@ -1,0 +1,69 @@
+{% extends "edc_dashboard/listboard.html" %}
+{% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
+
+{% block listboard_table_header %}
+
+    <!-- begin results header -->
+    <th>#</th>
+    <th></th>
+    <th>Consent Version form</th>
+    <th>Identifier</th>
+    <th>Subject</th>
+    <th>Age / Born</th>
+    <th>Consented</th>
+    <th>Modified</th>
+    <th>Host</th>
+    <!-- end results header -->
+
+{% endblock listboard_table_header %}
+	
+{% block listboard_table_button_column %}
+	{% comment %}
+
+    result: model_wrapper, usually the SubjectConsentModelWrapper
+        Required attributes:
+            subject_identifier
+            version: (consent version)
+            href: (model_wrapper.href)
+
+	{% endcomment %}
+	<td style="white-space: nowrap">
+    <div class="btn-group">
+    <a title="Edit subject's consent form" role="button" 
+       class="btn btn-default btn-sm"
+           href="{{ result.href }}">
+        <i class="fa fa-pencil-alt fa-sm"></i>
+    </a>
+    {% if result.id %}
+
+         <a id="btn-subject-dashboard-{{result.subject_identifier}}" class="btn btn-primary btn-sm" role="button"   
+        title="Go to subject's dashboard" href="{% url subject_dashboard_url result.subject_identifier %}">
+        <i class="far fa-user-circle fa-sm"></i> Dashboard  <i class="fa fa-share"></i></a>
+    {% endif %}
+    </div>
+	</td>
+
+	<td></td>
+{% endblock listboard_table_button_column %}
+
+{% block listboard_table_columns %}
+	
+	
+
+    <td>{{ result.subject_identifier }}
+    </td>
+    <td>
+       {% if result.gender == MALE %}
+           <i class="fa fa-male fa-lg"></i>
+       {% else %}
+           <i class="fa fa-female fa-lg"></i>
+       {% endif %}
+       {{ result.first_name }} {{ result.initials }}
+    </td>
+    <td>{% age_in_years result.object.dob %}yrs {{ result.object.dob|date:"SHORT_DATE_FORMAT" }}</td>
+    <td>{{ result.object.consent_datetime|date:"SHORT_DATE_FORMAT" }}</td>  
+    <td>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
+    <td>{{ result.hostname_created }}</td>
+
+{% endblock listboard_table_columns %}

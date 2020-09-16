@@ -1,0 +1,1 @@
+from .maternal_subject import ListboardView as MaternalSubjectListboardView

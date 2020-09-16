@@ -22,6 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'sfl!z0awdr+z$v+t001!f&bul2!s4(vq1q#_jac9@t$%=+mf!$'
 
+APP_NAME = 'flourish_dashboard'
+
+SITE_ID = 1
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -37,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'flourish_dashboard.apps.AppConfig'
 ]
 
 MIDDLEWARE = [
@@ -47,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'edc_dashboard.middleware.DashboardMiddleware',
+    'edc_subject_dashboard.middleware.DashboardMiddleware',
 ]
 
 ROOT_URLCONF = 'flourish_dashboard.urls'
@@ -118,3 +126,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+DASHBOARD_URL_NAMES = {
+    'subject_listboard_url': 'flourish_dashboard:subject_listboard_url',
+}
+
+DASHBOARD_BASE_TEMPLATES = {
+    'listboard_base_template': 'flourish/base.html',
+    'dashboard_base_template': 'flourish/base.html',
+    'subject_listboard_template': 'flourish_dashboard/maternal_subject/listboard.html',
+}
