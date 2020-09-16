@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'flourish_dashboard.apps.AppConfig'
+    'flourish_dashboard.apps.AppConfig',
 ]
 
 MIDDLEWARE = [
@@ -127,13 +127,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 DASHBOARD_URL_NAMES = {
     'subject_listboard_url': 'flourish_dashboard:subject_listboard_url',
+    'maternal_screening_listboard_url': 'flourish_dashboard:maternal_screening_listboard_url',
 }
 
 DASHBOARD_BASE_TEMPLATES = {
     'listboard_base_template': 'flourish/base.html',
     'dashboard_base_template': 'flourish/base.html',
     'subject_listboard_template': 'flourish_dashboard/maternal_subject/listboard.html',
+    'maternal_screening_listboard_template': 'flourish_dashboard/screening/maternal_listboard.html',
 }

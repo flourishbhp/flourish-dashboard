@@ -1,1 +1,2 @@
 from .maternal_subject import ListboardView as MaternalSubjectListboardView
+from .screening import MaternalScreeningListBoardView

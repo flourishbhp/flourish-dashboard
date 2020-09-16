@@ -5,3 +5,4 @@ git+https://github.com/botswana-harvard/edc-dashboard.git@develop#egg=edc_dashbo
 git+https://github.com/botswana-harvard/edc-device.git@develop#egg=edc_device
 git+https://github.com/botswana-harvard/edc-model-wrapper.git@develop#egg=edc_model_wrapper
 git+https://github.com/botswana-harvard/edc-navbar.git@develop#egg=edc_navbar
+git+https://github.com/botswana-harvard/edc-protocol.git@develop#egg=edc_protocol

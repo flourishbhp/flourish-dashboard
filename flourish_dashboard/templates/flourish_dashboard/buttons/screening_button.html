@@ -1,0 +1,12 @@
+ <a id="subjectscreening_add_{{ screening_identifier }}" 
+ 	title="{{ title }}"
+ 	
+ 	{% if subject_screening_obj %}
+            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+            href="{{ add_screening_href }}">
+        {% else %}
+            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+        href="{{ add_screening_href }}">
+        {% endif %}
+     	Subject Screening
+ </a>
