@@ -4,7 +4,10 @@
 {% load flourish_dashboard_extras %}
              
 {% block listboard_panel %}
-
+    <a id="maternal_screening_add" title="add screening" class="btn btn-sm btn-default" role="button"
+        href="{{ maternal_screening_add_url }}?next={{ maternal_screening_listboard_url }}">
+            <i class="fa fa-plus fa-sm"></i>Add Maternal Screening
+    </a>
 {% endblock listboard_panel %}
 
 {% block listboard_table_header %}

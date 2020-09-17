@@ -9,7 +9,7 @@ def screening_button(model_wrapper):
     return dict(
         add_screening_href=model_wrapper.subject_screening.href,
         screening_identifier=model_wrapper.object.screening_identifier,
-        subject_screening_obj=model_wrapper.maternal_model_obj)
+        maternal_screening_obj=model_wrapper.maternal_model_obj)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/consent_button.html')

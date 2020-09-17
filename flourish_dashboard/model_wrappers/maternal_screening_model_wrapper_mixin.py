@@ -1,12 +1,12 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
+from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
+
 
 class MaternalScreeningModelWrapperMixin:
 
-    model = 'flourish_maternal.subjectscreening'
-    querystring_attrs = ['screening_identifier']
-    next_url_attrs = ['screening_identifier']
+    maternal_screening_model_wrapper_cls = MaternalScreeningModelWrapper
 
     @property
     def screening_identifier(self):
@@ -19,9 +19,18 @@ class MaternalScreeningModelWrapperMixin:
         """Returns a maternal model instance or None.
         """
         try:
-            return self.maternal_screening_cls.objects.get(**self.maternal_screening_options)
+            return self.maternal_screening_cls.objects.get(
+                **self.maternal_screening_options)
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def maternal_screening(self):
+        """"Returns a wrapped saved or unsaved maternal screening
+        """
+        model_obj = self.maternal_model_obj or self.maternal_screening_cls(
+            **self.maternal_screening_options)
+        return self.maternal_screening_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def maternal_screening_cls(self):

@@ -13,7 +13,8 @@ from ...model_wrappers import MaternalScreeningModelWrapper
 
 
 class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
-                    ListboardFilterViewMixin, SearchFormViewMixin, ListboardView):
+                                     ListboardFilterViewMixin, SearchFormViewMixin,
+                                     ListboardView):
 
     listboard_template = 'maternal_screening_listboard_template'
     listboard_url = 'maternal_screening_listboard_url'
@@ -24,7 +25,7 @@ class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
     model = 'flourish_maternal.subjectscreening'
     model_wrapper_cls = MaternalScreeningModelWrapper
     navbar_name = 'flourish_dashboard'
-    navbar_selected_item = 'maternal'
+    navbar_selected_item = 'maternal_screening'
     ordering = '-modified'
     paginate_by = 10
     search_form_url = 'maternal_screening_listboard_url'
@@ -35,8 +36,8 @@ class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context.update(
-        #     maternal_screening_add_url=self.model_cls().get_absolute_url())
+        context.update(
+            maternal_screening_add_url=self.model_cls().get_absolute_url())
         return context
 
     def get_queryset_filter_options(self, request, *args, **kwargs):
