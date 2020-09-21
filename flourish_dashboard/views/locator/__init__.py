@@ -1,0 +1,1 @@
+from .maternal_locator_listboard_view import MaternalLocatorListBoardView

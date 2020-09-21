@@ -15,7 +15,9 @@ Including another URLconf
 from edc_dashboard import UrlConfig
 
 from .patterns import subject_identifier
-from .views import MaternalScreeningListBoardView, MaternalSubjectListboardView
+from .views import (
+    MaternalScreeningListBoardView, MaternalSubjectListboardView,
+    MaternalLocatorListBoardView)
 
 app_name = 'flourish_dashboard'
 
@@ -23,6 +25,13 @@ maternal_screening_listboard_url_config = UrlConfig(
     url_name='maternal_screening_listboard_url',
     view_class=MaternalScreeningListBoardView,
     label='maternal_screening_listboard',
+    identifier_label='identifier',
+    identifier_pattern=subject_identifier)
+
+maternal_locator_listboard_url_config = UrlConfig(
+    url_name='maternal_locator_listboard_url',
+    view_class=MaternalLocatorListBoardView,
+    label='maternal_locator_listboard',
     identifier_label='identifier',
     identifier_pattern=subject_identifier)
 
@@ -37,4 +46,5 @@ urlpatterns = [
 ]
 
 urlpatterns += subject_listboard_url_config.listboard_urls
+urlpatterns += maternal_locator_listboard_url_config.listboard_urls
 urlpatterns += maternal_screening_listboard_url_config.listboard_urls
