@@ -52,4 +52,4 @@ class MaternalLocatorModelWrapper(MaternalLocatorModelWrapperMixin,
         """
         model_obj = self.maternal_model_obj or self.maternal_locator_cls(
             **self.maternal_locator_options)
-        return MaternalLocatorModelWrapper(model_obj=model_obj)
+        return self(model_obj=model_obj)
