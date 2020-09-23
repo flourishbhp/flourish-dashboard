@@ -1,12 +1,12 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
-# from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
+from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
 
 
 class MaternalScreeningModelWrapperMixin:
     
-#     screening_model_wrapper_cls = MaternalScreeningModelWrapper
+    screening_model_wrapper_cls = MaternalScreeningModelWrapper
     
     @property
     def screening_identifier(self):

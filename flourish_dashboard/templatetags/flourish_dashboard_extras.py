@@ -41,11 +41,10 @@ def locator_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/consent_button.html')
 def consent_button(model_wrapper):
     title = ['Consent subject to participate.']
-    import pdb; pdb.set_trace()
     return dict(
         screening_identifier=model_wrapper.object.screening_identifier,
         subject_identifier=model_wrapper.subject_identifier,
-        subject_screening_obj=model_wrapper.screening_model_obj,
+        subject_screening_obj=model_wrapper.object,
         add_consent_href=model_wrapper.subject_consent.href,
 #         consent_version=model_wrapper.consent_version,
         title=' '.join(title))
