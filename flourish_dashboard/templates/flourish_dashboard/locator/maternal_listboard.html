@@ -15,7 +15,6 @@
     <th>#</th>
     <th></th>
     <th>Subject Identifier</th>
-    <th>Has Omang</th>
     <th>Age</th>
     <th>User</th>
     <th>Modified</th>
@@ -27,7 +26,7 @@
 {% block listboard_table_button_column %}
     <td style="white-space: nowrap;">
     <div class="btn-group">
-    {% edit_screening_button result %}
+    {% edit_locator_button result %}
     {% screening_button result %}
     </div>
     </td>
@@ -36,8 +35,7 @@
 
 {% block listboard_table_columns %}
 
-    <td>{{ result.subject_identifier }} </td>
-    <td nowrap>{{ result.has_omang }} yrs</td>
+    <td>{{ result.screening_identifier }} </td>
     <td nowrap>{{ result.age_in_years }} yrs</td>
     <td nowrap>{{ result.user_created }}</td>
     <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>  
