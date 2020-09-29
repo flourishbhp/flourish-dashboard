@@ -8,9 +8,9 @@ flourish_dashboard = Navbar(name='flourish_dashboard')
 
 flourish_dashboard.append_item(
     NavbarItem(
-        name='maternal_locator',
-        title='Maternal Locator',
-        label='maternal Locator',
+        name='maternal_datasett',
+        title='Maternal Dataset',
+        label='maternal dataset',
         fa_icon='far fa-user-circle',
         url_name=settings.DASHBOARD_URL_NAMES[
             'maternal_dataset_listboard_url'],

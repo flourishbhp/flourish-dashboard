@@ -22,7 +22,7 @@ class MaternalDatasetListBoardView(NavbarViewMixin, EdcBaseViewMixin,
     model = 'flourish_maternal.maternaldataset'
     model_wrapper_cls = MaternalDatasetModelWrapper
     navbar_name = 'flourish_dashboard'
-    navbar_selected_item = 'maternal_locator'
+    navbar_selected_item = 'maternal_dataset'
     ordering = '-modified'
     paginate_by = 10
     search_form_url = 'maternal_dataset_listboard_url'
