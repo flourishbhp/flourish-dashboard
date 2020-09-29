@@ -2,13 +2,7 @@
 {% load admin_urls %}
 {% load edc_base_extras %}
 {% load flourish_dashboard_extras %}
-             
-{% block listboard_panel %}
-    <a id="maternal_locator_add" title="add screening" class="btn btn-sm btn-default" role="button"
-        href="{{ maternal_locator_add_url }}?next={{ maternal_locator_listboard_url }}">
-            <i class="fa fa-plus fa-sm"></i>Add Maternal Locator
-    </a>
-{% endblock listboard_panel %}
+
 
 {% block listboard_table_header %}
     <!-- begin results header -->
@@ -26,7 +20,8 @@
 {% block listboard_table_button_column %}
     <td style="white-space: nowrap;">
     <div class="btn-group">
-    {% edit_locator_button result %}
+    {% edit_maternal_dataset_button result %}
+    {% locator_button result %}
     {% screening_button result %}
     </div>
     </td>

@@ -1,3 +1,3 @@
-from .locator import MaternalLocatorListBoardView
+from .maternal_dataset import MaternalDatasetListBoardView
 from .maternal_subject import ListboardView as MaternalSubjectListboardView
 from .screening import MaternalScreeningListBoardView

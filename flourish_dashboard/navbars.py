@@ -13,7 +13,7 @@ flourish_dashboard.append_item(
         label='maternal Locator',
         fa_icon='far fa-user-circle',
         url_name=settings.DASHBOARD_URL_NAMES[
-            'maternal_locator_listboard_url'],
+            'maternal_dataset_listboard_url'],
         no_url_namespace=no_url_namespace))
 
 flourish_dashboard.append_item(

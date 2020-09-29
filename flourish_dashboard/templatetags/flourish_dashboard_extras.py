@@ -13,9 +13,9 @@ def edit_screening_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/edit_locator_button.html')
-def edit_locator_button(model_wrapper):
-    title = ['Edit Subject Locator form.']
+@register.inclusion_tag('flourish_dashboard/buttons/edit_maternal_dataset_button.html')
+def edit_maternal_dataset_button(model_wrapper):
+    title = ['Edit Maternal Dataset form.']
     return dict(
         screening_identifier=model_wrapper.object.screening_identifier,
         href=model_wrapper.href,
@@ -42,6 +42,7 @@ def locator_button(model_wrapper):
 def consent_button(model_wrapper):
     title = ['Consent subject to participate.']
     return dict(
+        subject_identifier=model_wrapper.consent.object.subject_identifier,
         subject_screening_obj=model_wrapper.object,
         add_consent_href=model_wrapper.consent.href,
 #         consent_version=model_wrapper.consent_version,
