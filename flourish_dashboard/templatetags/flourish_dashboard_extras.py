@@ -27,7 +27,8 @@ def screening_button(model_wrapper):
     return dict(
         add_screening_href=model_wrapper.maternal_screening.href,
         screening_identifier=model_wrapper.object.screening_identifier,
-        maternal_screening_obj=model_wrapper.screening_model_obj)
+        maternal_screening_obj=model_wrapper.screening_model_obj,
+        maternal_locator_obj=model_wrapper.locator_model_obj)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')

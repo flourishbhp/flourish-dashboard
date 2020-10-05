@@ -1,3 +1,4 @@
+{% if maternal_locator_obj %}
  <a id="subjectscreening_add_{{ screening_identifier }}" 
  	title="{{ title }}"
  	
@@ -8,5 +9,8 @@
             class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
         href="{{ add_screening_href }}">
         {% endif %}
+        
      	Subject Screening
+     	
  </a>
+{% endif %}
