@@ -8,6 +8,7 @@ from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
 
 from ...model_wrappers import MaternalDatasetModelWrapper
+from .filters import ListboardViewFilters
 
 
 class MaternalDatasetListBoardView(NavbarViewMixin, EdcBaseViewMixin,
@@ -21,6 +22,7 @@ class MaternalDatasetListBoardView(NavbarViewMixin, EdcBaseViewMixin,
 
     model = 'flourish_maternal.maternaldataset'
     model_wrapper_cls = MaternalDatasetModelWrapper
+    listboard_view_filters = ListboardViewFilters()
     navbar_name = 'flourish_dashboard'
     navbar_selected_item = 'maternal_dataset'
     ordering = '-modified'

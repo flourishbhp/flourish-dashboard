@@ -11,13 +11,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+from django.urls import path
 from edc_dashboard import UrlConfig
 
 from .patterns import subject_identifier, screening_identifier
 from .views import (
     MaternalScreeningListBoardView, MaternalSubjectListboardView,
-    MaternalDatasetListBoardView)
+    MaternalDatasetListBoardView, CreateWorklistView)
 
 app_name = 'flourish_dashboard'
 
@@ -43,6 +43,7 @@ subject_listboard_url_config = UrlConfig(
     identifier_pattern=subject_identifier)
 
 urlpatterns = [
+    path('createworklist/', CreateWorklistView.as_view(), name='create_worklist_url'),
 ]
 
 urlpatterns += subject_listboard_url_config.listboard_urls

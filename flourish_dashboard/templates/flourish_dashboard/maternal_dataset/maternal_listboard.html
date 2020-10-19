@@ -2,22 +2,34 @@
 {% load admin_urls %}
 {% load edc_base_extras %}
 {% load flourish_dashboard_extras %}
+<form method="POST" action="{% url 'create_worklist_url' %}">  
+{% csrf_token %}    
+<fieldset>
 
+{% block listboard_panel %}
+Select to call participants
+<button type="button" class="btn btn-default btn-sm">
+  <span class="glyphicon glyphicon-phone-alt"></span> <input type="submit" value="Add to worklist" />
+</button>
 
+ <a href="{% url 'create_worklist_url' %}">me</a>
+{% endblock listboard_panel %}
 {% block listboard_table_header %}
     <!-- begin results header -->
     <th>#</th>
     <th></th>
+    <th>Prev study Identifier</th>
     <th>Subject Identifier</th>
-    <th>Age</th>
-    <th>User</th>
-    <th>Modified</th>
-    <th>Host</th>
+    <th>Pre Study Enroll Age</th>
+    <th>Screening Identifier</th>
+    <th>Mom enrolldate</th>
+    <th>Delivery Date</th>
+    <th>select all <input type="checkbox" name="identifiers" value="all"></th>
     <!-- end results header -->
 {% endblock listboard_table_header %}
 
 
-{% block listboard_table_button_column %}
+{% block listboard_table_button_column %} 
     <td style="white-space: nowrap;">
     <div class="btn-group">
     {% edit_maternal_dataset_button result %}
@@ -30,10 +42,14 @@
 
 {% block listboard_table_columns %}
 
-    <td>{{ result.screening_identifier }} </td>
-    <td nowrap>{{ result.age_in_years }} yrs</td>
-    <td nowrap>{{ result.user_created }}</td>
-    <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>  
-    <td nowrap>{{ result.hostname_created }}</td>
+	<td>{{ result.study_maternal_identifier }} </td>
+    <td>{{ result.subject_identifier }} </td>
+    <td nowrap>{{ result.mom_age_enrollment }}</td>
+    <td nowrap>{{ result.screening_identifier }}</td>
+    <td nowrap>{{ result.mom_enrolldate}}</td>  
+    <td nowrap>{{ result.delivdt }}</td>
+    <td><input type="checkbox" name="identifiers" value="{{result.study_maternal_identifier}}"></td> 
 
 {% endblock listboard_table_columns %}
+</fieldset>      
+</form>
