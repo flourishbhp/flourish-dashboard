@@ -8,7 +8,7 @@
 
 Select to call participants 
 	<button type="button" class="btn btn-default btn-sm">
-  		<span class="glyphicon glyphicon-phone-alt"></span></button>
+  		<span class="glyphicon glyphicon-phone-alt"></span><input type="submit" value="Add to worklist" /></button>
 {% endblock listboard_panel %}
 {% block listboard_table_header %}
     <!-- begin results header -->
@@ -45,14 +45,8 @@ Select to call participants
     <td nowrap>{{ result.mom_enrolldate}}</td>  
     <td nowrap>{{ result.delivdt }}</td>
     <td>
-    	<form action="{% url 'flourish_dashboard:create_worklist_url' %}" method="post">  
-		{% csrf_token %}    
-		<fieldset>
-    	<input type="checkbox" name="identifiers1" value="1">
-    	<input type="checkbox" name="identifiers2" value="2">
-    	<input type="submit" value="Add to worklist" />
-    	</fieldset>      
-		</form>
+    	<input type="checkbox" name="identifiers" value="{{result.study_maternal_identifier}}">
     </td>
-	
+	</fieldset>      
+</form>
 {% endblock listboard_table_columns %}
