@@ -1,7 +1,9 @@
-import re
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils.decorators import method_decorator
+from django.views.generic.edit import FormMixin
+import re
+
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.view_mixins import ListboardFilterViewMixin, SearchFormViewMixin
 from edc_dashboard.views import ListboardView
@@ -9,17 +11,20 @@ from edc_navbar import NavbarViewMixin
 
 from ...model_wrappers import MaternalDatasetModelWrapper
 from .filters import ListboardViewFilters
+from ...forms import WorklistCreateListForm
 
 
-class MaternalDatasetListBoardView(NavbarViewMixin, EdcBaseViewMixin,
-                                   ListboardFilterViewMixin, SearchFormViewMixin,
-                                   ListboardView):
+class MaternalDatasetListBoardView(
+        NavbarViewMixin, EdcBaseViewMixin,
+        FormMixin, ListboardFilterViewMixin, SearchFormViewMixin,
+        ListboardView):
 
     listboard_template = 'maternal_dataset_listboard_template'
     listboard_url = 'maternal_dataset_listboard_url'
     listboard_panel_style = 'info'
     listboard_fa_icon = "fa-user-plus"
 
+    form_class = WorklistCreateListForm
     model = 'flourish_maternal.maternaldataset'
     model_wrapper_cls = MaternalDatasetModelWrapper
     listboard_view_filters = ListboardViewFilters()

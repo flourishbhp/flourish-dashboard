@@ -2,17 +2,13 @@
 {% load admin_urls %}
 {% load edc_base_extras %}
 {% load flourish_dashboard_extras %}
-<form method="POST" action="{% url 'create_worklist_url' %}">  
-{% csrf_token %}    
-<fieldset>
+
 
 {% block listboard_panel %}
-Select to call participants
-<button type="button" class="btn btn-default btn-sm">
-  <span class="glyphicon glyphicon-phone-alt"></span> <input type="submit" value="Add to worklist" />
-</button>
 
- <a href="{% url 'create_worklist_url' %}">me</a>
+Select to call participants 
+	<button type="button" class="btn btn-default btn-sm">
+  		<span class="glyphicon glyphicon-phone-alt"></span></button>
 {% endblock listboard_panel %}
 {% block listboard_table_header %}
     <!-- begin results header -->
@@ -24,7 +20,7 @@ Select to call participants
     <th>Screening Identifier</th>
     <th>Mom enrolldate</th>
     <th>Delivery Date</th>
-    <th>select all <input type="checkbox" name="identifiers" value="all"></th>
+    <th>select</th>
     <!-- end results header -->
 {% endblock listboard_table_header %}
 
@@ -48,8 +44,15 @@ Select to call participants
     <td nowrap>{{ result.screening_identifier }}</td>
     <td nowrap>{{ result.mom_enrolldate}}</td>  
     <td nowrap>{{ result.delivdt }}</td>
-    <td><input type="checkbox" name="identifiers" value="{{result.study_maternal_identifier}}"></td> 
-
+    <td>
+    	<form action="{% url 'flourish_dashboard:create_worklist_url' %}" method="post">  
+		{% csrf_token %}    
+		<fieldset>
+    	<input type="checkbox" name="identifiers1" value="1">
+    	<input type="checkbox" name="identifiers2" value="2">
+    	<input type="submit" value="Add to worklist" />
+    	</fieldset>      
+		</form>
+    </td>
+	
 {% endblock listboard_table_columns %}
-</fieldset>      
-</form>
