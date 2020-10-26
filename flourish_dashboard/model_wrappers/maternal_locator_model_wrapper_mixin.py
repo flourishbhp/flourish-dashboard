@@ -42,7 +42,7 @@ class MaternalLocatorModelWrapperMixin:
         unpersisted maternal locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier)
+            screening_identifier=self.object.screening_identifier, )
         return options
 
     @property
@@ -51,5 +51,5 @@ class MaternalLocatorModelWrapperMixin:
          maternal locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier)
+            screening_identifier=self.object.screening_identifier, )
         return options
