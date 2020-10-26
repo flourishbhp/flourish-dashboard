@@ -42,6 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django_crypto_fields.apps.AppConfig',
+    'edc_action_item.apps.AppConfig',
+    'edc_data_manager.apps.AppConfig',
+    'edc_locator.apps.AppConfig',
+    'edc_navbar.apps.AppConfig',
+    'edc_protocol.apps.AppConfig',
     'flourish_dashboard.apps.AppConfig',
 ]
 
@@ -131,12 +137,14 @@ DASHBOARD_URL_NAMES = {
     'subject_listboard_url': 'flourish_dashboard:subject_listboard_url',
     'maternal_screening_listboard_url': 'flourish_dashboard:maternal_screening_listboard_url',
     'maternal_dataset_listboard_url': 'flourish_dashboard:maternal_dataset_listboard_url',
+    'subject_dashboard_url': 'flourish_dashboard:subject_dashboard_url',
 }
 
 DASHBOARD_BASE_TEMPLATES = {
     'listboard_base_template': 'flourish/base.html',
     'dashboard_base_template': 'flourish/base.html',
     'subject_listboard_template': 'flourish_dashboard/maternal_subject/listboard.html',
+    'subject_dashboard_template': 'flourish_dashboard/maternal_subject/dashboard.html',
     'maternal_screening_listboard_template': 'flourish_dashboard/screening/maternal_listboard.html',
     'maternal_dataset_listboard_template': 'flourish_dashboard/maternal_dataset/maternal_listboard.html',
 }

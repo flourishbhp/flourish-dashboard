@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 
 
 register = template.Library()
@@ -48,3 +49,12 @@ def consent_button(model_wrapper):
         add_consent_href=model_wrapper.consent.href,
 #         consent_version=model_wrapper.consent_version,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')
+def dashboard_button(model_wrapper):
+    subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
+        'subject_dashboard_url')
+    return dict(
+        subject_dashboard_url=subject_dashboard_url,
+        subject_identifier=model_wrapper.subject_identifier)

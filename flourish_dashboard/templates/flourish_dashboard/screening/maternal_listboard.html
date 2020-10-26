@@ -29,6 +29,9 @@
     <div class="btn-group">
     {% edit_screening_button result %}
     {% consent_button result %}
+    {% if result.is_eligible %}
+    	{% dashboard_button result %}
+	{% endif %}
     </div>
     </td>
 {% endblock listboard_table_button_column %}		

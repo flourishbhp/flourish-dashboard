@@ -1,8 +1,10 @@
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 
+from .maternal_locator_model_wrapper_mixin import MaternalLocatorModelWrapperMixin
 
-class SubjectConsentModelWrapper(ModelWrapper):
+
+class SubjectConsentModelWrapper(MaternalLocatorModelWrapperMixin, ModelWrapper):
 
     model = 'flourish_maternal.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get(

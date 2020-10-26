@@ -1,0 +1,29 @@
+{% extends 'edc_subject_dashboard/dashboard.html' %}
+
+{% load static %}
+
+{% block locator_information %}{% endblock locator_information %}
+
+{% block top_bar %}
+
+    {% include "flourish_dashboard/maternal_subject/dashboard/top_bar.html" %}
+
+{% endblock top_bar %}
+
+
+{% block side_bar %}
+	{{ block.super }}
+	
+	{% if locator_obj %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+          <h6 class="panel-title">
+              <i class="fa fa-info-circle fa-lg fa-fw"></i> Locator Info
+          </h6>
+      </div>
+      
+        {% include "flourish_dashboard/maternal_subject/dashboard/special_forms.html" %}   
+  	</div>
+  	{% endif %}
+	
+{% endblock side_bar %}

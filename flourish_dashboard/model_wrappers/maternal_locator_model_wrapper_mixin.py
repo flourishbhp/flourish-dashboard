@@ -5,7 +5,7 @@ from .maternal_locator_model_wrapper import MaternalLocatorModelWrapper
 
 
 class MaternalLocatorModelWrapperMixin:
-    
+
     locator_model_wrapper_cls = MaternalLocatorModelWrapper
 
     @property
@@ -23,7 +23,7 @@ class MaternalLocatorModelWrapperMixin:
                 **self.maternal_locator_options)
         except ObjectDoesNotExist:
             return None
-        
+
     @property
     def maternal_locator(self):
         """"Returns a wrapped saved or unsaved maternal locator
@@ -44,7 +44,7 @@ class MaternalLocatorModelWrapperMixin:
         options = dict(
             screening_identifier=self.object.screening_identifier)
         return options
-    
+
     @property
     def maternal_locator_options(self):
         """Returns a dictionary of options to get an existing
@@ -53,4 +53,3 @@ class MaternalLocatorModelWrapperMixin:
         options = dict(
             screening_identifier=self.object.screening_identifier)
         return options
-
