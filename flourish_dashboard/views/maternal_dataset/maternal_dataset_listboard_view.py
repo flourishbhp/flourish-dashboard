@@ -25,7 +25,7 @@ class MaternalDatasetListBoardView(
     listboard_fa_icon = "fa-user-plus"
 
     form_class = WorklistCreateListForm
-    model = 'flourish_maternal.maternaldataset'
+    model = 'flourish_caregiver.maternaldataset'
     model_wrapper_cls = MaternalDatasetModelWrapper
     listboard_view_filters = ListboardViewFilters()
     navbar_name = 'flourish_dashboard'

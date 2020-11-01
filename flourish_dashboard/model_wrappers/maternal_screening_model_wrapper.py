@@ -12,7 +12,7 @@ class MaternalScreeningModelWrapper(ConsentModelWrapperMixin,
                                     ModelWrapper):
 
     consent_model_wrapper_cls = SubjectConsentModelWrapper
-    model = 'flourish_maternal.subjectscreening'
+    model = 'flourish_caregiver.subjectscreening'
     querystring_attrs = ['screening_identifier']
     next_url_attrs = ['screening_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
@@ -39,7 +39,7 @@ class MaternalScreeningModelWrapper(ConsentModelWrapperMixin,
 
     @property
     def subject_consent_cls(self):
-        return django_apps.get_model('flourish_maternal.subjectconsent')
+        return django_apps.get_model('flourish_caregiver.subjectconsent')
 
     @property
     def create_consent_options(self):

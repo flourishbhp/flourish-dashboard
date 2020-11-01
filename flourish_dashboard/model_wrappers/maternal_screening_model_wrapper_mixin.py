@@ -35,7 +35,7 @@ class MaternalScreeningModelWrapperMixin:
 
     @property
     def maternal_screening_cls(self):
-        return django_apps.get_model('flourish_maternal.subjectscreening')
+        return django_apps.get_model('flourish_caregiver.subjectscreening')
 
     @property
     def create_maternal_screening_options(self):

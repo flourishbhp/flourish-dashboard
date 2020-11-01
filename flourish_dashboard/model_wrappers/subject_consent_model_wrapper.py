@@ -6,7 +6,7 @@ from .maternal_locator_model_wrapper_mixin import MaternalLocatorModelWrapperMix
 
 class SubjectConsentModelWrapper(MaternalLocatorModelWrapperMixin, ModelWrapper):
 
-    model = 'flourish_maternal.subjectconsent'
+    model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'maternal_screening_listboard_url')
     next_url_attrs = ['screening_identifier']

@@ -9,7 +9,7 @@ class MaternalDatasetModelWrapper(MaternalLocatorModelWrapperMixin,
                                   MaternalScreeningModelWrapperMixin,
                                   ModelWrapper):
 
-    model = 'flourish_maternal.maternaldataset'
+    model = 'flourish_caregiver.maternaldataset'
     querystring_attrs = [
         'screening_identifier', 'subject_identifier',
         'study_maternal_identifier', 'study_child_identifier']

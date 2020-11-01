@@ -19,11 +19,11 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     dashboard_template = 'subject_dashboard_template'
     appointment_model = 'edc_appointment.appointment'
     appointment_model_wrapper_cls = AppointmentModelWrapper
-    consent_model = 'flourish_maternal.subjectconsent'
+    consent_model = 'flourish_caregiver.subjectconsent'
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     navbar_name = 'flourish_dashboard'
     navbar_selected_item = 'consented_subject'
-    subject_locator_model = 'flourish_maternal.maternallocator'
+    subject_locator_model = 'flourish_caregiver.maternallocator'
     subject_locator_model_wrapper_cls = MaternalLocatorModelWrapper
     visit_model_wrapper_cls = MaternalVisitModelWrapper
     special_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/special_forms.html'

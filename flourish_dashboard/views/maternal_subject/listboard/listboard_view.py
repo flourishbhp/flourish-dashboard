@@ -19,7 +19,7 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
     listboard_panel_style = 'success'
     listboard_fa_icon = "far fa-user-circle"
 
-    model = 'flourish_maternal.subjectconsent'
+    model = 'flourish_caregiver.subjectconsent'
     model_wrapper_cls = SubjectConsentModelWrapper
     navbar_name = 'flourish_dashboard'
     navbar_selected_item = 'consented_subject'

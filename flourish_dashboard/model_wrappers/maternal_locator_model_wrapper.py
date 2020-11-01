@@ -5,7 +5,7 @@ from edc_model_wrapper import ModelWrapper
 
 class MaternalLocatorModelWrapper(ModelWrapper):
 
-    model = 'flourish_maternal.maternallocator'
+    model = 'flourish_caregiver.maternallocator'
     querystring_attrs = ['screening_identifier', 'subject_identifier',
                          'study_maternal_identifier']
     next_url_attrs = ['screening_identifier', 'subject_identifier',

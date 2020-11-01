@@ -34,7 +34,7 @@ class MaternalLocatorModelWrapperMixin:
 
     @property
     def maternal_locator_cls(self):
-        return django_apps.get_model('flourish_maternal.maternallocator')
+        return django_apps.get_model('flourish_caregiver.maternallocator')
 
     @property
     def create_maternal_locator_options(self):
