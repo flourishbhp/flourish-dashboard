@@ -9,12 +9,6 @@ class MaternalLocatorModelWrapperMixin:
     locator_model_wrapper_cls = MaternalLocatorModelWrapper
 
     @property
-    def screening_identifier(self):
-        if self.locator_model_obj:
-            return self.locator_model_obj.screening_identifier
-        return None
-
-    @property
     def locator_model_obj(self):
         """Returns a maternal locator model instance or None.
         """
