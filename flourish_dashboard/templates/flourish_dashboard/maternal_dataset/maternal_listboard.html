@@ -5,10 +5,11 @@
 
 
 {% block listboard_panel %}
-
-Select to call participants 
+{% if results %}
+Select to call participants
 	<button type="button" class="btn btn-default btn-sm">
   		<span class="glyphicon glyphicon-phone-alt"></span><input type="submit" value="Add to worklist" /></button>
+ {% endif %}
 {% endblock listboard_panel %}
 {% block listboard_table_header %}
     <!-- begin results header -->
@@ -31,6 +32,9 @@ Select to call participants
     {% edit_maternal_dataset_button result %}
     {% locator_button result %}
     {% screening_button result %}
+    {% with history_objects=wrapped.log_entries title="Locator logs" history_object=wrapped.log_entry add_button=True %}
+	  {% include 'edc_dashboard/controls/history_button.html' %}
+	{% endwith %}
     </div>
     </td>
 {% endblock listboard_table_button_column %}		

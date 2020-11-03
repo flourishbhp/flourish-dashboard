@@ -9,7 +9,7 @@ from edc_dashboard.view_mixins import ListboardFilterViewMixin, SearchFormViewMi
 from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
 
-from ...model_wrappers import MaternalDatasetModelWrapper
+from ...model_wrappers import LocatorWithLogEntryModelWrapper
 from .filters import ListboardViewFilters
 from ...forms import WorklistCreateListForm
 
@@ -26,7 +26,7 @@ class MaternalDatasetListBoardView(
 
     form_class = WorklistCreateListForm
     model = 'flourish_caregiver.maternaldataset'
-    model_wrapper_cls = MaternalDatasetModelWrapper
+    model_wrapper_cls = LocatorWithLogEntryModelWrapper
     listboard_view_filters = ListboardViewFilters()
     navbar_name = 'flourish_dashboard'
     navbar_selected_item = 'maternal_dataset'

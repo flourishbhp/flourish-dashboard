@@ -4,3 +4,5 @@ from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 from .maternal_dataset_model_wrapper import MaternalDatasetModelWrapper
 from .maternal_visit_model_wrapper import MaternalVisitModelWrapper
+from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
+from .locator_with_log_entry_model_wrapper import LocatorWithLogEntryModelWrapper
