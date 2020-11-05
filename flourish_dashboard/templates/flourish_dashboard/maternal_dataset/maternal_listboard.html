@@ -30,11 +30,13 @@ Select to call participants
     <td style="white-space: nowrap;">
     <div class="btn-group">
     {% edit_maternal_dataset_button result %}
-    {% locator_button result %}
-    {% screening_button result %}
-    {% with history_objects=wrapped.log_entries title="Locator logs" history_object=wrapped.log_entry add_button=True %}
-	  {% include 'edc_dashboard/controls/history_button.html' %}
+    {% with history_objects=result.log_entries title="Locator logs" history_object=result.log_entry add_button=True %}
+	  {% include "flourish_dashboard/maternal_dataset/locator_log_entries.html" %}   
 	{% endwith %}
+	{% if result.locator_exists %}
+		{% locator_button result %}
+	{% endif %}
+	{% screening_button result %}
     </div>
     </td>
 {% endblock listboard_table_button_column %}		
