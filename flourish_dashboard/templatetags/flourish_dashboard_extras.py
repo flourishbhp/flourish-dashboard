@@ -29,15 +29,15 @@ def screening_button(model_wrapper):
         add_screening_href=model_wrapper.maternal_screening.href,
         screening_identifier=model_wrapper.object.screening_identifier,
         maternal_screening_obj=model_wrapper.screening_model_obj,
-        maternal_locator_obj=model_wrapper.locator_model_obj)
+        caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
 def locator_button(model_wrapper):
     return dict(
-        add_locator_href=model_wrapper.maternal_locator.href,
+        add_locator_href=model_wrapper.caregiver_locator.href,
         screening_identifier=model_wrapper.object.screening_identifier,
-        maternal_locator_obj=model_wrapper.locator_model_obj)
+        caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/consent_button.html')

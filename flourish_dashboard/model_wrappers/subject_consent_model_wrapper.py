@@ -1,10 +1,10 @@
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 
-from .maternal_locator_model_wrapper_mixin import MaternalLocatorModelWrapperMixin
+from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 
 
-class SubjectConsentModelWrapper(MaternalLocatorModelWrapperMixin, ModelWrapper):
+class SubjectConsentModelWrapper(CaregiverLocatorModelWrapperMixin, ModelWrapper):
 
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get(

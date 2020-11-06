@@ -2,13 +2,13 @@ from django.conf import settings
 
 from edc_model_wrapper import ModelWrapper
 from .maternal_screening_model_wrapper_mixin import MaternalScreeningModelWrapperMixin
-from .maternal_locator_model_wrapper_mixin import MaternalLocatorModelWrapperMixin
+from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 
 from flourish_caregiver.models import LocatorLogEntry
 from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
 
 
-class MaternalDatasetModelWrapper(MaternalLocatorModelWrapperMixin,
+class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
                                   MaternalScreeningModelWrapperMixin,
                                   ModelWrapper):
 
