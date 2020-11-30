@@ -14,9 +14,8 @@ class MaternalScreeningModelWrapper(ConsentModelWrapperMixin,
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.subjectscreening'
     querystring_attrs = ['screening_identifier']
+    next_url_name = settings.DASHBOARD_URL_NAMES.get('maternal_screening_listboard_url')
     next_url_attrs = ['screening_identifier']
-    next_url_name = settings.DASHBOARD_URL_NAMES.get(
-                                'maternal_screening_listboard_url')
 
     @property
     def consent_version(self):
