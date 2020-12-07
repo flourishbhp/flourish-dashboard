@@ -18,5 +18,5 @@ class LocatorLogModelWrapper(ModelWrapper):
         return self.object.maternal_dataset.study_maternal_identifier
 
     @property
-    def locator_log(self):
-        return self.object.locator_log.id
+    def maternal_dataset(self):
+        return self.object.maternal_dataset.id

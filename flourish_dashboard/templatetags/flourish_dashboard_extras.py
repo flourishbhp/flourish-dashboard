@@ -58,3 +58,8 @@ def dashboard_button(model_wrapper):
     return dict(
         subject_dashboard_url=subject_dashboard_url,
         subject_identifier=model_wrapper.subject_identifier)
+
+
+@register.simple_tag()
+def log_history_objects(model_wrapper):
+    return model_wrapper.object.history.all()
