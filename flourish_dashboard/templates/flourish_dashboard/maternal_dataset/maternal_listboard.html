@@ -30,7 +30,7 @@ Select to call participants
     <td style="white-space: nowrap;">
     <div class="btn-group">
     {% edit_maternal_dataset_button result %}
-    {% with history_objects=log_history_objects title="Locator logs" history_object=result.log_entry add_button=True %}
+    {% with history_objects=result.log_entries title="Locator logs" history_object=result.log_entry add_button=result.locator_exists %}
 	  {% include "flourish_dashboard/maternal_dataset/locator_log_entries.html" %}   
 	{% endwith %}
 	{% if result.locator_exists %}
