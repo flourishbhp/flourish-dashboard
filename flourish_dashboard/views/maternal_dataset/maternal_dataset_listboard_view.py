@@ -11,12 +11,11 @@ from edc_navbar import NavbarViewMixin
 
 from ...model_wrappers import MaternalDatasetModelWrapper
 from .filters import ListboardViewFilters
-from ...forms import WorklistCreateListForm
 
 
 class MaternalDatasetListBoardView(
         NavbarViewMixin, EdcBaseViewMixin,
-        FormMixin, ListboardFilterViewMixin, SearchFormViewMixin,
+        ListboardFilterViewMixin, SearchFormViewMixin,
         ListboardView):
 
     listboard_template = 'maternal_dataset_listboard_template'
@@ -24,7 +23,6 @@ class MaternalDatasetListBoardView(
     listboard_panel_style = 'info'
     listboard_fa_icon = "fa-user-plus"
 
-    form_class = WorklistCreateListForm
     model = 'flourish_caregiver.maternaldataset'
     model_wrapper_cls = MaternalDatasetModelWrapper
     listboard_view_filters = ListboardViewFilters()

@@ -17,7 +17,7 @@ from edc_dashboard import UrlConfig
 from .patterns import subject_identifier, screening_identifier
 from .views import (
     MaternalScreeningListBoardView, MaternalSubjectListboardView,
-    MaternalDatasetListBoardView, MaternalDashboardView, CreateWorklistView)
+    MaternalDatasetListBoardView, MaternalDashboardView, LocatorLogReportView)
 
 app_name = 'flourish_dashboard'
 
@@ -50,7 +50,8 @@ subject_listboard_url_config = UrlConfig(
     identifier_pattern=subject_identifier)
 
 urlpatterns = [
-    path('createworklist/', CreateWorklistView.as_view(), name='create_worklist_url'),
+    path('locator_logs_report', LocatorLogReportView.as_view(),
+         name='locator_report_url'),
 ]
 
 urlpatterns += subject_listboard_url_config.listboard_urls

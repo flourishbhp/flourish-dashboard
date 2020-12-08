@@ -6,9 +6,11 @@
 
 {% block listboard_panel %}
 {% if results %}
-Select to call participants
-	<button type="button" class="btn btn-default btn-sm">
-  		<span class="glyphicon glyphicon-phone-alt"></span><input type="submit" value="Add to worklist" /></button>
+	<span class="pull-right">
+	<span class="glyphicon glyphicon-folder-open"></span>
+	<a href="{% url 'flourish_dashboard:locator_report_url' %}" class="btn btn-sm btn-info">Locator report</a>
+	</span>
+	&nbsp;&nbsp;
  {% endif %}
 {% endblock listboard_panel %}
 {% block listboard_table_header %}
