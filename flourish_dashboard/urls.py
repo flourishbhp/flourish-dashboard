@@ -14,7 +14,7 @@ Including another URLconf
 from django.urls import path
 from edc_dashboard import UrlConfig
 
-from .patterns import subject_identifier, screening_identifier
+from .patterns import subject_identifier, screening_identifier, study_maternal_identifier
 from .views import (
     MaternalScreeningListBoardView, MaternalSubjectListboardView,
     MaternalDatasetListBoardView, MaternalDashboardView, LocatorLogReportView)
@@ -39,8 +39,8 @@ maternal_dataset_listboard_url_config = UrlConfig(
     url_name='maternal_dataset_listboard_url',
     view_class=MaternalDatasetListBoardView,
     label='maternal_dataset_listboard',
-    identifier_label='screening_identifier',
-    identifier_pattern=screening_identifier)
+    identifier_label='study_maternal_identifier',
+    identifier_pattern=study_maternal_identifier)
 
 subject_listboard_url_config = UrlConfig(
     url_name='subject_listboard_url',

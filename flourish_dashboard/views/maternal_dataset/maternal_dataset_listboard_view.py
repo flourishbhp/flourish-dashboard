@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils.decorators import method_decorator
-from django.views.generic.edit import FormMixin
 import re
 
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -28,7 +27,7 @@ class MaternalDatasetListBoardView(
     listboard_view_filters = ListboardViewFilters()
     navbar_name = 'flourish_dashboard'
     navbar_selected_item = 'maternal_dataset'
-    ordering = '-modified'
+    ordering = '-locatorlog__locatorlogentry__report_datetime'
     paginate_by = 10
     search_form_url = 'maternal_dataset_listboard_url'
 
@@ -47,6 +46,9 @@ class MaternalDatasetListBoardView(
         if kwargs.get('screening_identifier'):
             options.update(
                 {'screening_identifier': kwargs.get('screening_identifier')})
+        if kwargs.get('study_maternal_identifier'):
+            options.update(
+                {'study_maternal_identifier': kwargs.get('study_maternal_identifier')})
         return options
 
     def extra_search_options(self, search_term):

@@ -9,11 +9,11 @@ class LocatorLogEntryModelWrapper(ModelWrapper):
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
                                 'maternal_dataset_listboard_url')
     querystring_attrs = ['locator_log']
-    next_url_attrs = ['locator_log']
+    next_url_attrs = ['study_maternal_identifier']
 
     @property
     def study_maternal_identifier(self):
-        return self.object.locator_log.study_maternal_identifier
+        return self.object.locator_log.maternal_dataset.study_maternal_identifier
 
     @property
     def locator_log(self):
