@@ -7,6 +7,7 @@ from django.views.generic.edit import FormView
 
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
+from flourish_caregiver.models import CaregiverLocator, LocatorLogEntry
 
 from ...forms import LocatorLogReportForm
 
@@ -28,12 +29,24 @@ class LocatorLogReportView(
             pass
         return super().form_valid(form)
 
+    @property
+    def total_locators(self):
+        """Returns totall number of locators.
+        """
+        return CaregiverLocator.objects.all().count()
+
+    @property
+    def locators_not_found(self):
+        """Returns total locators not found.
+        """
+        return LocatorLogEntry.objects.filter(log_status='not_found').count()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(
             locator_logs=[],
-            total_locators=2,
-            not_found=3)
+            total_locators=self.total_locators,
+            not_found=self.locators_not_found)
         return context
 
     @method_decorator(login_required)
