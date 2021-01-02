@@ -3,16 +3,26 @@
        <div class="panel panel-warning">
        <div class="panel-heading">Statistics</div>
         <div class="panel-body"> 
-        	<ul class="list-group">
-			  <li class="list-group-item">
-			    <span class="badge badge-error">{{ total_locators }}</span>
-			   Total locators:
-			  </li>
-			  <li class="list-group-item">
-			    <span class="badge badge-success">{{ not_found }}</span>
-			   Not Found:
-			  </li>
-			 </ul>
+        	<table class="table table-striped">
+			    <thead>
+			      <tr>
+			        <th>User</th>
+			        <th>Found</th>
+			        <th>Missing</th>
+			        <th>Captured</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			    {% for stats in locator_user_stats %}
+			      <tr>
+			        <td>{{ stats.0 }}</td>
+			        <td><span class="badge badge-error">{{ stats.1 }}</span></td>
+			        <td><span class="badge badge-success">{{ stats.2 }}</span></td>
+			        <td><span class="badge badge-success">{{ stats.3 }}</span></td>
+			      </tr>
+			      {% endfor %}
+			    </tbody>
+			  </table>
         </div>
        </div>
    </div>

@@ -11,15 +11,18 @@ class LocatorLogReportForm(forms.Form):
 
     username = forms.ChoiceField(
         label='Username',
+        required=False,
         widget=forms.Select())
 
     start_date = forms.DateField(
         label='Start date',
+        required=False,
         widget=forms.TextInput(
             attrs={'type': 'date'}))
 
     end_date = forms.DateField(
         label='End date',
+        required=False,
         widget=forms.TextInput(
             attrs={'type': 'date'}))
 
@@ -27,9 +30,9 @@ class LocatorLogReportForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['username'].choices = self.users
         self.helper = FormHelper()
-        self.helper.form_method = 'post'
+        self.helper.form_method = 'get'
         self.helper.form_id = 'assign_participant'
-        self.helper.form_action = 'flourish_follow:home_url'
+        self.helper.form_action = 'flourish_dashboard:locator_report_url'
 
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field.html'
@@ -44,7 +47,7 @@ class LocatorLogReportForm(forms.Form):
     def users(self):
         """Return all users to be on the report.
         """
-        assignable_users_choices = (('---', 'None'),)
+        assignable_users_choices = ((None, 'Select User'),)
         user = django_apps.get_model('auth.user')
         app_config = django_apps.get_app_config('edc_data_manager')
         assignable_users_group = app_config.assignable_users_group

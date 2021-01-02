@@ -33,6 +33,12 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
         return wrapped_entries
 
     @property
+    def call_or_home_visit_success(self):
+        """Returns true if the call or home visit was a success.
+        """
+        return True
+
+    @property
     def locator_exists(self):
         locator_log = getattr(self.object, 'locatorlog')
         exists = False
