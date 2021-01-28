@@ -39,7 +39,7 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
         """
         log_entries = LogEntry.objects.filter(
             study_maternal_identifier=self.object.study_maternal_identifier,
-            appt_date__isnull=False, phone_num_success__isnull=False)
+            phone_num_success__isnull=False)
         if log_entries:
             return True
         return False
