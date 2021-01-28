@@ -38,7 +38,9 @@
 	{% if result.locator_exists %}
 		{% locator_button result %}
 	{% endif %}
+	{% if result.call_or_home_visit_success %}
 	{% screening_button result %}
+	{% endif %}
     </div>
     </td>
 {% endblock listboard_table_button_column %}		

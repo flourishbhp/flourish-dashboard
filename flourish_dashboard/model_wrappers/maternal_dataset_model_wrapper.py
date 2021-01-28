@@ -5,6 +5,7 @@ from .maternal_screening_model_wrapper_mixin import MaternalScreeningModelWrappe
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 
 from flourish_caregiver.models import LocatorLogEntry
+from flourish_follow.models import LogEntry
 from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
 
 
@@ -36,7 +37,12 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
     def call_or_home_visit_success(self):
         """Returns true if the call or home visit was a success.
         """
-        return True
+        log_entries = LogEntry.objects.filter(
+            study_maternal_identifier=self.object.study_maternal_identifier,
+            appt_date__isnull=False, phone_num_success__isnull=False)
+        if log_entries:
+            return True
+        return False
 
     @property
     def locator_exists(self):
