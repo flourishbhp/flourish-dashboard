@@ -1,11 +1,12 @@
 from django.conf import settings
+from django.db.models import Q
 
 from edc_model_wrapper import ModelWrapper
 from .maternal_screening_model_wrapper_mixin import MaternalScreeningModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 
 from flourish_caregiver.models import LocatorLogEntry
-from flourish_follow.models import LogEntry
+from flourish_follow.models import LogEntry, InPersonContactAttempt
 from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
 
 
@@ -38,9 +39,15 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
         """Returns true if the call or home visit was a success.
         """
         log_entries = LogEntry.objects.filter(
+            ~Q(phone_num_success='none_of_the_above'),
             study_maternal_identifier=self.object.study_maternal_identifier,
             phone_num_success__isnull=False)
+        home_visit_logs = InPersonContactAttempt.objects.filter(
+            ~Q(successful_location='none_of_the_above'),
+            successful_location__isnull=False)
         if log_entries:
+            return True
+        elif home_visit_logs:
             return True
         return False
 
