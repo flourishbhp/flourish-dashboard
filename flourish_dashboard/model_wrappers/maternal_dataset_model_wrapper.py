@@ -44,6 +44,7 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
             phone_num_success__isnull=False)
         home_visit_logs = InPersonContactAttempt.objects.filter(
             ~Q(successful_location='none_of_the_above'),
+            study_maternal_identifier=self.object.study_maternal_identifier,
             successful_location__isnull=False)
         if log_entries:
             return True
