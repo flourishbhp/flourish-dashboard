@@ -5,6 +5,19 @@ from django.conf import settings
 register = template.Library()
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
+def eligibility_button(screening_model_wrapper):
+    comment = []
+    obj = screening_model_wrapper.object
+    tooltip = None
+    if not obj.is_eligible:
+        comment = obj.ineligibility.split(',')
+    comment = list(set(comment))
+    comment.sort()
+    return dict(eligible=obj.is_eligible, comment=comment,
+                tooltip=tooltip, obj=obj)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/edit_screening_button.html')
 def edit_screening_button(model_wrapper):
     title = ['Edit Subject Screening form.']
@@ -29,6 +42,15 @@ def screening_button(model_wrapper):
         add_screening_href=model_wrapper.maternal_screening.href,
         screening_identifier=model_wrapper.object.screening_identifier,
         maternal_screening_obj=model_wrapper.screening_model_obj,
+        caregiver_locator_obj=model_wrapper.locator_model_obj)
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/bhp_prior_screening_button.html')
+def bhp_prior_screening_button(model_wrapper):
+    return dict(
+        add_screening_href=model_wrapper.bhp_prior_screening.href,
+        screening_identifier=model_wrapper.screening_identifier,
+        prior_screening_obj=model_wrapper.bhp_prior_screening_model_obj,
         caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 

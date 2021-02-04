@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db.models import Q
 
 from edc_model_wrapper import ModelWrapper
+from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .maternal_screening_model_wrapper_mixin import MaternalScreeningModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 
@@ -11,6 +12,7 @@ from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
 
 
 class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
+                                  BHPPriorScreeningModelWrapperMixin,
                                   MaternalScreeningModelWrapperMixin,
                                   ModelWrapper):
 
@@ -18,7 +20,7 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
     querystring_attrs = [
         'screening_identifier', 'subject_identifier',
         'study_maternal_identifier', 'study_child_identifier']
-    next_url_attrs = ['study_maternal_identifier']
+    next_url_attrs = ['study_maternal_identifier', 'screening_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
                                 'maternal_dataset_listboard_url')
 
@@ -68,3 +70,7 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
         locator_log = getattr(self.object, 'locatorlog')
         log_entry = LocatorLogEntry(locator_log=locator_log)
         return LocatorLogEntryModelWrapper(log_entry)
+
+    @property
+    def contact_attempts(self):
+        return False

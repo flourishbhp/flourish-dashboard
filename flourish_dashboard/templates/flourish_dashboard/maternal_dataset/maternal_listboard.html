@@ -39,7 +39,15 @@
 		{% locator_button result %}
 	{% endif %}
 	{% if result.call_or_home_visit_success %}
-	{% screening_button result %}
+		{% if result.bhp_prior_screening_model_obj %}
+			{% if result.bhp_prior_screening_model_obj.is_eligible %}
+				{% screening_button result %}
+			{% else %}
+				{% eligibility_button result.bhp_prior_screening %}
+			{% endif %}
+		{% else %}
+			{% bhp_prior_screening_button result %}
+		{% endif %}
 	{% endif %}
     </div>
     </td>
