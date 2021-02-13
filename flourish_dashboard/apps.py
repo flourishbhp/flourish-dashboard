@@ -8,4 +8,7 @@ class AppConfig(DjangoAppConfig):
 
     def ready(self):
         from django.contrib.auth.models import Group
-        Group.objects.create(name='locator users')
+        try:
+            Group.objects.get(name='locator users')
+        except Group.DoesNotExist:
+            Group.objects.create(name='locator users')
