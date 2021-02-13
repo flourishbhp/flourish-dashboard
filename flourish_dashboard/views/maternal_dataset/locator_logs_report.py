@@ -35,7 +35,7 @@ class LocatorLogReportView(
         """Returns stats of logs of all users who captured locators.
         """
         log_stats = []
-        users = User.objects.filter(groups__name='assignable users')
+        users = User.objects.filter(groups__name='locator users')
         for user in users:
             found = LocatorLogEntry.objects.filter(
                 user_created=user.username,
