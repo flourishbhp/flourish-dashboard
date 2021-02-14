@@ -47,31 +47,24 @@ class LocatorLogReportForm(forms.Form):
     def users(self):
         """Return all users to be on the report.
         """
-        assignable_users_choices = ((None, 'Select User'),)
+        locator_users_choices = ((None, 'Select User'),)
         user = django_apps.get_model('auth.user')
-        app_config = django_apps.get_app_config('edc_data_manager')
-        assignable_users_group = app_config.assignable_users_group
+        locator_users_group = 'locator users'
         try:
-            Group.objects.get(name=assignable_users_group)
+            Group.objects.get(name=locator_users_group)
         except Group.DoesNotExist:
-            Group.objects.create(name=assignable_users_group)
-        assignable_users = user.objects.filter(
-            groups__name=assignable_users_group)
-        extra_choices = ()
-        if app_config.extra_assignee_choices:
-            for _, value in app_config.extra_assignee_choices.items():
-                extra_choices += (value[0],)
-        for assignable_user in assignable_users:
-            username = assignable_user.username
-            if not assignable_user.first_name:
+            Group.objects.create(name=locator_users_group)
+        locator_users = user.objects.filter(
+            groups__name=locator_users_group)
+        for locator_user in locator_users:
+            username = locator_user.username
+            if not locator_user.first_name:
                 raise ValidationError(
                     f'The user {username} needs to set their first name.')
-            if not assignable_user.last_name:
+            if not locator_user.last_name:
                 raise ValidationError(
                     f"The user {username} needs to set their last name.")
-            full_name = (f'{assignable_user.first_name} '
-                         f'{assignable_user.last_name}')
-            assignable_users_choices += ((username, full_name),)
-        if extra_choices:
-            assignable_users_choices += extra_choices
-        return assignable_users_choices
+            full_name = (f'{locator_user.first_name} '
+                         f'{locator_user.last_name}')
+            locator_users_choices += ((username, full_name),)
+        return locator_users_choices
