@@ -40,7 +40,7 @@ class LocatorLogReportForm(forms.Form):
             'username',
             'start_date',
             'end_date',
-            Submit('submit', u'Assign', css_class="btn btn-sm btn-default"),
+            Submit('submit', u'Search', css_class="btn btn-sm btn-default"),
         )
 
     @property
