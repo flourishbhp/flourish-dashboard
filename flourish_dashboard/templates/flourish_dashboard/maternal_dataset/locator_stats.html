@@ -1,7 +1,7 @@
 <div id="div-home-right" class="col-md-4">
 
        <div class="panel panel-warning">
-       <div class="panel-heading">Statistics</div>
+       <div class="panel-heading">Log Entry Statistics</div>
         <div class="panel-body"> 
         	<table class="table table-striped">
 			    <thead>
@@ -9,16 +9,39 @@
 			        <th>User</th>
 			        <th>Found</th>
 			        <th>Missing</th>
-			        <th>Captured</th>
 			      </tr>
 			    </thead>
 			    <tbody>
-			    {% for stats in locator_user_stats %}
+			    {% for stats in locator_log_user_stats %}
 			      <tr>
 			        <td>{{ stats.0 }}</td>
 			        <td><span class="badge badge-error">{{ stats.1 }}</span></td>
 			        <td><span class="badge badge-success">{{ stats.2 }}</span></td>
-			        <td><span class="badge badge-success">{{ stats.3 }}</span></td>
+			      </tr>
+			      {% endfor %}
+			    </tbody>
+			  </table>
+        </div>
+       </div>
+   </div>
+   
+   <div id="div-home-right" class="col-md-4">
+
+       <div class="panel panel-warning">
+       <div class="panel-heading">Locator Statistics</div>
+        <div class="panel-body"> 
+        	<table class="table table-striped">
+			    <thead>
+			      <tr>
+			        <th>User</th>
+			        <th>Captured</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			    {% for l_stats in locator_user_stats %}
+			      <tr>
+			        <td>{{ l_stats.0 }}</td>
+			        <td><span class="badge badge-error">{{ l_stats.1 }}</span></td>
 			      </tr>
 			      {% endfor %}
 			    </tbody>

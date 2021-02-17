@@ -31,20 +31,38 @@ class LocatorLogReportView(
         return CaregiverLocator.objects.all().count()
 
     @property
+    def locator_log_user_stats(self):
+        """Returns stats of logs of all users who captured locators.
+        """
+        log_stats = []
+        
+        user_created_list = LocatorLogEntry.objects.values_list('user_created', flat=True).all().distinct()
+        user_created_list = list(set(user_created_list))
+        for username in user_created_list:
+            found_identifiers = LocatorLogEntry.objects.values_list(
+                'locator_log__maternal_dataset__study_maternal_identifier', flat=True).filter(
+                    user_created=username,
+                    log_status='exist')
+            found = len(list(set(found_identifiers)))
+            missing_identifiers = LocatorLogEntry.objects.values_list(
+                'locator_log__maternal_dataset__study_maternal_identifier', flat=True).filter(
+                    user_created=username,
+                    log_status='not_found')
+            missing = len(list(set(missing_identifiers)))
+            log_stats.append([username, found, missing])
+        return log_stats
+
+    @property
     def locator_user_stats(self):
         """Returns stats of logs of all users who captured locators.
         """
         log_stats = []
-        users = User.objects.filter(groups__name='locator users')
-        for user in users:
-            found = LocatorLogEntry.objects.filter(
-                user_created=user.username,
-                log_status='exist').count()
-            missing = LocatorLogEntry.objects.filter(
-                user_created=user.username,
-                log_status='not_found').count()
-            captured = CaregiverLocator.objects.filter(user_created=user.username).count()
-            log_stats.append([user.username, found, missing, captured])
+        
+        user_created_list = CaregiverLocator.objects.values_list('user_created', flat=True).all().distinct()
+        user_created_list = list(set(user_created_list))
+        for username in user_created_list:
+            captured = CaregiverLocator.objects.filter(user_created=username).count()
+            log_stats.append([username, captured])
         return log_stats
 
     @property
@@ -89,7 +107,8 @@ class LocatorLogReportView(
             total_locators=self.total_locators,
             not_found=self.locators_not_found,
             locator_log_entries=self.log_entries,
-            locator_user_stats=self.locator_user_stats)
+            locator_user_stats=self.locator_user_stats,
+            locator_log_user_stats=self.locator_log_user_stats)
         return context
 
     @method_decorator(login_required)

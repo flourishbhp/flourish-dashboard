@@ -17,6 +17,7 @@
     <!-- begin results header -->
     <th>#</th>
     <th></th>
+    <th>Prev study</th>
     <th>Prev study Identifier</th>
     <th>Subject Identifier</th>
     <th>Pre Study Enroll Age</th>
@@ -56,6 +57,7 @@
 
 {% block listboard_table_columns %}
 
+	<td>{{ result.protocol }} </td>
 	<td>{{ result.study_maternal_identifier }} </td>
     <td>{{ result.subject_identifier }} </td>
     <td nowrap>{{ result.mom_age_enrollment }}</td>

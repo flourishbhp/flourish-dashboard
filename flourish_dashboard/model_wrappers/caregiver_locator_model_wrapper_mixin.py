@@ -46,5 +46,5 @@ class CaregiverLocatorModelWrapperMixin:
          caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier, )
+            study_maternal_identifier=self.object.study_maternal_identifier, )
         return options

@@ -58,11 +58,9 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
     def locator_exists(self):
         locator_log = getattr(self.object, 'locatorlog')
         exists = False
-        log_entries = LocatorLogEntry.objects.filter(
-            locator_log=locator_log)
-        for log_entry in log_entries:
-            if log_entry.log_status == 'exist':
-                return True
+        if LocatorLogEntry.objects.filter(locator_log=locator_log, log_status='exist'):
+            exists = True
+        print(exists, '#################')
         return exists
 
     @property
