@@ -44,6 +44,7 @@
 			{% if result.bhp_prior_screening_model_obj.is_eligible %}
 				{% screening_button result %}
 			{% else %}
+				{% bhp_prior_screening_button result %}
 				{% eligibility_button result.bhp_prior_screening %}
 			{% endif %}
 		{% else %}
