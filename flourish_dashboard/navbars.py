@@ -8,7 +8,7 @@ flourish_dashboard = Navbar(name='flourish_dashboard')
 
 flourish_dashboard.append_item(
     NavbarItem(
-        name='maternal_datasett',
+        name='maternal_dataset',
         title='Maternal Dataset',
         label='maternal dataset',
         fa_icon='far fa-user-circle',
