@@ -22,7 +22,7 @@ class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
     listboard_fa_icon = "fa-user-plus"
 
     # listboard_view_filters = ListboardViewFilters()
-    model = 'flourish_caregiver.subjectscreening'
+    model = 'flourish_caregiver.screeningpregwomen'
     model_wrapper_cls = MaternalScreeningModelWrapper
     navbar_name = 'flourish_dashboard'
     navbar_selected_item = 'maternal_screening'

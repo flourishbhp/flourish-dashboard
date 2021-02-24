@@ -20,11 +20,7 @@
     <th>Prev study</th>
     <th>Prev study Identifier</th>
     <th>Subject Identifier</th>
-    <th>Pre Study Enroll Age</th>
     <th>Screening Identifier</th>
-    <th>Mom enrolldate</th>
-    <th>Delivery Date</th>
-    <th>select</th>
     <!-- end results header -->
 {% endblock listboard_table_header %}
 
@@ -40,15 +36,16 @@
 		{% locator_button result %}
 	{% endif %}
 	{% if result.call_or_home_visit_success %}
+		{% bhp_prior_screening_button result %}
 		{% if result.bhp_prior_screening_model_obj %}
 			{% if result.bhp_prior_screening_model_obj.is_eligible %}
-				{% screening_button result %}
+				{% consent_button result %}
+			    {% if result.consent %}
+			    	{% dashboard_button result %}
+				{% endif %}
 			{% else %}
-				{% bhp_prior_screening_button result %}
 				{% eligibility_button result.bhp_prior_screening %}
 			{% endif %}
-		{% else %}
-			{% bhp_prior_screening_button result %}
 		{% endif %}
 	{% endif %}
     </div>
@@ -61,13 +58,7 @@
 	<td>{{ result.protocol }} </td>
 	<td>{{ result.study_maternal_identifier }} </td>
     <td>{{ result.subject_identifier }} </td>
-    <td nowrap>{{ result.mom_age_enrollment }}</td>
     <td nowrap>{{ result.screening_identifier }}</td>
-    <td nowrap>{{ result.mom_enrolldate}}</td>  
-    <td nowrap>{{ result.delivdt }}</td>
-    <td>
-    	<input type="checkbox" name="identifiers" value="{{result.study_maternal_identifier}}">
-    </td>
 	</fieldset>      
 </form>
 {% endblock listboard_table_columns %}

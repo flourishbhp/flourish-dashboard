@@ -1,21 +1,22 @@
 from django.conf import settings
 from django.db.models import Q
-
 from edc_model_wrapper import ModelWrapper
-from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
-from .maternal_screening_model_wrapper_mixin import MaternalScreeningModelWrapperMixin
-from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
-
 from flourish_caregiver.models import LocatorLogEntry
 from flourish_follow.models import LogEntry, InPersonContactAttempt
+
+from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
+from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
+from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
+from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 
 
-class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
+class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
+                                  CaregiverLocatorModelWrapperMixin,
                                   BHPPriorScreeningModelWrapperMixin,
-                                  MaternalScreeningModelWrapperMixin,
                                   ModelWrapper):
 
+    consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.maternaldataset'
     querystring_attrs = [
         'screening_identifier', 'subject_identifier',
@@ -60,7 +61,6 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
         exists = False
         if LocatorLogEntry.objects.filter(locator_log=locator_log, log_status='exist'):
             exists = True
-        print(exists, '#################')
         return exists
 
     @property
@@ -72,3 +72,8 @@ class MaternalDatasetModelWrapper(CaregiverLocatorModelWrapperMixin,
     @property
     def contact_attempts(self):
         return False
+
+    @property
+    def screening_report_datetime(self):
+        if self.bhp_prior_screening_model_obj:
+            return self.bhp_prior_screening_model_obj.report_datetime

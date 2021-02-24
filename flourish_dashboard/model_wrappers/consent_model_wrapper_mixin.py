@@ -1,21 +1,31 @@
 from django.apps import apps as django_apps
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from edc_model_wrapper import ModelWrapper
 from edc_base.utils import get_uuid
-from edc_consent import ConsentModelWrapperMixin
 
-from .subject_consent_model_wrapper import SubjectConsentModelWrapper
+from edc_consent.site_consents import site_consents
 
 
-class MaternalScreeningModelWrapper(ConsentModelWrapperMixin, ModelWrapper):
+class ConsentModelWrapperMixin:
 
-    consent_model_wrapper_cls = SubjectConsentModelWrapper
-    model = 'flourish_caregiver.screeningpregwomen'
-    querystring_attrs = ['screening_identifier']
-    next_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'maternal_screening_listboard_url')
-    next_url_attrs = ['screening_identifier']
+    consent_model_wrapper_cls = None
+
+    @property
+    def consent_object(self):
+        """Returns a consent configuration object from site_consents
+        relative to the wrapper's "object" report_datetime.
+        """
+        default_consent_group = django_apps.get_app_config(
+            'edc_consent').default_consent_group
+        consent_object = site_consents.get_consent_for_period(
+            model=self.consent_model_wrapper_cls.model,
+            report_datetime=self.screening_report_datetime,
+            consent_group=default_consent_group,
+            version=self.consent_version or None)
+        return consent_object
+
+    @property
+    def subject_consent_cls(self):
+        return django_apps.get_model('flourish_caregiver.subjectconsent')
 
     @property
     def consent_version(self):
@@ -37,8 +47,12 @@ class MaternalScreeningModelWrapper(ConsentModelWrapperMixin, ModelWrapper):
             return None
 
     @property
-    def subject_consent_cls(self):
-        return django_apps.get_model('flourish_caregiver.subjectconsent')
+    def consent(self):
+        """Returns a wrapped saved or unsaved consent.
+        """
+        model_obj = self.consent_model_obj or self.consent_object.model_cls(
+            **self.create_consent_options)
+        return self.consent_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):
@@ -60,9 +74,3 @@ class MaternalScreeningModelWrapper(ConsentModelWrapperMixin, ModelWrapper):
             screening_identifier=self.object.screening_identifier,
             version=self.consent_version)
         return options
-
-    def is_eligible(self):
-        return self.object.is_eligible
-
-    def eligible_at_enrol(self):
-        return self.object.is_eligible
