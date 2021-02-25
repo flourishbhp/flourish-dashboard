@@ -69,7 +69,17 @@ def consent_button(model_wrapper):
         subject_identifier=model_wrapper.consent.object.subject_identifier,
         subject_screening_obj=model_wrapper.object,
         add_consent_href=model_wrapper.consent.href,
-#         consent_version=model_wrapper.consent_version,
+        consent_version=model_wrapper.consent_version,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/assent_button.html')
+def assent_button(model_wrapper):
+    title = ['Assent child to participate.']
+    return dict(
+        subject_identifier=model_wrapper.child_assent.subject_identifier,
+        consent_obj=model_wrapper.consent_model_obj,
+        add_assent_href=model_wrapper.child_assent.href,
         title=' '.join(title))
 
 

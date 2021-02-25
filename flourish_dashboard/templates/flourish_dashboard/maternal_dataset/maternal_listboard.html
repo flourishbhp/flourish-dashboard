@@ -41,7 +41,10 @@
 			{% if result.bhp_prior_screening_model_obj.is_eligible %}
 				{% consent_button result %}
 			    {% if result.consent %}
-			    	{% dashboard_button result %}
+			    	{% assent_button result %}
+			    	{% if result.assent_model_obj %}
+			    		{% dashboard_button result %}
+			    	{% endif %}
 				{% endif %}
 			{% else %}
 				{% eligibility_button result.bhp_prior_screening %}

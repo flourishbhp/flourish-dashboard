@@ -6,6 +6,7 @@ from flourish_follow.models import LogEntry, InPersonContactAttempt
 
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
+from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
@@ -14,6 +15,7 @@ from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
                                   CaregiverLocatorModelWrapperMixin,
                                   BHPPriorScreeningModelWrapperMixin,
+                                  ChildAssentModelWrapperMixin,
                                   ModelWrapper):
 
     consent_model_wrapper_cls = SubjectConsentModelWrapper
