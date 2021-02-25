@@ -32,12 +32,6 @@ class ConsentModelWrapperMixin:
         return '1'
 
     @property
-    def subject_identifier(self):
-        if self.consent_model_obj:
-            return self.consent_model_obj.subject_identifier
-        return None
-
-    @property
     def consent_model_obj(self):
         """Returns a consent model instance or None.
         """
