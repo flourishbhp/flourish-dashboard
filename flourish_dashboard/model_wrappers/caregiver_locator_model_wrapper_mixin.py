@@ -36,8 +36,7 @@ class CaregiverLocatorModelWrapperMixin:
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,
-            study_maternal_identifier=self.study_maternal_identifier)
+            screening_identifier=self.object.screening_identifier,)
         return options
 
     @property
@@ -46,5 +45,5 @@ class CaregiverLocatorModelWrapperMixin:
          caregiver locator model instance.
         """
         options = dict(
-            study_maternal_identifier=self.object.study_maternal_identifier, )
+            screening_identifier=self.object.screening_identifier,)
         return options

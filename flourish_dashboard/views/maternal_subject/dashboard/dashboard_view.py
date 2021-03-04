@@ -22,6 +22,7 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     consent_model = 'flourish_caregiver.subjectconsent'
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     navbar_name = 'flourish_dashboard'
+    visit_attr = 'maternalvisit'
     navbar_selected_item = 'consented_subject'
     subject_locator_model = 'flourish_caregiver.caregiverlocator'
     subject_locator_model_wrapper_cls = CaregiverLocatorModelWrapper
@@ -42,5 +43,24 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(
-            subject_consent=self.consent_wrapped, )
+            subject_consent=self.consent_wrapped,)
         return context
+
+    def set_current_schedule(self, onschedule_model_obj=None,
+                             schedule=None, visit_schedule=None,
+                             is_onschedule=True):
+        if onschedule_model_obj:
+            self.current_schedule = schedule
+            self.current_visit_schedule = visit_schedule
+            self.current_onschedule_model = onschedule_model_obj
+            self.onschedule_models.append(onschedule_model_obj)
+            self.visit_schedules.update(
+                {visit_schedule.name: visit_schedule})
+
+    def get_onschedule_model_obj(self, schedule):
+        try:
+            return schedule.onschedule_model_cls.objects.get(
+                subject_identifier=self.subject_identifier,
+                schedule_name=schedule.name)
+        except ObjectDoesNotExist:
+            return None
