@@ -60,7 +60,6 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
 
 
     def get_onschedule_model_obj(self, schedule):
-#         import pdb; pdb.set_trace()
         try:
             return schedule.onschedule_model_cls.objects.get(
                 subject_identifier=self.subject_identifier,
