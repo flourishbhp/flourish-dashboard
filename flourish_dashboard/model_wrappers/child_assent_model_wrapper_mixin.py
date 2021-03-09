@@ -44,8 +44,6 @@ class ChildAssentModelWrapperMixin:
         options = dict(
             screening_identifier=self.screening_identifier,
             version=self.assent_version)
-        if self.consent_model_obj:
-            options.update({'subject_identifier': self.consent_model_obj.subject_identifier + '-10'})
         return options
 
     # @property
