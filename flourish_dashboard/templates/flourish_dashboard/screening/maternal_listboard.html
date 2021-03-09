@@ -30,7 +30,11 @@
     {% edit_screening_button result %}
     {% consent_button result %}
     {% if result.consent %}
-    	{% dashboard_button result %}
+    	
+    	{% antenatal_enrollment_button result %}
+    	{% if result.antenatal_enrollment_model_obj %}
+    		{% dashboard_button result %}
+    	{% endif %}
 	{% endif %}
     </div>
     </td>
