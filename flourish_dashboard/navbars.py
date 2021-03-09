@@ -36,4 +36,14 @@ flourish_dashboard.append_item(
             'subject_listboard_url'],
         no_url_namespace=no_url_namespace))
 
+flourish_dashboard.append_item(
+    NavbarItem(
+        name='child_subject',
+        title='Child Subjects',
+        label='child subjects',
+        fa_icon='far fa-user-circle',
+        url_name=settings.DASHBOARD_URL_NAMES[
+            'child_listboard_url'],
+        no_url_namespace=no_url_namespace))
+
 site_navbars.register(flourish_dashboard)

@@ -8,6 +8,7 @@ class ChildAssentModelWrapperMixin:
 
     assent_model_wrapper_cls = ChildAssentModelWrapper
 
+
     @property
     def assent_model_cls(self):
         return django_apps.get_model('flourish_child.childassent')
@@ -41,6 +42,12 @@ class ChildAssentModelWrapperMixin:
         if self.consent_model_obj:
             options.update({'subject_identifier': self.consent_model_obj.subject_identifier + '-10'})
         return options
+
+    # @property
+    # def screening_identifier(self):
+    #     if self.assent_model_obj:
+    #         return self.assent_model_obj.screening_identifier
+    #     return None
 
     @property
     def assent_options(self):
