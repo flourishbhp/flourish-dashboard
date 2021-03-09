@@ -54,6 +54,17 @@ def bhp_prior_screening_button(model_wrapper):
         caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/antenatal_enrollment_button.html')
+def antenatal_enrollment_button(model_wrapper):
+    title = ['subject antenatal enrollment.']
+    return dict(
+        subject_identifier=model_wrapper.consent.subject_identifier,
+        add_anternatal_enrollment_href=model_wrapper.antenatal_enrollment.href,
+        antenatal_enrollment_model_obj=model_wrapper.antenatal_enrollment_model_obj,
+        screening_identifier=model_wrapper.object.screening_identifier,
+        title=' '.join(title),)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
 def locator_button(model_wrapper):
     return dict(

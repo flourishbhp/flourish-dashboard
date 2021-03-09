@@ -50,12 +50,14 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
                              schedule=None, visit_schedule=None,
                              is_onschedule=True):
         if onschedule_model_obj:
-            self.current_schedule = schedule
-            self.current_visit_schedule = visit_schedule
-            self.current_onschedule_model = onschedule_model_obj
+            if is_onschedule:
+                self.current_schedule = schedule
+                self.current_visit_schedule = visit_schedule
+                self.current_onschedule_model = onschedule_model_obj
             self.onschedule_models.append(onschedule_model_obj)
             self.visit_schedules.update(
                 {visit_schedule.name: visit_schedule})
+
 
     def get_onschedule_model_obj(self, schedule):
         try:
