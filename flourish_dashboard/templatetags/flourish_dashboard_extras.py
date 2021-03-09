@@ -76,7 +76,6 @@ def consent_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/assent_button.html')
 def assent_button(model_wrapper):
     title = ['Assent child to participate.']
-    import pdb; pdb.set_trace()
     return dict(
         consent_obj=model_wrapper.consent_model_obj,
         assent_obj=model_wrapper.assent_model_obj,
