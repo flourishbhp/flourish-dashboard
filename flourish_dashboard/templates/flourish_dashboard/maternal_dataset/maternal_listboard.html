@@ -42,14 +42,12 @@
 			{% consent_button result %}
 		    {% if result.consent %}
 		    	{% if result.consent_model_obj.is_eligible %}
-		    		{% if result.consent_model_obj.child_age_at_enrollment > 7 %}
 		    			{% assent_button result %}
 		    			{% if result.child_assent %}
 		    				{% if result.assent_model_obj.is_eligible %}
 			    				{% dashboard_button result.consent %}
 			    			{% else %}
 			    				{% eligibility_button result.child_assent %}
-			    		{% endif %}
 			    		{% endif %}
 		    		{% endif %}
 		    	{% else %}
