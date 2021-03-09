@@ -1,0 +1,46 @@
+{% extends "edc_dashboard/listboard.html" %}
+{% load admin_urls %}
+{% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
+
+
+{% block listboard_table_header %}
+
+    <!-- begin results header -->
+    <th>#</th>
+    <th></th>
+    <th>Identifier</th>
+    <th>Subject</th>
+
+    <th>Modified</th>
+    <th>Host</th>
+    <!-- end results header -->
+
+{% endblock listboard_table_header %}
+
+{% block listboard_table_button_column %}
+<td style="white-space: nowrap">
+<div class="btn-group">
+
+    {% assent_button result %}
+    {% include 'flourish_dashboard/buttons/child_dashboard_button.html' %}
+</div>
+</td>
+{% endblock listboard_table_button_column %}
+
+{% block listboard_table_columns %}
+
+    <td>{{ result.subject_identifier }}
+    </td>
+    <td>
+       {% if result.gender == MALE %}
+           <i class="fa fa-male fa-lg"></i>
+       {% else %}
+           <i class="fa fa-female fa-lg"></i>
+       {% endif %}
+       {{ result.first_name }} {{ result.initials }}
+    </td>
+    <td>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
+    <td>{{ result.hostname_created }}</td>
+
+{% endblock listboard_table_columns %}
