@@ -2,7 +2,7 @@
  	title="{{ title }}"
  	
  	{% if consent_obj %}
- 	   {% if not subject_identifier %}
+ 	   {% if not assent_obj %}
 	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
 	        href="{{ add_assent_href }}">
 		{% else %}

@@ -35,8 +35,11 @@ class ChildAssentModelWrapperMixin:
         """Returns a dictionary of options to create a new
         unpersisted child assent model instance.
         """
+
         options = dict(
-            screening_identifier=self.screening_identifier)
+            screening_identifier=self.screening_identifier,)
+        if self.consent_model_obj:
+            options.update({'subject_identifier': self.consent_model_obj.subject_identifier + '-10'})
         return options
 
     @property
@@ -45,6 +48,5 @@ class ChildAssentModelWrapperMixin:
          child assent model instance.
         """
         options = dict(
-            screening_identifier=self.screening_identifier,
-            subject_identifier=self.subject_identifier)
+            screening_identifier=self.screening_identifier,)
         return options

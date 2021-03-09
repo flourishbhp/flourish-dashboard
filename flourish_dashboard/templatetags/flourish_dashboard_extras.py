@@ -77,8 +77,8 @@ def consent_button(model_wrapper):
 def assent_button(model_wrapper):
     title = ['Assent child to participate.']
     return dict(
-        subject_identifier=model_wrapper.child_assent.subject_identifier,
         consent_obj=model_wrapper.consent_model_obj,
+        assent_obj=model_wrapper.assent_model_obj,
         add_assent_href=model_wrapper.child_assent.href,
         title=' '.join(title))
 
@@ -89,4 +89,4 @@ def dashboard_button(model_wrapper):
         'subject_dashboard_url')
     return dict(
         subject_dashboard_url=subject_dashboard_url,
-        subject_identifier=model_wrapper.subject_identifier)
+        subject_identifier=model_wrapper.consent_model_obj.subject_identifier)
