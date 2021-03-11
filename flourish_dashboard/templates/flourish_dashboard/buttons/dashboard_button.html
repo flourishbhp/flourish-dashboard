@@ -1,3 +1,11 @@
- <a id="maternal_dashboard_{{ subject_identifier }}" class="btn btn-primary btn-sm" role="button"   
-title="Go to maternal's dashboard" href="{% url subject_dashboard_url subject_identifier %}">
-<i class="fa fa-user-circle fa-sm"></i> Dashboard  <i class="fa fa-share"></i></a>
+{% if child_age %}
+	 <a id="maternal_dashboard_{{ subject_identifier }}" class="btn btn-primary btn-sm" role="button"   
+	title="Go to maternal's dashboard" href="{% url subject_dashboard_url subject_identifier %}">
+	<i class="fa fa-user-circle fa-sm"></i> Dashboard <i class="fa fa-share"></i></a>
+{% else %}
+	{% if assent_obj and assent_obj.is_eligible %}
+		<a id="maternal_dashboard_{{ subject_identifier }}" class="btn btn-primary btn-sm" role="button"   
+		title="Go to maternal's dashboard" href="{% url subject_dashboard_url subject_identifier %}">
+		<i class="fa fa-user-circle fa-sm"></i> Dashboard  <i class="fa fa-share"></i></a>
+	{% endif %}
+{% endif %}

@@ -44,12 +44,11 @@
 		    	{% if result.consent_model_obj.is_eligible %}
 		    			{% assent_button result %}
 		    			{% if result.child_assent %}
-		    				{% if result.assent_model_obj.is_eligible %}
-			    				{% dashboard_button result.consent %}
-			    			{% else %}
+		    				{% if not result.assent_model_obj.is_eligible %}
 			    				{% eligibility_button result.child_assent %}
-			    		{% endif %}
-		    		{% endif %}
+			    			{% endif %}
+		    			{% endif %}
+		    			{% dashboard_button result.consent %}
 		    	{% else %}
 		    		{% eligibility_button result.consent %}
 		    	{% endif %}

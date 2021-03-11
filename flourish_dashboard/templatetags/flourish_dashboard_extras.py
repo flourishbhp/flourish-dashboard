@@ -101,4 +101,6 @@ def dashboard_button(model_wrapper):
         'subject_dashboard_url')
     return dict(
         subject_dashboard_url=subject_dashboard_url,
-        subject_identifier=model_wrapper.consent_model_obj.subject_identifier)
+        subject_identifier=model_wrapper.consent_model_obj.subject_identifier,
+        assent_obj=model_wrapper.assent_model_obj,
+        child_age=model_wrapper.consent_model_obj.child_age_at_enrollment < 7)
