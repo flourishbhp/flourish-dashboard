@@ -10,6 +10,7 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
+from ....model_wrappers import MaternalCrfModelWrapper
 
 
 class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
@@ -19,6 +20,7 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     dashboard_template = 'subject_dashboard_template'
     appointment_model = 'edc_appointment.appointment'
     appointment_model_wrapper_cls = AppointmentModelWrapper
+    crf_model_wrapper_cls = MaternalCrfModelWrapper
     consent_model = 'flourish_caregiver.subjectconsent'
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     navbar_name = 'flourish_dashboard'
@@ -57,7 +59,6 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             self.onschedule_models.append(onschedule_model_obj)
             self.visit_schedules.update(
                 {visit_schedule.name: visit_schedule})
-
 
     def get_onschedule_model_obj(self, schedule):
         try:
