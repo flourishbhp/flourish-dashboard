@@ -5,11 +5,15 @@ from edc_model_wrapper import ModelWrapper
 from edc_base.utils import get_uuid
 from edc_consent import ConsentModelWrapperMixin
 
+from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
 
+
 class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
-                                    ConsentModelWrapperMixin, ModelWrapper):
+                                    ConsentModelWrapperMixin,
+                                    ChildAssentModelWrapperMixin,
+                                    ModelWrapper):
 
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.screeningpregwomen'
