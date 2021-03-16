@@ -57,6 +57,21 @@ class ConsentModelWrapperMixin:
             screening_identifier=self.screening_identifier,
             consent_identifier=get_uuid(),
             version=self.consent_version)
+        if getattr(self, 'locator_model_obj'):
+            first_name = self.locator_model_obj.first_name.upper()
+            last_name = self.locator_model_obj.last_name.upper()
+            initials = ''
+            if (len(first_name.split(' ')) > 1):
+                first = first_name.split(' ')[0]
+                middle = first_name.split(' ')[1]
+                initials = f'{first[:1]}{middle[:1]}{last_name[:1]}'
+            else:
+                initials = f'{first_name[:1]}{last_name[:1]}'
+            options.update(
+                {'first_name': first_name,
+                 'last_name': last_name,
+                 'initials': initials,
+                 'child_dob': self.delivdt})
         return options
 
     @property
