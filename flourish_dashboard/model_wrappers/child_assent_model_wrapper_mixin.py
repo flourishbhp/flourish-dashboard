@@ -44,6 +44,9 @@ class ChildAssentModelWrapperMixin:
         options = dict(
             screening_identifier=self.screening_identifier,
             version=self.assent_version)
+        if getattr(self, 'consent_model_obj'):
+            options.update(
+                {'dob': self.consent_model_obj.child_dob})
         return options
 
     # @property
