@@ -1,0 +1,37 @@
+{% extends 'edc_subject_dashboard/dashboard.html' %}
+{% load flourish_dashboard_extras %}
+
+{% load static %}
+
+{% block schedule_button %}
+<span class="pull-right"><span class="text test-muted">
+    <a href="{% url child_subject_dashboard_url subject_identifier=subject_identifier %}"
+       role="button" class="btn btn-sm btn-primary">
+        <i class="fa fa-reply fa-fw" aria-hidden="true"></i> <i class="far fa-calendar fa-fw"></i> Schedule
+    </a>
+</span></span>
+{% endblock schedule_button %}
+
+{% block dashboard_schedule_footer %}
+				
+<!---->
+{% endblock dashboard_schedule_footer %}
+
+{% block appointments_schedule_footer %}
+				
+<!---->
+{% endblock appointments_schedule_footer %}	
+	            
+{% block locator_information %}{% endblock locator_information %}
+
+{% block top_bar %}
+
+    {% include "flourish_dashboard/child_subject/dashboard/top_bar.html" %}
+
+{% endblock top_bar %}
+
+
+{% block side_bar %}
+		{% include 'flourish_dashboard/child_subject/dashboard/sidebar.html' %}
+
+{% endblock side_bar %}

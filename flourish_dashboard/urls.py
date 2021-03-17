@@ -16,11 +16,18 @@ from edc_dashboard import UrlConfig
 
 from .patterns import subject_identifier, screening_identifier, study_maternal_identifier
 from .views import (
-    ChildListboardView, MaternalScreeningListBoardView,
+    ChildListboardView, ChildDashboardView, MaternalScreeningListBoardView,
     MaternalSubjectListboardView, MaternalDatasetListBoardView,
     MaternalDashboardView, LocatorLogReportView)
 
 app_name = 'flourish_dashboard'
+
+child_dashboard_url_config = UrlConfig(
+    url_name='child_dashboard_url',
+    view_class=ChildDashboardView,
+    label='child_dashboard',
+    identifier_label='subject_identifier',
+    identifier_pattern=subject_identifier)
 
 child_listboard_url_config = UrlConfig(
     url_name='child_listboard_url',
@@ -62,6 +69,7 @@ urlpatterns = [
          name='locator_report_url'),
 ]
 
+urlpatterns += child_dashboard_url_config.dashboard_urls
 urlpatterns += child_listboard_url_config.listboard_urls
 urlpatterns += subject_listboard_url_config.listboard_urls
 urlpatterns += maternal_dataset_listboard_url_config.listboard_urls

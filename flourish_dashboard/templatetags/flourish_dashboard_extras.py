@@ -5,6 +5,17 @@ from django.conf import settings
 register = template.Library()
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/Child_dashboard_button.html')
+def child_dashboard_button(model_wrapper):
+    child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
+        'child_dashboard_url')
+    return dict(
+        child_dashboard_url=child_dashboard_url,
+        subject_identifier=model_wrapper.object.subject_identifier,
+        assent_obj=model_wrapper.assent_model_obj,
+        consent_obj=model_wrapper.object)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
 def eligibility_button(screening_model_wrapper):
     comment = []
@@ -16,6 +27,15 @@ def eligibility_button(screening_model_wrapper):
     comment.sort()
     return dict(eligible=obj.is_eligible, comment=comment,
                 tooltip=tooltip, obj=obj)
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
+def dashboard_button(model_wrapper):
+    subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
+        'child_dashboard_url')
+    return dict(
+        subject_dashboard_url=subject_dashboard_url,
+        subject_identifier=model_wrapper.consent_model_obj.subject_identifier)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/edit_screening_button.html')

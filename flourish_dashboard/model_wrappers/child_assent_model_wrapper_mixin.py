@@ -1,3 +1,6 @@
+from dateutil import relativedelta
+from edc_base.utils import get_utcnow
+
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -28,6 +31,33 @@ class ChildAssentModelWrapperMixin:
             return None
 
     @property
+    def child_name_initial(self):
+        if getattr(self, 'assent_model_obj'):
+            name = self.assent_model_obj.first_name
+            initials = self.assent_model_obj.initials
+            return f'{name} {initials}'
+        return None
+
+    @property
+    def assent_date(self):
+        if getattr(self, 'assent_model_obj'):
+            return self.assent_model_obj.consent_datetime.date()
+        return None
+
+    @property
+    def child_age(self):
+        if getattr(self, 'assent_model_obj'):
+            birth_date = self.assent_model_obj.dob
+            difference = relativedelta.relativedelta(
+                get_utcnow().date(), birth_date)
+            months = 0
+            if difference.years > 0:
+                months = difference.years * 12
+            years = round((months + difference.months) / 12, 2)
+            return years
+        return None
+
+    @property
     def child_assent(self):
         """"Returns a wrapped saved or unsaved child assent
         """
@@ -45,6 +75,7 @@ class ChildAssentModelWrapperMixin:
             screening_identifier=self.screening_identifier,
             version=self.assent_version)
         if getattr(self, 'consent_model_obj'):
+            # import pdb; pdb.set_trace()
             options.update(
                 {'dob': self.consent_model_obj.child_dob})
         return options

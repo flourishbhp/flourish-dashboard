@@ -1,3 +1,4 @@
+from .child_subject import DashboardView as ChildDashboardView
 from .child_subject import ListboardView as ChildListboardView
 from .maternal_dataset import MaternalDatasetListBoardView
 from .maternal_subject import DashboardView as MaternalDashboardView
