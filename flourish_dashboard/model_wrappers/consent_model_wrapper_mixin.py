@@ -57,21 +57,6 @@ class ConsentModelWrapperMixin:
             screening_identifier=self.screening_identifier,
             consent_identifier=get_uuid(),
             version=self.consent_version)
-        if getattr(self, 'locator_model_obj'):
-            first_name = self.locator_model_obj.first_name.upper()
-            last_name = self.locator_model_obj.last_name.upper()
-            initials = ''
-            if (len(first_name.split(' ')) > 1):
-                first = first_name.split(' ')[0]
-                middle = first_name.split(' ')[1]
-                initials = f'{first[:1]}{middle[:1]}{last_name[:1]}'
-            else:
-                initials = f'{first_name[:1]}{last_name[:1]}'
-            options.update(
-                {'first_name': first_name,
-                 'last_name': last_name,
-                 'initials': initials,
-                 'child_dob': self.delivdt})
         return options
 
     @property
@@ -80,6 +65,26 @@ class ConsentModelWrapperMixin:
         consent model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,
+            screening_identifier=self.screening_identifier,
             version=self.consent_version)
         return options
+
+    @property
+    def show_dashboard(self):
+        show_dashboard = False
+        subject_consent = self.consent_model_obj
+        if subject_consent:
+            child_consents = subject_consent.caregiverchildconsent_set.all()
+            for child_consent in child_consents:
+                child_age = child_consent.child_age_at_enrollment
+                if child_consent.is_eligible and child_age < 7:
+                    show_dashboard = True
+                    break
+                elif child_consent.is_eligible and child_age > 7:
+                    assent_obj = getattr(self, 'child_assent_obj', None)
+                    if assent_obj:
+                        child_assent = assent_obj(
+                            subject_identifier=child_consent.subject_identifier,)
+                        show_dashboard = True if child_assent else False
+                        break
+        return show_dashboard

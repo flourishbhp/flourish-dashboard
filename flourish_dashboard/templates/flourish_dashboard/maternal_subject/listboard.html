@@ -7,7 +7,6 @@
     <!-- begin results header -->
     <th>#</th>
     <th></th>
-    <th>Consent Version form</th>
     <th>Identifier</th>
     <th>Subject</th>
     <th>Age / Born</th>
@@ -36,20 +35,14 @@
         <i class="fa fa-pencil-alt fa-sm"></i>
     </a>
     {% if result.is_eligible %}
-         {% assent_button result %}
-         {% if result.assent_model_obj %}
-	         {% if not result.child_assent.is_eligible %}
-		      	{% eligibility_button result.child_assent %}
-		     {% endif %}
-		 {% endif %}
+         {% assents_button result %}
+         
 		 {% dashboard_button result %}
 	{% else %}
 		{% eligibility_button result %}
     {% endif %}
     </div>
 	</td>
-
-	<td></td>
 {% endblock listboard_table_button_column %}
 
 {% block listboard_table_columns %}
