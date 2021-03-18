@@ -11,8 +11,8 @@ class ChildAppointmentModelWrapper(BaseAppointmentModelWrapper):
 
     visit_model_wrapper_cls = ChildVisitModelWrapper
     dashboard_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'child_subject_dashboard_url')
-    next_url_name = settings.DASHBOARD_URL_NAMES.get('child_subject_dashboard_url')
+        'child_dashboard_url')
+    next_url_name = settings.DASHBOARD_URL_NAMES.get('child_dashboard_url')
     next_url_attrs = ['subject_identifier']
     querystring_attrs = ['subject_identifier', 'reason']
     unscheduled_appointment_url_name = 'edc_appointment:unscheduled_appointment_url'

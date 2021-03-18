@@ -6,7 +6,7 @@ class ChildVisitModelWrapper(BaseSubjectVisitModelWrapper):
 
     model = 'flourish_child.childvisit'
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'child_subject_dashboard_url')
+        'child_dashboard_url')
     next_url_attrs = ['subject_identifier', 'appointment', 'reason']
 
     @property
