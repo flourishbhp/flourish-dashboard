@@ -3,7 +3,7 @@
  	title="{{ title }}"
 
  	{% if consent_obj %}
- 	   {% if not assent_obj %}
+ 	   {% if not child_assent %}
 	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
 	        href="{{ add_assent_href }}">
 		{% else %}

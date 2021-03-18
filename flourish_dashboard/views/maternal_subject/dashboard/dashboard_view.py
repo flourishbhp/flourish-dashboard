@@ -1,6 +1,6 @@
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
@@ -10,7 +10,8 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
-from ....model_wrappers import MaternalCrfModelWrapper
+from ....model_wrappers import MaternalCrfModelWrapper, MaternalScreeningModelWrapper
+from ....model_wrappers import CaregiverChildConsentModelWrapper
 
 
 class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
@@ -42,10 +43,36 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
                     'visit_code')
         return self._appointments
 
+    @property
+    def screening_pregnant_women(self):
+        """Return a wrapped screening for preg women obj.
+        """
+        screening_cls = django_apps.get_model('flourish_caregiver.screeningpregwomen')
+        try:
+            subject_screening = screening_cls.objects.get(
+                screening_identifier=self.consent_wrapped.screening_identifier)
+        except screening_cls.DoesNotExist:
+            raise ValidationError('Subject Screening must exist.')
+        else:
+            return MaternalScreeningModelWrapper(subject_screening)
+
+    @property
+    def caregiver_child_consents(self):
+        wrapped_assents = []
+        child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+        child_consents = child_consent_cls.objects.filter(
+            subject_identifier__istartswith=self.subject_identifier)
+        for child_consent in child_consents:
+            wrapped_assents.append(CaregiverChildConsentModelWrapper(child_consent))
+        return wrapped_assents
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(
-            subject_consent=self.consent_wrapped,)
+            subject_consent=self.consent_wrapped,
+            screening_preg_women=self.screening_pregnant_women,
+            caregiver_child_consents=self.caregiver_child_consents)
         return context
 
     def set_current_schedule(self, onschedule_model_obj=None,

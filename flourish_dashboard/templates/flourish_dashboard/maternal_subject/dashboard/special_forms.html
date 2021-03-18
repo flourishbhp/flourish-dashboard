@@ -7,5 +7,18 @@
 			{% locator_button subject_consent %}
 		</td>
 		</tr>
+		{% for caregiver_child_consent in caregiver_child_consents %}
+			<tr>
+			<td>
+				{% assent_button caregiver_child_consent %}
+			</td>
+			</tr>
+		{% endfor %}
+		<tr>
+		<td>
+			{% antenatal_enrollment_button screening_preg_women %}
+		</td>
+		</tr>
+
     </tbody>
 </table>
