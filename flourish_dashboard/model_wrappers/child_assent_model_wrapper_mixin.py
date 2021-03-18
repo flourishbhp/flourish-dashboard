@@ -11,7 +11,6 @@ class ChildAssentModelWrapperMixin:
 
     assent_model_wrapper_cls = ChildAssentModelWrapper
 
-
     @property
     def assent_model_cls(self):
         return django_apps.get_model('flourish_child.childassent')
@@ -74,17 +73,7 @@ class ChildAssentModelWrapperMixin:
         options = dict(
             screening_identifier=self.screening_identifier,
             version=self.assent_version)
-        if getattr(self, 'consent_model_obj'):
-            # import pdb; pdb.set_trace()
-            options.update(
-                {'dob': self.consent_model_obj.child_dob})
         return options
-
-    # @property
-    # def screening_identifier(self):
-    #     if self.assent_model_obj:
-    #         return self.assent_model_obj.screening_identifier
-    #     return None
 
     @property
     def assent_options(self):
@@ -95,3 +84,68 @@ class ChildAssentModelWrapperMixin:
             screening_identifier=self.screening_identifier,
             version=self.assent_version)
         return options
+
+    def child_assent_obj(self, **kwargs):
+        try:
+            return self.assent_model_cls.objects.get(**kwargs)
+        except self.assent_model_cls.DoesNotExist:
+            return None
+
+    @property
+    def child_assents(self):
+        wrapped_entries = []
+        if getattr(self, 'consent_model_obj'):
+            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set.all()
+            for caregiverchildconsent in caregiverchildconsents:
+                is_eligible = caregiverchildconsent.is_eligible
+                child_age = caregiverchildconsent.child_age_at_enrollment
+                if is_eligible and child_age > 7:
+                    model_obj = self.child_assent_model_obj(caregiverchildconsent) or\
+                        self.assent_model_cls(**self.create_child_assent_options(caregiverchildconsent))
+                    wrapped_entries.append(ChildAssentModelWrapper(model_obj))
+        return wrapped_entries
+
+    def create_child_assent_options(self, caregiverchildconsent):
+        first_name = caregiverchildconsent.first_name
+        last_name = caregiverchildconsent.last_name
+        initials = self.set_initials(first_name, last_name)
+        options = dict(
+            screening_identifier=self.screening_identifier,
+            version=self.assent_version,
+            first_name=first_name,
+            last_name=last_name,
+            initials=initials,
+            gender=caregiverchildconsent.gender,
+            identity=caregiverchildconsent.identity,
+            identity_type=caregiverchildconsent.identity_type,
+            confirm_identity=caregiverchildconsent.confirm_identity,
+            dob=caregiverchildconsent.child_dob)
+        return options
+
+    def child_assent_options(self, caregiverchildconsent):
+        first_name = caregiverchildconsent.first_name
+        last_name = caregiverchildconsent.last_name
+        options = dict(
+            screening_identifier=self.screening_identifier,
+            version=self.assent_version,
+            first_name=first_name,
+            last_name=last_name,
+            identity=caregiverchildconsent.identity)
+        return options
+
+    def child_assent_model_obj(self, caregiverchildconsent):
+        try:
+            return self.assent_model_cls.objects.get(
+                **self.child_assent_options(caregiverchildconsent))
+        except self.assent_model_cls.DoesNotExist:
+            return None
+
+    def set_initials(self, first_name, last_name):
+        initials = ''
+        if (len(first_name.split(' ')) > 1):
+            first = first_name.split(' ')[0]
+            middle = first_name.split(' ')[1]
+            initials = f'{first[:1]}{middle[:1]}{last_name[:1]}'
+        else:
+            initials = f'{first_name[:1]}{last_name[:1]}'
+        return initials

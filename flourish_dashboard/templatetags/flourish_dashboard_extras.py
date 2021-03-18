@@ -5,7 +5,7 @@ from django.conf import settings
 register = template.Library()
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/Child_dashboard_button.html')
+@register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
 def child_dashboard_button(model_wrapper):
     child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'child_dashboard_url')
@@ -27,15 +27,6 @@ def eligibility_button(screening_model_wrapper):
     comment.sort()
     return dict(eligible=obj.is_eligible, comment=comment,
                 tooltip=tooltip, obj=obj)
-
-
-@register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
-def dashboard_button(model_wrapper):
-    subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
-        'child_dashboard_url')
-    return dict(
-        subject_dashboard_url=subject_dashboard_url,
-        subject_identifier=model_wrapper.consent_model_obj.subject_identifier)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/edit_screening_button.html')
@@ -108,11 +99,19 @@ def consent_button(model_wrapper):
 def assent_button(model_wrapper):
     title = ['Assent child to participate.']
     return dict(
-        consent_obj=model_wrapper.consent_model_obj,
-        assent_age=model_wrapper.consent_model_obj.child_age_at_enrollment > 7,
-        assent_obj=model_wrapper.assent_model_obj,
+        consent_obj=model_wrapper.object,
+        assent_age=model_wrapper.object.child_age_at_enrollment > 7,
+        child_assent=model_wrapper.child_assent,
         add_assent_href=model_wrapper.child_assent.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
+def assents_button(model_wrapper):
+    title = ['Child Assent(s)']
+    return dict(
+        wrapped_assents=model_wrapper.child_assents,
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')
@@ -122,5 +121,4 @@ def dashboard_button(model_wrapper):
     return dict(
         subject_dashboard_url=subject_dashboard_url,
         subject_identifier=model_wrapper.consent_model_obj.subject_identifier,
-        assent_obj=model_wrapper.assent_model_obj,
-        child_age=model_wrapper.consent_model_obj.child_age_at_enrollment < 7)
+        show_dashboard=model_wrapper.show_dashboard)

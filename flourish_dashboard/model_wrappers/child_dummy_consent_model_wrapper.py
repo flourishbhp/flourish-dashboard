@@ -21,14 +21,14 @@ class ChildDummyConsentModelWrapper(ChildAssentModelWrapperMixin,
             subject_identifier=self.subject_identifier)
         return subject_consent.screening_identifier
 
-
     @property
     def assent_options(self):
         """Returns a dictionary of options to get an existing
          child assent model instance.
         """
         options = dict(
-            subject_identifier=self.object.subject_identifier)
+            subject_identifier=self.object.subject_identifier,
+            version=self.version)
         return options
 
     @property

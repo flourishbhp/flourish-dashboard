@@ -1,0 +1,18 @@
+{% if wrapped_assents %}
+	<div class="btn-group">
+		<button title = "{{ title|default:'Assents' }}" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
+		  	{{ wrapped_assents|length }} Child Assent(s) <i class=""></i>
+		    <span class="caret"></span>
+		</button>
+	    <ul class="dropdown-menu" role="menu">
+	        <li class="dropdown-header">{{ title|default:'Assent' }}</li>
+	        {% for assent in wrapped_assents %}
+	          <li>
+	          	<a href="{{ assent.get_absolute_url }}?next={{ assent.next_url }}&{{ assent.querystring }}">
+	               {{ assent.first_name }} {{ assent.last_name }}, ID: {{assent.identity}}
+	            </a>
+	         </li>
+	        {% endfor %}
+	     </ul>
+	</div>
+{% endif %}
