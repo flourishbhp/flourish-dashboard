@@ -39,7 +39,6 @@ class BHPPriorScreeningModelWrapperMixin(ModelWrapper):
         """
         options = dict(
             screening_identifier=self.object.screening_identifier,
-            study_child_identifier=self.study_child_identifier,
             study_maternal_identifier=self.study_maternal_identifier)
         return options
 
@@ -50,5 +49,5 @@ class BHPPriorScreeningModelWrapperMixin(ModelWrapper):
         """
         options = dict(
             screening_identifier=self.object.screening_identifier,
-            study_child_identifier=self.study_child_identifier)
+            study_maternal_identifier=self.study_maternal_identifier)
         return options
