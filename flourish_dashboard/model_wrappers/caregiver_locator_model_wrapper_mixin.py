@@ -37,6 +37,10 @@ class CaregiverLocatorModelWrapperMixin:
         """
         options = dict(
             screening_identifier=self.object.screening_identifier,)
+        if getattr(self, 'study_maternal_identifier'):
+            options.update({'study_maternal_identifier': self.study_maternal_identifier})
+        if getattr(self, 'first_name'):
+            options.update({'first_name': self.first_name, 'last_name': self.last_name})
         return options
 
     @property
