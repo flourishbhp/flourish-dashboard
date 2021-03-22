@@ -28,14 +28,18 @@
     <td style="white-space: nowrap;">
     <div class="btn-group">
     {% edit_screening_button result %}
-    {% consent_button result %}
-    {% if result.consent %}
-    	
-    	{% antenatal_enrollment_button result %}
-    	{% if result.antenatal_enrollment_model_obj %}
-    		{% dashboard_button result %}
-    	{% endif %}
+    {% if result.is_eligible %}
+	    {% consent_button result %}
+	    {% if result.consent %}
+	    	{% antenatal_enrollment_button result %}
+	    	{% if result.antenatal_enrollment_model_obj %}
+	    		{% dashboard_button result %}
+	    	{% endif %}
+		{% endif %}
+	{% else %}
+			{% eligibility_button result %}
 	{% endif %}
+	
     </div>
     </td>
 {% endblock listboard_table_button_column %}		
