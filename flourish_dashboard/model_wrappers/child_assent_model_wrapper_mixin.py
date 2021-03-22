@@ -124,13 +124,3 @@ class ChildAssentModelWrapperMixin:
                 **self.child_assent_options(caregiverchildconsent))
         except self.assent_model_cls.DoesNotExist:
             return None
-
-    def set_initials(self, first_name, last_name):
-        initials = ''
-        if (len(first_name.split(' ')) > 1):
-            first = first_name.split(' ')[0]
-            middle = first_name.split(' ')[1]
-            initials = f'{first[:1]}{middle[:1]}{last_name[:1]}'
-        else:
-            initials = f'{first_name[:1]}{last_name[:1]}'
-        return initials

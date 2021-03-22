@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from edc_base.utils import get_uuid
 
 from edc_consent.site_consents import site_consents
+from edc_constants.constants import FEMALE
 
 
 class ConsentModelWrapperMixin:
@@ -57,6 +58,18 @@ class ConsentModelWrapperMixin:
             screening_identifier=self.screening_identifier,
             consent_identifier=get_uuid(),
             version=self.consent_version)
+        if getattr(self, 'bhp_prior_screening_model_obj'):
+            bhp_prior_screening = self.bhp_prior_screening_model_obj
+            flourish_participation = bhp_prior_screening.flourish_participation
+            if flourish_participation == 'interested' and getattr(self, 'locator_model_obj'):
+                first_name = self.locator_model_obj.first_name
+                last_name = self.locator_model_obj.last_name
+                initials = self.set_initials(first_name, last_name)
+                options.update(
+                    {'first_name': first_name,
+                     'last_name': last_name,
+                     'initials': initials,
+                     'gender': FEMALE})
         return options
 
     @property
