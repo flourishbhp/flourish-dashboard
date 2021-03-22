@@ -1,7 +1,6 @@
 from django import template
 from django.conf import settings
 
-
 register = template.Library()
 
 
@@ -22,7 +21,7 @@ def eligibility_button(screening_model_wrapper):
     obj = screening_model_wrapper.object
     tooltip = None
     if not obj.is_eligible:
-        comment = obj.ineligibility.split(',')
+        comment = obj.ineligibility[1:-1].split(',')
     comment = list(set(comment))
     comment.sort()
     return dict(eligible=obj.is_eligible, comment=comment,
@@ -111,7 +110,7 @@ def assents_button(model_wrapper):
     title = ['Child Assent(s)']
     return dict(
         wrapped_assents=model_wrapper.child_assents,
-        title=' '.join(title), )
+        title=' '.join(title),)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')
