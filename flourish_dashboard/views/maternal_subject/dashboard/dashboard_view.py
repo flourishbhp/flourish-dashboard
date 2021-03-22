@@ -52,7 +52,7 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             subject_screening = screening_cls.objects.get(
                 screening_identifier=self.consent_wrapped.screening_identifier)
         except screening_cls.DoesNotExist:
-            raise ValidationError('Subject Screening must exist.')
+            return None
         else:
             return MaternalScreeningModelWrapper(subject_screening)
 

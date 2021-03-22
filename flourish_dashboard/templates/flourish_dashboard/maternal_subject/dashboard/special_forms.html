@@ -15,9 +15,11 @@
 			</tr>
 		{% endfor %}
 		<tr>
+		{% if screening_preg_women %}
 		<td>
 			{% antenatal_enrollment_button screening_preg_women %}
 		</td>
+		{% endif %}
 		</tr>
 
     </tbody>
