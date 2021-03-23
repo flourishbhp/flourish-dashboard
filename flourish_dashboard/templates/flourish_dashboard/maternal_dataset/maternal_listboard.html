@@ -42,12 +42,7 @@
 			{% consent_button result %}
 		    {% if result.consent %}
 		    	{% if result.consent_model_obj.is_eligible %}
-		    			{% assent_button result %}
-		    			{% if result.child_assent %}
-		    				{% if not result.assent_model_obj.is_eligible %}
-			    				{% eligibility_button result.child_assent %}
-			    			{% endif %}
-		    			{% endif %}
+		    			{% assents_button result %}
 		    			{% dashboard_button result.consent %}
 		    	{% else %}
 		    		{% eligibility_button result.consent %}

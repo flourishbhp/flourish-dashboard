@@ -1,5 +1,7 @@
+from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from edc_base.utils import get_utcnow
 
 from .child_assent_model_wrapper import ChildAssentModelWrapper
 
@@ -124,3 +126,16 @@ class ChildAssentModelWrapperMixin:
                 **self.child_assent_options(caregiverchildconsent))
         except self.assent_model_cls.DoesNotExist:
             return None
+
+    @property
+    def child_age(self):
+        if self.assent_model_obj:
+            birth_date = self.assent_model_obj.dob
+            difference = relativedelta(get_utcnow().date(), birth_date)
+            months = 0
+            if difference.years > 0:
+                months = difference.years * 12
+            years = round((months + difference.months) / 12, 2)
+            return years
+        return 0
+
