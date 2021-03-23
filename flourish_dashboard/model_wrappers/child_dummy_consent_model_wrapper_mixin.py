@@ -43,7 +43,7 @@ class ChildDummyConsentModelWrapperMixin:
             name = self.assent_model_obj.first_name
             initials = self.assent_model_obj.initials
             return f'{name} {initials}'
-        if getattr(self, 'consent_model_obj'):
+        elif getattr(self, 'consent_model_obj'):
             caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
             for caregiverchildconsent_obj in caregiverchildconsent_objs:
                 first_name = caregiverchildconsent_obj.first_name
@@ -61,7 +61,7 @@ class ChildDummyConsentModelWrapperMixin:
                 months = difference.years * 12
             years = round((months + difference.months) / 12, 2)
             return years
-        if getattr(self, 'consent_model_obj'):
+        elif getattr(self, 'consent_model_obj'):
             caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
             for caregiverchildconsent_obj in caregiverchildconsent_objs:
                 birth_date = caregiverchildconsent_obj.child_dob
@@ -77,7 +77,7 @@ class ChildDummyConsentModelWrapperMixin:
     def assent_date(self):
         if getattr(self, 'assent_model_obj'):
             return self.assent_model_obj.consent_datetime.date()
-        if getattr(self, 'consent_model_obj'):
+        elif getattr(self, 'consent_model_obj'):
             caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
             for caregiverchildconsent_obj in caregiverchildconsent_objs:
                 consent_date = caregiverchildconsent_obj.consent_datetime.date()
