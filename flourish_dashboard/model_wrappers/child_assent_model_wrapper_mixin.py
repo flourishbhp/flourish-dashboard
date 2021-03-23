@@ -29,20 +29,6 @@ class ChildAssentModelWrapperMixin:
             return None
 
     @property
-    def child_name_initial(self):
-        if getattr(self, 'assent_model_obj'):
-            name = self.assent_model_obj.first_name
-            initials = self.assent_model_obj.initials
-            return f'{name} {initials}'
-        return None
-
-    @property
-    def assent_date(self):
-        if getattr(self, 'assent_model_obj'):
-            return self.assent_model_obj.consent_datetime.date()
-        return 'N/A'
-
-    @property
     def child_assent(self):
         """"Returns a wrapped saved or unsaved child assent
         """
