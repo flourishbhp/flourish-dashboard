@@ -66,8 +66,8 @@ class ConsentModelWrapperMixin:
                 last_name = self.locator_model_obj.last_name
                 initials = self.set_initials(first_name, last_name)
                 options.update(
-                    {'first_name': first_name,
-                     'last_name': last_name,
+                    {'first_name': first_name.upper(),
+                     'last_name': last_name.upper(),
                      'initials': initials,
                      'gender': FEMALE})
         return options
