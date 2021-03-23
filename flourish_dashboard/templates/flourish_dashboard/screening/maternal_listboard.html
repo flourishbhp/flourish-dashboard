@@ -33,7 +33,11 @@
 	    {% if result.consent %}
 	    	{% antenatal_enrollment_button result %}
 	    	{% if result.antenatal_enrollment_model_obj %}
+	    	  {% if result.antenatal_enrollment_model_obj.is_eligible %}
 	    		{% dashboard_button result %}
+	    	  {% else %}
+	    	     {% eligibility_button result.antenatal_enrollment %}
+	    	  {% endif %}
 	    	{% endif %}
 		{% endif %}
 	{% else %}

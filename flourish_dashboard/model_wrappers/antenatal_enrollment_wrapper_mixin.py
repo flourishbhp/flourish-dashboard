@@ -48,3 +48,7 @@ class AntenatalEnrollmentModelWrapperMixin:
         options = dict(
             subject_identifier=self.consent.subject_identifier)
         return options
+
+    @property
+    def show_dashboard(self):
+        return True

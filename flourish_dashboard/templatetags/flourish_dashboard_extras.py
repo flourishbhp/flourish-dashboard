@@ -21,10 +21,10 @@ def eligibility_button(screening_model_wrapper):
     comment = []
     obj = screening_model_wrapper.object
     tooltip = None
-    if not obj.is_eligible:
+    if obj.ineligibility:
         comment = obj.ineligibility[1:-1].split(',')
-    comment = list(set(comment))
-    comment.sort()
+        comment = list(set(comment))
+        comment.sort()
     return dict(eligible=obj.is_eligible, comment=comment,
                 tooltip=tooltip, obj=obj)
 
