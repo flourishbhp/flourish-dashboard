@@ -15,10 +15,12 @@ class ConsentModelWrapperMixin:
         """Returns a consent configuration object from site_consents
         relative to the wrapper's "object" report_datetime.
         """
+        consent_model_wrapper_cls = self.consent_model_wrapper_cls or self.__class__
+
         default_consent_group = django_apps.get_app_config(
             'edc_consent').default_consent_group
         consent_object = site_consents.get_consent_for_period(
-            model=self.consent_model_wrapper_cls.model,
+            model=consent_model_wrapper_cls.model,
             report_datetime=self.screening_report_datetime,
             consent_group=default_consent_group,
             version=self.consent_version or None)
@@ -45,9 +47,10 @@ class ConsentModelWrapperMixin:
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
         """
+        consent_model_wrapper_cls = self.consent_model_wrapper_cls or self.__class__
         model_obj = self.consent_model_obj or self.consent_object.model_cls(
             **self.create_consent_options)
-        return self.consent_model_wrapper_cls(model_obj=model_obj)
+        return consent_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):
@@ -66,8 +69,8 @@ class ConsentModelWrapperMixin:
                 last_name = self.locator_model_obj.last_name
                 initials = self.set_initials(first_name, last_name)
                 options.update(
-                    {'first_name': first_name,
-                     'last_name': last_name,
+                    {'first_name': first_name.upper(),
+                     'last_name': last_name.upper(),
                      'initials': initials,
                      'gender': FEMALE})
         return options

@@ -1,3 +1,4 @@
+from django.apps import apps as django_apps
 from django import template
 from django.conf import settings
 
@@ -67,11 +68,20 @@ def bhp_prior_screening_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/antenatal_enrollment_button.html')
 def antenatal_enrollment_button(model_wrapper):
     title = ['subject antenatal enrollment.']
+
+    preg_screening_cls = django_apps.get_model('flourish_caregiver.screeningpregwomen')
+    try:
+        preg_screening_obj = preg_screening_cls.objects.get(
+            screening_identifier=model_wrapper.consent.screening_identifier)
+    except preg_screening_cls.DoesNotExist:
+        preg_screening_obj = None
+
     return dict(
         subject_identifier=model_wrapper.consent.subject_identifier,
         add_anternatal_enrollment_href=model_wrapper.antenatal_enrollment.href,
         antenatal_enrollment_model_obj=model_wrapper.antenatal_enrollment_model_obj,
         screening_identifier=model_wrapper.object.screening_identifier,
+        preg_screening_obj=preg_screening_obj,
         title=' '.join(title),)
 
 
