@@ -22,4 +22,6 @@ class CaregiverChildConsentModelWrapper(ConsentModelWrapperMixin,
 
     @property
     def child_age(self):
-        return self.object.child_age_at_enrollment
+        if self.object.child_age_at_enrollment:
+            return self.object.child_age_at_enrollment
+        return 0
