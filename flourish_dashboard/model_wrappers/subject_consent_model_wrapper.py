@@ -19,3 +19,20 @@ class SubjectConsentModelWrapper(ChildAssentModelWrapperMixin,
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
                          'first_name', 'last_name', 'initials', 'gender']
+
+    @property
+    def create_caregiver_locator_options(self):
+        """Returns a dictionary of options to create a new
+        unpersisted caregiver locator model instance.
+        """
+        options = dict(
+            screening_identifier=self.object.screening_identifier,)
+        if self.assent_model_obj:
+            options.update(
+                {'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier})
+        else:
+            options.update(
+                {'subject_identifier': self.subject_identifier})
+        if getattr(self, 'first_name'):
+            options.update({'first_name': self.first_name, 'last_name': self.last_name})
+        return options

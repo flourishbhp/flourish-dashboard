@@ -7,7 +7,6 @@ from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
-
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, MaternalScreeningModelWrapper

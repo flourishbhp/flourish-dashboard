@@ -29,7 +29,7 @@
     <div class="btn-group">
     {% edit_screening_button result %}
     {% if result.is_eligible %}
-	    {% consent_button result %}
+	    {% consent_button result True %}
 	    {% if result.consent %}
 	    	{% antenatal_enrollment_button result %}
 	    	{% if result.antenatal_enrollment_model_obj %}
