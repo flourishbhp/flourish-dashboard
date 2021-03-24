@@ -86,12 +86,14 @@ class ConsentModelWrapperMixin:
         return options
 
     @property
+    def child_consents(self):
+        return self.consent_model_obj.caregiverchildconsent_set.all()
+
+    @property
     def show_dashboard(self):
         show_dashboard = False
-        subject_consent = self.consent_model_obj
-        if subject_consent:
-            child_consents = subject_consent.caregiverchildconsent_set.all()
-            for child_consent in child_consents:
+        if self.consent_model_obj:
+            for child_consent in self.child_consents:
                 child_age = child_consent.child_age_at_enrollment
                 if child_consent.is_eligible and child_age < 7:
                     show_dashboard = True
@@ -114,3 +116,18 @@ class ConsentModelWrapperMixin:
         else:
             initials = f'{first_name[:1]}{last_name[:1]}'
         return initials
+
+    @property
+    def children_eligibility(self):
+        for child_consent in self.child_consents:
+            if child_consent.is_eligible:
+                return True
+        return False
+
+    @property
+    def children_ineligible(self):
+        ineligible = []
+        for child_consent in self.child_consents:
+            if not child_consent.is_eligible:
+                ineligible.append(child_consent)
+        return ineligible

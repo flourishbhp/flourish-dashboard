@@ -17,9 +17,9 @@ def child_dashboard_button(model_wrapper):
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
-def eligibility_button(screening_model_wrapper):
+def eligibility_button(model_wrapper):
     comment = []
-    obj = screening_model_wrapper.object
+    obj = model_wrapper.object
     tooltip = None
     if obj.ineligibility:
         comment = obj.ineligibility[1:-1].split(',')
@@ -27,6 +27,26 @@ def eligibility_button(screening_model_wrapper):
         comment.sort()
     return dict(eligible=obj.is_eligible, comment=comment,
                 tooltip=tooltip, obj=obj)
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_eligibility_button.html')
+def child_eligibility_button(model_wrapper):
+    comments = []
+    comment = []
+    children_ineligible = model_wrapper.children_ineligible
+    tooltip = None
+    for child_ineligible in children_ineligible:
+        if not child_ineligible.is_eligible:
+            comment = child_ineligible.ineligibility[1:-1].split(',')
+        comment = list(set(comment))
+        comment.sort()
+        comments.append(comment)
+    consent_ineligible_pair = zip(children_ineligible, comments)
+    return dict(
+        comment=comment,
+        tooltip=tooltip,
+        consent_ineligible_pair=consent_ineligible_pair,
+        children_ineligible=children_ineligible)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/edit_screening_button.html')
@@ -93,6 +113,14 @@ def locator_button(model_wrapper):
         caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/caregiver_enrolment_info_button.html')
+def caregiver_enrolment_info_button(model_wrapper):
+    return dict(
+        add_caregiver_enrol_info_href=model_wrapper.caregiver_enrolment_info.href,
+        subject_identifier=model_wrapper.object.subject_identifier,
+        caregiver_enrolment_info_obj=model_wrapper.caregiver_enrolment_info_obj)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/consent_button.html')
 def consent_button(model_wrapper, antenatal=None):
     title = ['Consent subject to participate.']
@@ -114,6 +142,16 @@ def assent_button(model_wrapper):
         assent_age=model_wrapper.child_age > 7,
         child_assent=model_wrapper.child_assent,
         add_assent_href=model_wrapper.child_assent.href,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/caregiverchildconsent_button.html')
+def caregiverchildconsent_button(model_wrapper):
+    title = ['Caregiver Child Consent']
+    return dict(
+        consent_obj=model_wrapper.object.subject_consent,
+        caregiver_childconsent=model_wrapper.caregiverchildconsent_obj,
+        add_caregiverchildconsent_href=model_wrapper.href,
         title=' '.join(title))
 
 

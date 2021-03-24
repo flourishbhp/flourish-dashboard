@@ -138,6 +138,7 @@ DASHBOARD_URL_NAMES = {
     'maternal_screening_listboard_url': 'flourish_dashboard:maternal_screening_listboard_url',
     'maternal_dataset_listboard_url': 'flourish_dashboard:maternal_dataset_listboard_url',
     'subject_dashboard_url': 'flourish_dashboard:subject_dashboard_url',
+    'child_screening_listboard_url': 'flourish_dashboard:child_screening_listboard_url',
 }
 
 DASHBOARD_BASE_TEMPLATES = {
@@ -147,4 +148,5 @@ DASHBOARD_BASE_TEMPLATES = {
     'subject_dashboard_template': 'flourish_dashboard/maternal_subject/dashboard.html',
     'maternal_screening_listboard_template': 'flourish_dashboard/screening/maternal_listboard.html',
     'maternal_dataset_listboard_template': 'flourish_dashboard/maternal_dataset/maternal_listboard.html',
+    'child_screening_listboard_template': 'flourish_dashboard/child_subject/screening_listboard.html',
 }

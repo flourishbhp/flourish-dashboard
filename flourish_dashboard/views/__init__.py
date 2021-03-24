@@ -1,5 +1,6 @@
 from .child_subject import DashboardView as ChildDashboardView
 from .child_subject import ListboardView as ChildListboardView
+from .child_subject import ScreeningListboardView as ChildScreeningListboardView
 from .maternal_dataset import MaternalDatasetListBoardView
 from .maternal_subject import DashboardView as MaternalDashboardView
 from .maternal_dataset import LocatorLogReportView

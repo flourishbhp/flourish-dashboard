@@ -35,9 +35,14 @@
         <i class="fa fa-pencil-alt fa-sm"></i>
     </a>
     {% if result.is_eligible %}
-         {% assents_button result %}
-		  {% antenatal_enrollment_button result %}
-		 {% dashboard_button result %}
+    	{% if result.children_eligibility %}
+    		{% caregiver_enrolment_info_button result %}
+         	{% assents_button result %}
+		  	{% antenatal_enrollment_button result %}
+		 	{% dashboard_button result %}
+		{% else %}
+			{% child_eligibility_button result %}
+		{% endif %}
 	{% else %}
 		{% eligibility_button result %}
     {% endif %}

@@ -124,4 +124,3 @@ class ChildAssentModelWrapperMixin:
             years = round((months + difference.months) / 12, 2)
             return years
         return 0
-
