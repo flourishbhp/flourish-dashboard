@@ -1,5 +1,7 @@
+from django.apps import apps as django_apps
+
 from dateutil.relativedelta import relativedelta
-from edc_base.utils import get_utcnow
+from edc_base.utils import age, get_utcnow
 
 
 class ChildDummyConsentModelWrapperMixin:
@@ -55,22 +57,18 @@ class ChildDummyConsentModelWrapperMixin:
     def child_age(self):
         if getattr(self, 'assent_model_obj'):
             birth_date = self.assent_model_obj.dob
-            difference = relativedelta(get_utcnow().date(), birth_date)
-            months = 0
-            if difference.years > 0:
-                months = difference.years * 12
-            years = round((months + difference.months) / 12, 2)
+            years = age(birth_date, get_utcnow()).years
             return years
         elif getattr(self, 'consent_model_obj'):
             caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
             for caregiverchildconsent_obj in caregiverchildconsent_objs:
                 birth_date = caregiverchildconsent_obj.child_dob
-                difference = relativedelta(get_utcnow().date(), birth_date)
-                months = 0
-                if difference.years > 0:
-                    months = difference.years * 12
-                years = round((months + difference.months) / 12, 2)
+                years = age(birth_date, get_utcnow()).years
                 return years
+        elif getattr(self, 'maternal_delivery_obj'):
+            birth_date = self.maternal_delivery_obj.delivery_datetime.date()
+            years = age(birth_date, get_utcnow()).months
+            return years
         return 0
 
     @property
@@ -83,3 +81,11 @@ class ChildDummyConsentModelWrapperMixin:
                 consent_date = caregiverchildconsent_obj.consent_datetime.date()
                 return consent_date
         return 'N/A'
+
+    @property
+    def maternal_delivery_obj(self):
+        maternal_delivery_cls = django_apps.get_model(
+            'flourish_caregiver.maternaldelivery')
+        maternal_delivery_obj = maternal_delivery_cls.objects.get(
+            subject_identifier=self.subject_identifier)
+        return django_apps.get_model('flourish_caregiver.maternaldelivery')
