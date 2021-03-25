@@ -6,12 +6,14 @@ from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
+from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 
 
 class SubjectConsentModelWrapper(ChildAssentModelWrapperMixin,
                                  CaregiverEnrolmentInfoModelWrapperMixin,
                                  CaregiverLocatorModelWrapperMixin,
                                  ConsentModelWrapperMixin,
+                                 BHPPriorScreeningModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
                                  ModelWrapper):
 
