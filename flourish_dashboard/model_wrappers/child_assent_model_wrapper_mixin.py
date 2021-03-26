@@ -67,7 +67,7 @@ class ChildAssentModelWrapperMixin:
     @property
     def child_assents(self):
         wrapped_entries = []
-        if getattr(self, 'consent_model_obj'):
+        if getattr(self, 'consent_model_obj', None):
             caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set.all()
             for caregiverchildconsent in caregiverchildconsents:
                 is_eligible = caregiverchildconsent.is_eligible
@@ -124,3 +124,23 @@ class ChildAssentModelWrapperMixin:
             years = round((months + difference.months) / 12, 2)
             return years
         return 0
+
+    @property
+    def child_assents_qs(self):
+        if getattr(self, 'consent_model_obj', None):
+            identities = self.consent_model_obj.caregiverchildconsent_set.values_list(
+                'identity', flat=True)
+            return self.assent_model_cls.objects.filter(identity__in=identities)
+
+    @property
+    def assents_eligibility(self):
+        assent_eligible = True
+        if self.child_assents_qs:
+            assents_eligible = self.child_assents_qs.filter(is_eligible=True)
+            if not assents_eligible:
+                assent_eligible = False
+        return assent_eligible
+
+    @property
+    def assents_ineligible(self):
+        return self.child_assents_qs.filter(is_eligible=False)

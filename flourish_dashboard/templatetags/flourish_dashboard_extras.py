@@ -30,10 +30,9 @@ def eligibility_button(model_wrapper):
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/child_eligibility_button.html')
-def child_eligibility_button(model_wrapper):
+def child_eligibility_button(children_ineligible):
     comments = []
     comment = []
-    children_ineligible = model_wrapper.children_ineligible
     tooltip = None
     for child_ineligible in children_ineligible:
         if not child_ineligible.is_eligible:
