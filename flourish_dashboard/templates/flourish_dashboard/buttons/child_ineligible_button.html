@@ -1,0 +1,17 @@
+{% if ineligible_children %}
+	<div class="btn-group">
+	<a type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+		<span class="caret"></span>
+	</a>
+	<ul class="dropdown-menu" role="menu">
+		{% for child in ineligible_children %}
+			<li>
+				<a href="{{child_screening_url}}">
+					<small>{{ child.first_name }} {{ child.last_name }}, ID: {{ child.identity }}</small> 
+					<span class="badge badge-warning" style="background-color:#008080"> ineligible</span>
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+	</div>
+{% endif %}

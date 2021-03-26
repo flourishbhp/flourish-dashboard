@@ -131,8 +131,3 @@ class ConsentModelWrapperMixin:
     @property
     def children_ineligible(self):
         return self.child_consents.filter(is_eligible=False)
-#         ineligible = []
-#         for child_consent in self.child_consents:
-#             if not child_consent.is_eligible:
-#                 ineligible.append(child_consent)
-#         return ineligible

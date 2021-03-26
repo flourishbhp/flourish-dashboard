@@ -1,5 +1,6 @@
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
+from itertools import chain
 
 from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfoModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
@@ -40,3 +41,7 @@ class SubjectConsentModelWrapper(ChildAssentModelWrapperMixin,
         if getattr(self, 'first_name'):
             options.update({'first_name': self.first_name, 'last_name': self.last_name})
         return options
+
+    @property
+    def overall_ineligible(self):
+        return list(chain(self.assents_ineligible, self.children_ineligible))

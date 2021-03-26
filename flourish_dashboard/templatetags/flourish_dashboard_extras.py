@@ -1,6 +1,7 @@
-from django.apps import apps as django_apps
 from django import template
+from django.apps import apps as django_apps
 from django.conf import settings
+from django.urls.base import reverse
 
 register = template.Library()
 
@@ -46,6 +47,18 @@ def child_eligibility_button(children_ineligible):
         tooltip=tooltip,
         consent_ineligible_pair=consent_ineligible_pair,
         children_ineligible=children_ineligible)
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_ineligible_button.html')
+def child_ineligible_button(model_wrapper):
+    tooltip = 'See child screening for details.'
+    url_name = 'flourish_dashboard:child_screening_listboard_url'
+    options = {'screening_identifier': model_wrapper.screening_identifier}
+    child_screening_url = reverse(url_name, kwargs=options)
+    return dict(
+        tooltip=tooltip,
+        child_screening_url=child_screening_url,
+        ineligible_children=model_wrapper.overall_ineligible)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/edit_screening_button.html')
