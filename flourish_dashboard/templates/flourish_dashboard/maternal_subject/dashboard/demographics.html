@@ -2,8 +2,8 @@
 
 <div class="list-group" >
 <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
-{{ dob|date:"Y-m-d" }}
-{% age_in_years dob %} yrs 
+{{ dob|date:"d/m/Y" }}
+
  {% if hiv_status == 'POS' %}
  	<span data-toggle="tooltip" data-placement="right" title="HIV Status" > <i class="fa  fa-plus-circle  fa-fw"></i> </span>
  {% else %}
@@ -17,4 +17,9 @@
 <a class="list-group-item"><i class="far fa-address-card fa-fw"></i>
 {{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ initials }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
 </a>
+
+<a class="list-group-item"><i class="fa fa-users"></i>
+{{ cohorts|default:'?? Cohort' }} <span data-toggle="tooltip" data-placement="right" title="Cohort" class="text text-default"><sup></sup></span>
+</a>
+
 </div>

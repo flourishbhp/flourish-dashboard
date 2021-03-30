@@ -2,6 +2,7 @@
 
 {% load static %}
 
+
 {% block locator_information %}{% endblock locator_information %}
 
 {% block top_bar %}
@@ -12,8 +13,9 @@
 
 
 {% block side_bar %}
-	{{ block.super }}
-	
+
+   		{% include 'flourish_dashboard/maternal_subject/dashboard/sidebar.html' %}
+
 	{% if locator_obj %}
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -21,9 +23,9 @@
               <i class="fa fa-info-circle fa-lg fa-fw"></i> Locator Info
           </h6>
       </div>
-      
-        {% include "flourish_dashboard/maternal_subject/dashboard/special_forms.html" %}   
+
+        {% include "flourish_dashboard/maternal_subject/dashboard/locator_info.html" %}
   	</div>
   	{% endif %}
-	
+
 {% endblock side_bar %}
