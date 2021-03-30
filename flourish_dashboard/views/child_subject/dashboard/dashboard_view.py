@@ -221,6 +221,7 @@ class DashboardView(
         #                              offstudy_cls=child_offstudy_cls)
                                      # offstudy_action=CHILDOFF_STUDY_ACTION)
         # self.get_covid_object_or_message()
+
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,

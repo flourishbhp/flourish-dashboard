@@ -1,26 +1,11 @@
-{% load edc_prn_extras %}
-{% load action_item_extras %}
+{% extends 'edc_subject_dashboard/dashboard/sidebar.html' %}
 
-{% block demographics %}   
-	
+{% block demographics %}
+
     	{% include 'flourish_dashboard/child_subject/dashboard/demographics.html' %}
 
 {% endblock demographics %}
 
-{% block prn_forms %}   
+{% block special_forms %}
 
-	<div class="list-group list-group-default">
-
-    {% add_action_item_popover subject_identifier child_subject_dashboard_url %}
-    
-    {% if appointment %}
-    	{% add_prn_crf_popover appointment.object child_subject_dashboard_url %}
-    	{% add_prn_requisition_popover appointment.object child_subject_dashboard_url %}
-    {% endif %}
-    
-	</div>
-{% endblock prn_forms %}
-
-{% block consents %}
-
-{% endblock consents %}
+{% endblock special_forms %}
