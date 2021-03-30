@@ -15,7 +15,7 @@
  {% endif %}
 </a>
 <a class="list-group-item"><i class="far fa-address-card fa-fw"></i>
-{{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ initials }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
+{{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ consent.child_name_initial }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
 </a>
 
 <a class="list-group-item"><i class="fa fa-users"></i>
