@@ -48,6 +48,5 @@ class BHPPriorScreeningModelWrapperMixin(ModelWrapper):
         maternal screening model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,
-            study_maternal_identifier=self.study_maternal_identifier)
+            screening_identifier=self.object.screening_identifier)
         return options

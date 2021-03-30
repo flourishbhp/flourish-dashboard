@@ -67,15 +67,14 @@ class ChildAssentModelWrapperMixin:
     @property
     def child_assents(self):
         wrapped_entries = []
-        if getattr(self, 'consent_model_obj'):
-            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set.all()
+        if getattr(self, 'consent_model_obj', None):
+            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set.filter(
+                is_eligible=True, child_age_at_enrollment__gte=7)
             for caregiverchildconsent in caregiverchildconsents:
-                is_eligible = caregiverchildconsent.is_eligible
-                child_age = caregiverchildconsent.child_age_at_enrollment
-                if is_eligible and child_age > 7:
-                    model_obj = self.child_assent_model_obj(caregiverchildconsent) or\
-                        self.assent_model_cls(**self.create_child_assent_options(caregiverchildconsent))
-                    wrapped_entries.append(ChildAssentModelWrapper(model_obj))
+                model_obj = self.child_assent_model_obj(caregiverchildconsent) or\
+                    self.assent_model_cls(
+                        **self.create_child_assent_options(caregiverchildconsent))
+                wrapped_entries.append(ChildAssentModelWrapper(model_obj))
         return wrapped_entries
 
     def create_child_assent_options(self, caregiverchildconsent):
@@ -84,6 +83,7 @@ class ChildAssentModelWrapperMixin:
         initials = self.set_initials(first_name, last_name)
         options = dict(
             screening_identifier=self.screening_identifier,
+            subject_identifier=caregiverchildconsent.subject_identifier,
             version=self.assent_version,
             first_name=first_name,
             last_name=last_name,
@@ -124,3 +124,23 @@ class ChildAssentModelWrapperMixin:
             years = round((months + difference.months) / 12, 2)
             return years
         return 0
+
+    @property
+    def child_assents_qs(self):
+        if getattr(self, 'consent_model_obj', None):
+            identities = self.consent_model_obj.caregiverchildconsent_set.values_list(
+                'identity', flat=True)
+            return self.assent_model_cls.objects.filter(identity__in=identities)
+
+    @property
+    def assents_eligibility(self):
+        assent_eligible = True
+        if self.child_assents_qs:
+            assents_eligible = self.child_assents_qs.filter(is_eligible=True)
+            if not assents_eligible:
+                assent_eligible = False
+        return assent_eligible
+
+    @property
+    def assents_ineligible(self):
+        return self.child_assents_qs.filter(is_eligible=False)

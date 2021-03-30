@@ -119,15 +119,15 @@ class ConsentModelWrapperMixin:
 
     @property
     def children_eligibility(self):
-        for child_consent in self.child_consents:
-            if child_consent.is_eligible:
-                return True
-        return False
+        child_eligibility = True
+
+        if self.child_consents:
+            eligble_children = self.child_consents.filter(is_eligible=True)
+            if not eligble_children:
+                child_eligibility = False
+
+        return child_eligibility
 
     @property
     def children_ineligible(self):
-        ineligible = []
-        for child_consent in self.child_consents:
-            if not child_consent.is_eligible:
-                ineligible.append(child_consent)
-        return ineligible
+        return self.child_consents.filter(is_eligible=False)
