@@ -69,7 +69,6 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-
         context.update(
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
@@ -83,8 +82,6 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
         child_consent = subject_consent.caregiverchildconsent_set.all()
         cohorts_query = child_consent.values_list('cohort', flat=True).distinct()
         cohorts = []
-        import pdb;
-        pdb.set_trace()
         for cohort in cohorts_query:
             cohorts = ''.join(cohort.upper())
         return cohorts.replace('_', ' ')
