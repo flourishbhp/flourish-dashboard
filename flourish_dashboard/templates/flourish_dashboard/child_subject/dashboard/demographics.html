@@ -2,24 +2,14 @@
 
 <div class="list-group" >
 <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
-{{ dob|date:"d/m/Y" }}
-
- {% if hiv_status == 'POS' %}
- 	<span data-toggle="tooltip" data-placement="right" title="HIV Status" > <i class="fa  fa-plus-circle  fa-fw"></i> </span>
- {% else %}
- 	{% if hiv_status == 'NEG' %}
- 		<span data-toggle="tooltip" data-placement="right" title="HIV Status"> <i  class="fa  fa-minus-circle  fa-fw"></i> </span>
-	 	{% else %}
-	 		<span data-toggle="tooltip" data-placement="right" title="HIV Status" > <i class="fa  fa-question-circle  fa-fw"></i> </span>
-	 	{% endif %}
- {% endif %}
+{{ consent.child_dob|date:"d/m/Y" }}
 </a>
 <a class="list-group-item"><i class="far fa-address-card fa-fw"></i>
 {{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ consent.child_name_initial }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
 </a>
 
 <a class="list-group-item"><i class="fa fa-users"></i>
-{{ cohorts|default:'?? Cohort' }} <span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default"><sup></sup></span>
+{{ consent.get_cohort|default:'?? Cohort' }} <span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default"><sup></sup></span>
 </a>
 
 </div>
