@@ -64,7 +64,8 @@ class ConsentModelWrapperMixin:
         if getattr(self, 'bhp_prior_screening_model_obj'):
             bhp_prior_screening = self.bhp_prior_screening_model_obj
             flourish_participation = bhp_prior_screening.flourish_participation
-            if flourish_participation == 'interested' and getattr(self, 'locator_model_obj'):
+            locator_obj = getattr(self, 'locator_model_obj', None)
+            if flourish_participation == 'interested' and locator_obj:
                 first_name = self.locator_model_obj.first_name
                 last_name = self.locator_model_obj.last_name
                 initials = self.set_initials(first_name, last_name)
@@ -87,24 +88,27 @@ class ConsentModelWrapperMixin:
 
     @property
     def child_consents(self):
-        return self.consent_model_obj.caregiverchildconsent_set.all()
+        if self.consent_model_obj:
+            return self.consent_model_obj.caregiverchildconsent_set.all()
+        return []
 
     @property
     def show_dashboard(self):
         show_dashboard = False
-        if self.consent_model_obj:
-            for child_consent in self.child_consents:
-                child_age = child_consent.child_age_at_enrollment
-                if child_consent.is_eligible and child_age < 7:
-                    show_dashboard = True
-                    break
-                elif child_consent.is_eligible and child_age > 7:
-                    assent_obj = getattr(self, 'child_assent_obj', None)
-                    if assent_obj:
-                        child_assent = assent_obj(
-                            subject_identifier=child_consent.subject_identifier,)
-                        show_dashboard = True if child_assent else False
-                        break
+        child_consents = self.child_consents.filter(is_eligible=True)
+        for child_consent in child_consents:
+            child_age = child_consent.child_age_at_enrollment
+            if child_age < 7:
+                show_dashboard = True
+                break
+
+            assent_obj = getattr(self, 'child_assent_obj', None)
+            if assent_obj:
+                child_assent = assent_obj(
+                    subject_identifier=child_consent.subject_identifier,
+                    is_eligible=True)
+                show_dashboard = True if child_assent else False
+                break
         return show_dashboard
 
     def set_initials(self, first_name, last_name):
@@ -130,4 +134,6 @@ class ConsentModelWrapperMixin:
 
     @property
     def children_ineligible(self):
-        return self.child_consents.filter(is_eligible=False)
+        if self.child_consents:
+            return self.child_consents.filter(is_eligible=False)
+        return []
