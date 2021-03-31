@@ -72,6 +72,26 @@ class ChildDummyConsentModelWrapperMixin:
         return 0
 
     @property
+    def child_dob(self):
+        if getattr(self, 'assent_model_obj'):
+            birth_date = self.assent_model_obj.dob
+            return birth_date
+        elif getattr(self, 'consent_model_obj'):
+            caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
+            for caregiverchildconsent_obj in caregiverchildconsent_objs:
+                birth_date = caregiverchildconsent_obj.child_dob
+                return birth_date
+        elif getattr(self, 'maternal_delivery_obj'):
+            birth_date = self.maternal_delivery_obj.delivery_datetime.date()
+            return birth_date
+        return 0
+
+    @property
+    def get_cohort(self):
+        cohort = self.object.cohort.upper()
+        return cohort.replace('_', ' ')
+
+    @property
     def assent_date(self):
         if getattr(self, 'assent_model_obj'):
             return self.assent_model_obj.consent_datetime.date()
