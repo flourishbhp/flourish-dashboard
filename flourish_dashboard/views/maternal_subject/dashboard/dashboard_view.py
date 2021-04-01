@@ -1,11 +1,10 @@
 from django.apps import apps as django_apps
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.views import DashboardView as BaseDashboardView
-from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+from flourish_caregiver.helper_classes import MaternalStatusHelper
 
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
@@ -73,6 +72,7 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
             screening_preg_women=self.screening_pregnant_women,
+            hiv_status=self.hiv_status,
             caregiver_child_consents=self.caregiver_child_consents)
         return context
 
@@ -81,9 +81,10 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
         subject_consent = self.consent_wrapped.object
         child_consent = subject_consent.caregiverchildconsent_set.all()
         cohorts_query = child_consent.values_list('cohort', flat=True).distinct()
-        cohorts = []
+        cohorts = ''
         for cohort in cohorts_query:
-            cohorts = ''.join(cohort.upper())
+            if cohort:
+                cohorts = ''.join(cohort.upper())
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,
@@ -105,3 +106,22 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
                 schedule_name=schedule.name)
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def hiv_status(self):
+        """Returns mother's current hiv status.
+        """
+        maternal_visit_cls = django_apps.get_model(
+            MaternalVisitModelWrapper.model)
+        subject_identifier = self.kwargs.get('subject_identifier')
+        latest_visit = maternal_visit_cls.objects.filter(
+            subject_identifier=subject_identifier,).order_by(
+            '-report_datetime').first()
+
+        if latest_visit:
+            maternal_status_helper = MaternalStatusHelper(
+                maternal_visit=latest_visit)
+        else:
+            maternal_status_helper = MaternalStatusHelper(
+                subject_identifier=self.kwargs.get('subject_identifier'))
+        return maternal_status_helper.hiv_status
