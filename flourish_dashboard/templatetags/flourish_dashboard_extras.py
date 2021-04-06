@@ -185,3 +185,12 @@ def dashboard_button(model_wrapper):
         subject_dashboard_url=subject_dashboard_url,
         subject_identifier=model_wrapper.consent_model_obj.subject_identifier,
         show_dashboard=model_wrapper.show_dashboard)
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/caregiver_dashboard_button.html')
+def caregiver_dashboard_button(model_wrapper):
+    subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
+        'subject_dashboard_url')
+    return dict(
+        subject_dashboard_url=subject_dashboard_url,
+        subject_identifier=model_wrapper.subject_identifier)

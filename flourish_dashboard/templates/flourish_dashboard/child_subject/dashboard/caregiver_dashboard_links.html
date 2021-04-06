@@ -1,0 +1,13 @@
+{% load flourish_dashboard_extras %}
+{% if caregiver_registered_subject %}
+<table class="table table-condensed">
+    <thead></thead>
+    <tbody>
+        <tr>
+        <td>
+			{% caregiver_dashboard_button caregiver_registered_subject %}
+		</td>
+		</tr>
+    </tbody>
+</table>
+{% endif %}

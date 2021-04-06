@@ -28,6 +28,9 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     subject_locator_model = 'flourish_caregiver.caregiverlocator'
     subject_locator_model_wrapper_cls = CaregiverLocatorModelWrapper
     visit_model_wrapper_cls = MaternalVisitModelWrapper
+    mother_infant_study = True
+    infant_links = True
+    maternal_links = False
     special_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/special_forms.html'
     data_action_item_template = 'flourish_dashboard/maternal_subject/dashboard/data_manager.html'
 

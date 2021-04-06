@@ -5,7 +5,7 @@
 from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -15,11 +15,14 @@ from edc_appointment.constants import IN_PROGRESS_APPT
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+from edc_registration.models import RegisteredSubject
 
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
-    ChildVisitModelWrapper, CaregiverLocatorModelWrapper, ActionItemModelWrapper)
+    ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
+    ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
+    MaternalRegisteredSubjectModelWrapper)
 
 
 class ChildBirthValues(object):
@@ -139,31 +142,38 @@ class ChildBirthButtonCls(ContextMixin):
             infant_birth_values=infant_birth_values,)
         return context
 
-# class MaternalRegisteredSubjectCls(ContextMixin):
-#
-#     @property
-#     def maternal_registered_subject(self):
-#         subject_identifier = self.kwargs.get('subject_identifier')
-#         try:
-#             infant_registered_subject = RegisteredSubject.objects.get(
-#                 subject_identifier=subject_identifier)
-#         except RegisteredSubject.DoesNotExist:
-#             raise ValidationError(
-#                 "Registered subject for infant is expected to exist.")
-#         else:
-#             try:
-#                 maternal_registered_subject = RegisteredSubject.objects.get(
-#                     subject_identifier=infant_registered_subject.relative_identifier)
-#             except RegisteredSubject.DoesNotExist:
-#                 raise ValidationError(
-#                     "Registered subject for the monther is expected to exist.")
-#             else:
-#                 return MaternalRegisteredSubjectModelWrapper(maternal_registered_subject)
+
+class CaregiverRegisteredSubjectCls(ContextMixin):
+
+    @property
+    def caregiver_registered_subject(self):
+        try:
+            caregiver_registered_subject = RegisteredSubject.objects.get(
+                subject_identifier=self.caregiver_subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            raise ValidationError(
+                "Registered subject for the mother is expected to exist.")
+        else:
+            return MaternalRegisteredSubjectModelWrapper(
+                caregiver_registered_subject)
+
+    @property
+    def caregiver_subject_identifier(self):
+        subject_identifier = self.kwargs.get('subject_identifier').split('-')
+        subject_identifier.pop()
+        caregiver_subject_identifier = '-'.join(subject_identifier)
+        return caregiver_subject_identifier
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            caregiver_registered_subject=self.caregiver_registered_subject)
+        return context
 
 
 class DashboardView(
-        EdcBaseViewMixin, SubjectDashboardViewMixin,
-        NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls):
+        EdcBaseViewMixin, SubjectDashboardViewMixin, NavbarViewMixin,
+        BaseDashboardView, ChildBirthButtonCls, CaregiverRegisteredSubjectCls):
 
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
@@ -182,10 +192,9 @@ class DashboardView(
     subject_locator_model_wrapper_cls = CaregiverLocatorModelWrapper
     mother_infant_study = True
     infant_links = False
-    maternal_links = False
-    special_forms_include_value = "flourish_dashboard/child_subject/dashboard/special_forms.html"
-    # maternal_dashboard_include_value = None
-    # maternal_dashboard_include_value = "flourish_dashboard/maternal_subject/dashboard/maternal_dashboard_links.html"
+    maternal_links = True
+    special_forms_include_value = 'flourish_dashboard/child_subject/dashboard/special_forms.html'
+    maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
     data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
 
     @property
@@ -199,6 +208,15 @@ class DashboardView(
         model_wrapper = DataActionItemModelWrapper(model_obj=model_obj,
                                                    next_url_name=next_url)
         return model_wrapper
+
+    @property
+    def caregiver_child_consent(self):
+        child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+        child_consent = child_consent_cls.objects.get(
+            subject_identifier=self.subject_identifier)
+        wrapped_assent = CaregiverChildConsentModelWrapper(child_consent)
+        return wrapped_assent
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -215,7 +233,9 @@ class DashboardView(
         #                              offstudy_cls=child_offstudy_cls)
                                      # offstudy_action=CHILDOFF_STUDY_ACTION)
         # self.get_covid_object_or_message()
-
+        context.update(
+            caregiver_child_consent=self.caregiver_child_consent,
+        )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
