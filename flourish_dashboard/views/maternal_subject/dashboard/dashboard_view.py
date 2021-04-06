@@ -9,6 +9,7 @@ from flourish_caregiver.helper_classes import MaternalStatusHelper
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, MaternalScreeningModelWrapper
+from ....model_wrappers import MaternalDatasetModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
 
 
@@ -58,6 +59,20 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             return MaternalScreeningModelWrapper(subject_screening)
 
     @property
+    def maternal_dataset(self):
+        """Returns a wrapped maternal dataset obj
+        """
+        maternal_dataset_cls = django_apps.get_model(
+            'flourish_caregiver.maternaldataset')
+        try:
+            maternal_dataset = maternal_dataset_cls.objects.get(
+                screening_identifier=self.consent_wrapped.screening_identifier)
+        except maternal_dataset_cls.DoesNotExist:
+            return None
+        else:
+            return MaternalDatasetModelWrapper(maternal_dataset)
+
+    @property
     def caregiver_child_consents(self):
         wrapped_assents = []
         child_consent_cls = django_apps.get_model(
@@ -75,6 +90,7 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
             screening_preg_women=self.screening_pregnant_women,
+            maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
             caregiver_child_consents=self.caregiver_child_consents)
         return context
