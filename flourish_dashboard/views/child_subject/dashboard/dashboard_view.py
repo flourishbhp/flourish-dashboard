@@ -1,4 +1,3 @@
-from datetime import date
 # from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
 # from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 # # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
@@ -6,16 +5,12 @@ from datetime import date
 from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.utils.safestring import mark_safe
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.base import ContextMixin
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
-from edc_registration.models import RegisteredSubject
 
-from edc_action_item.site_action_items import site_action_items
 from edc_appointment.constants import IN_PROGRESS_APPT
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
