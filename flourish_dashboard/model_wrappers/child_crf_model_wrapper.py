@@ -8,7 +8,7 @@ class ChildCrfModelWrapper(BaseCrfModelWrapper):
     visit_model_attr = 'child_visit'
 
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'child_subject_dashboard_url')
+        'child_dashboard_url')
     next_url_attrs = ['appointment', 'subject_identifier']
     querystring_attrs = [visit_model_attr]
 

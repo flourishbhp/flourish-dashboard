@@ -107,27 +107,6 @@ class ChildBirthValues(object):
             subject_identifier=self.subject_identifier)
         return options
 
-    # @property
-    # def infant_death_report_cls(self):
-    #     return django_apps.get_model('td_prn.infantdeathreport')
-    #
-    # @property
-    # def infant_death_report_model_obj(self):
-    #     """Returns a infant death report model instance or None.
-    #     """
-    #     try:
-    #         return self.infant_death_report_cls.objects.get(**self.infant_offstudy_options)
-    #     except ObjectDoesNotExist:
-    #         return None
-    #
-    # @property
-    # def infant_death_report(self):
-    #     """Returns a wrapped saved or unsaved infant death report.
-    #     """
-    #     model_obj = self.infant_death_report_model_obj or self.infant_death_report_cls(
-    #         **self.infant_offstudy_options)
-    #     return InfantDeathReportModelWrapper(model_obj=model_obj)
-
 
 class ChildBirthButtonCls(ContextMixin):
 
@@ -139,27 +118,6 @@ class ChildBirthButtonCls(ContextMixin):
             infant_birth_values=infant_birth_values,)
         return context
 
-# class MaternalRegisteredSubjectCls(ContextMixin):
-#
-#     @property
-#     def maternal_registered_subject(self):
-#         subject_identifier = self.kwargs.get('subject_identifier')
-#         try:
-#             infant_registered_subject = RegisteredSubject.objects.get(
-#                 subject_identifier=subject_identifier)
-#         except RegisteredSubject.DoesNotExist:
-#             raise ValidationError(
-#                 "Registered subject for infant is expected to exist.")
-#         else:
-#             try:
-#                 maternal_registered_subject = RegisteredSubject.objects.get(
-#                     subject_identifier=infant_registered_subject.relative_identifier)
-#             except RegisteredSubject.DoesNotExist:
-#                 raise ValidationError(
-#                     "Registered subject for the monther is expected to exist.")
-#             else:
-#                 return MaternalRegisteredSubjectModelWrapper(maternal_registered_subject)
-
 
 class DashboardView(
         EdcBaseViewMixin, SubjectDashboardViewMixin,
@@ -167,7 +125,7 @@ class DashboardView(
 
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
-    appointment_model = 'edc_appointment.appointment'
+    appointment_model = 'flourish_child.appointment'
     appointment_model_wrapper_cls = ChildAppointmentModelWrapper
     crf_model_wrapper_cls = ChildCrfModelWrapper
     # requisition_model_wrapper_cls = None
@@ -195,7 +153,7 @@ class DashboardView(
         model_cls = django_apps.get_model('edc_data_manager.dataactionitem')
         model_obj = model_cls(subject_identifier=self.subject_identifier)
         next_url = settings.DASHBOARD_URL_NAMES.get(
-            'child_subject_dashboard_url')
+            'child_dashboard_url')
         model_wrapper = DataActionItemModelWrapper(model_obj=model_obj,
                                                    next_url_name=next_url)
         return model_wrapper

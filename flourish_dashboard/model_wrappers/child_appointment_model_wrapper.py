@@ -22,7 +22,7 @@ class ChildAppointmentModelWrapper(BaseAppointmentModelWrapper):
         """Returns a wrapped persistent or non-persistent visit instance.
         """
         try:
-            model_obj = self.object.childvisit
+            model_obj = self.object.visit
         except ObjectDoesNotExist:
             visit_model = django_apps.get_model(
                 self.visit_model_wrapper_cls.model)
