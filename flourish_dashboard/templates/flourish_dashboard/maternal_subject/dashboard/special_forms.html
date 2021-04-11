@@ -8,26 +8,33 @@
 		</td>
 		</tr>
 		{% for caregiver_child_consent in caregiver_child_consents %}
-			<tr>
-			<td>
-				{% assent_button caregiver_child_consent %}
-			</td>
-			</tr>
+			{% if caregiver_child_consent.object.child_age_at_enrollment > 7 %}
+				<tr>
+					<td>
+						{% assent_button caregiver_child_consent %}
+					</td>
+				</tr>
+			{% endif %}
 		{% endfor %}
-		<tr>
 		{% if screening_preg_women %}
-		<td>
-			{% antenatal_enrollment_button screening_preg_women %}
-		</td>
+		<tr>
+			<td>
+				{% antenatal_enrollment_button screening_preg_women %}
+			</td>
+		</tr>
 		{% endif %}
+		{% if maternal_dataset %}
+		<tr>
+			<td>
+				{% caregiver_enrolment_info_button subject_consent %}
+			</td>
 		</tr>
 		<tr>
-		{% if maternal_dataset %}
-		<td>
-			{% maternal_dataset_button maternal_dataset %}
-		</td>
-		{% endif %}
+			<td>
+				{% maternal_dataset_button maternal_dataset %}
+			</td>
 		</tr>
+		{% endif %}
 
     </tbody>
 </table>
