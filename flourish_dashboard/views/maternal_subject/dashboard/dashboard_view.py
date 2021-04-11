@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
+from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 
@@ -34,6 +35,8 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     maternal_links = False
     special_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/special_forms.html'
     data_action_item_template = 'flourish_dashboard/maternal_subject/dashboard/data_manager.html'
+    infant_dashboard_include_value = 'flourish_dashboard/maternal_subject/dashboard/infant_dashboard_links.html'
+    infant_subject_dashboard_url = 'child_dashboard_url'
 
     @property
     def appointments(self):
@@ -92,7 +95,8 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
-            caregiver_child_consents=self.caregiver_child_consents)
+            caregiver_child_consents=self.caregiver_child_consents,
+            infant_registered_subjects=self.infant_registered_subjects)
         return context
 
     @property
@@ -144,3 +148,16 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             maternal_status_helper = MaternalStatusHelper(
                 subject_identifier=self.kwargs.get('subject_identifier'))
         return maternal_status_helper.hiv_status
+
+    @property
+    def infant_registered_subjects(self):
+        """Returns an infant registered subjects.
+        """
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            registered_subject = RegisteredSubject.objects.filter(
+                relative_identifier=subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            return None
+        else:
+            return registered_subject
