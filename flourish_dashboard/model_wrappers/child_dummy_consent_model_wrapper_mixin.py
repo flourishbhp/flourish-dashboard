@@ -34,7 +34,6 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def caregiver_subject_identifier(self):
-        import pdb; pdb.set_trace()
         subject_identifier = self.object.subject_identifier.split('-')
         subject_identifier.pop()
         caregiver_subject_identifier = '-'.join(subject_identifier)
