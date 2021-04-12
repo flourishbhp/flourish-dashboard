@@ -4,4 +4,4 @@ from edc_action_item.model_wrappers import ActionItemModelWrapper as BaseActionI
 
 class ActionItemModelWrapper(BaseActionItemModelWrapper):
 
-    next_url_name = settings.DASHBOARD_URL_NAMES.get('child_subject_dashboard_url')
+    next_url_name = settings.DASHBOARD_URL_NAMES.get('child_dashboard_url')
