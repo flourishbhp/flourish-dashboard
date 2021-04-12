@@ -12,9 +12,7 @@ def child_dashboard_button(model_wrapper):
         'child_dashboard_url')
     return dict(
         child_dashboard_url=child_dashboard_url,
-        subject_identifier=model_wrapper.object.subject_identifier,
-        assent_obj=model_wrapper.assent_model_obj,
-        consent_obj=model_wrapper.object)
+        subject_identifier=model_wrapper.subject_identifier)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')

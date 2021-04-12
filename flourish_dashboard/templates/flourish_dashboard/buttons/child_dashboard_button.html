@@ -1,8 +1,6 @@
-{% if consent_obj %}
-    <div class="btn-group">
-         <a id="btn-subject-dashboard-{{subject_identifier}}" class="btn btn-primary btn-sm" role="button"
+<div class="btn-group">
+     <a id="btn-subject-dashboard-{{subject_identifier}}" class="btn btn-primary btn-sm" role="button"
 
-        title="Go to child's dashboard" href="{% url child_dashboard_url subject_identifier %}">
-        <i class="far fa-user-circle fa-sm"></i> Dashboard  <i class="fa fa-share"></i></a>
-    </div>
-{% endif %}
+    title="Go to child's dashboard" href="{% url child_dashboard_url subject_identifier %}">
+    <i class="far fa-user-circle fa-sm"></i> Dashboard  <i class="fa fa-share"></i></a>
+</div>

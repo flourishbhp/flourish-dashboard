@@ -9,7 +9,7 @@ class ChildDummyConsentModelWrapperMixin:
     @property
     def screening_identifier(self):
         subject_consent = self.subject_consent_cls.objects.get(
-            subject_identifier=self.subject_identifier)
+            subject_identifier=self.caregiver_subject_identifier)
         return subject_consent.screening_identifier
 
     @property
@@ -28,12 +28,12 @@ class ChildDummyConsentModelWrapperMixin:
         consent model instance.
         """
         options = dict(
-            subject_identifier=self.subject_identifier,
+            subject_identifier=self.caregiver_subject_identifier,
             version=self.consent_version)
         return options
 
     @property
-    def subject_identifier(self):
+    def caregiver_subject_identifier(self):
         subject_identifier = self.object.subject_identifier.split('-')
         subject_identifier.pop()
         caregiver_subject_identifier = '-'.join(subject_identifier)
@@ -107,5 +107,5 @@ class ChildDummyConsentModelWrapperMixin:
         maternal_delivery_cls = django_apps.get_model(
             'flourish_caregiver.maternaldelivery')
         maternal_delivery_obj = maternal_delivery_cls.objects.get(
-            subject_identifier=self.subject_identifier)
-        return django_apps.get_model('flourish_caregiver.maternaldelivery')
+            subject_identifier=self.caregiver_subject_identifier)
+        return maternal_delivery_obj

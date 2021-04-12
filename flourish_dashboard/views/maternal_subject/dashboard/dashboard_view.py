@@ -3,9 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
+from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, MaternalScreeningModelWrapper
@@ -13,7 +16,7 @@ from ....model_wrappers import MaternalDatasetModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
 
 
-class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
+class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
                     NavbarViewMixin, BaseDashboardView):
 
     dashboard_url = 'subject_dashboard_url'
@@ -34,6 +37,8 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     maternal_links = False
     special_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/special_forms.html'
     data_action_item_template = 'flourish_dashboard/maternal_subject/dashboard/data_manager.html'
+    infant_dashboard_include_value = 'flourish_dashboard/maternal_subject/dashboard/infant_dashboard_links.html'
+    infant_subject_dashboard_url = 'child_dashboard_url'
 
     @property
     def appointments(self):
@@ -86,13 +91,21 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        caregiver_offstudy_cls = django_apps.get_model('flourish_prn.caregiveroffstudy')
+        caregiver_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
+        self.get_offstudy_or_message(
+            visit_cls=caregiver_visit_cls,
+            offstudy_cls=caregiver_offstudy_cls,
+            offstudy_action=CAREGIVEROFF_STUDY_ACTION)
+
         context.update(
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
-            caregiver_child_consents=self.caregiver_child_consents)
+            caregiver_child_consents=self.caregiver_child_consents,
+            infant_registered_subjects=self.infant_registered_subjects)
         return context
 
     @property
@@ -144,3 +157,16 @@ class DashboardView(EdcBaseViewMixin, SubjectDashboardViewMixin,
             maternal_status_helper = MaternalStatusHelper(
                 subject_identifier=self.kwargs.get('subject_identifier'))
         return maternal_status_helper.hiv_status
+
+    @property
+    def infant_registered_subjects(self):
+        """Returns an infant registered subjects.
+        """
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            registered_subject = RegisteredSubject.objects.filter(
+                relative_identifier=subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            return None
+        else:
+            return registered_subject
