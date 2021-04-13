@@ -1,5 +1,4 @@
 # from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
-# from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 # # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
 
 from dateutil import relativedelta
@@ -16,7 +15,9 @@ from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_registration.models import RegisteredSubject
+from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
@@ -151,8 +152,9 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 
 
 class DashboardView(
-        EdcBaseViewMixin, SubjectDashboardViewMixin, NavbarViewMixin,
-        BaseDashboardView, ChildBirthButtonCls, CaregiverRegisteredSubjectCls):
+        DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
+        NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
+        CaregiverRegisteredSubjectCls):
 
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
@@ -208,9 +210,9 @@ class DashboardView(
         # self.update_messages(offstudy_cls=child_offstudy_cls)
         # self.get_death_or_message(visit_cls=child_visit_cls,
         #                           death_cls=child_death_cls)
-        # self.get_offstudy_or_message(visit_cls=child_visit_cls,
-        #                              offstudy_cls=child_offstudy_cls)
-                                     # offstudy_action=CHILDOFF_STUDY_ACTION)
+        self.get_offstudy_or_message(visit_cls=child_visit_cls,
+                                     offstudy_cls=child_offstudy_cls,
+                                     offstudy_action=CHILDOFF_STUDY_ACTION)
         # self.get_covid_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
