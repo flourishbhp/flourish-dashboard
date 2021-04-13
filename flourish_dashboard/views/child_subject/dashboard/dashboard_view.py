@@ -214,6 +214,7 @@ class DashboardView(
         # self.get_covid_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
+            schedule_names=[model.schedule_name for model in self.onschedule_models],
         )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',

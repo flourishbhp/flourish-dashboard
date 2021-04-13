@@ -99,6 +99,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
 
         context.update(
+            schedule_names=[model.schedule_name for model in self.onschedule_models],
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
             screening_preg_women=self.screening_pregnant_women,
