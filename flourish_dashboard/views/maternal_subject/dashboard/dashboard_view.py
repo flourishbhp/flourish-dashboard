@@ -105,9 +105,20 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
+            child_names=self.child_names,
             caregiver_child_consents=self.caregiver_child_consents,
             infant_registered_subjects=self.infant_registered_subjects)
         return context
+
+    @property
+    def child_names(self):
+        child_consent_cls = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
+        child_consents = child_consent_cls.objects.filter(
+            subject_identifier__icontains=self.subject_identifier).order_by('created')
+
+        child_name_list = [child.first_name + ' ' + child.last_name for child in child_consents]
+
+        return child_name_list if child_name_list else []
 
     @property
     def get_cohorts(self):

@@ -88,8 +88,9 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def get_cohort(self):
-        cohort = self.object.cohort.upper()
-        return cohort.replace('_', ' ')
+        if self.object.cohort:
+            cohort = self.object.cohort.upper()
+            return cohort.replace('_', ' ')
 
     @property
     def assent_date(self):
