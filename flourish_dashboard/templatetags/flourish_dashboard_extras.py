@@ -206,6 +206,7 @@ def maternal_dataset_button(model_wrapper):
         href=model_wrapper.href,
         title=' '.join(title))
 
+
 @register.inclusion_tag('edc_visit_schedule/subject_schedule_footer_row.html')
 def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
                                 subject_dashboard_url):
@@ -261,3 +262,18 @@ def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
         verbose_name=visit_schedule.offstudy_model_cls._meta.verbose_name)
     return context
 
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_dataset_button.html')
+def child_dataset_button(model_wrapper):
+    title = ['View Child Dataset form.']
+    return dict(
+        href=model_wrapper.href,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/caregiver_child_consent_button.html')
+def caregiver_child_consent_button(model_wrapper):
+    title = ['View Caregiver Consent on Behalf of Child form.']
+    return dict(
+        href=model_wrapper.href,
+        title=' '.join(title))

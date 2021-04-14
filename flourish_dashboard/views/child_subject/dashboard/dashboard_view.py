@@ -1,5 +1,4 @@
 # from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
-# from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 # # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
 
 from dateutil import relativedelta
@@ -16,13 +15,15 @@ from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_registration.models import RegisteredSubject
+from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
-    MaternalRegisteredSubjectModelWrapper)
+    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
 
 
 class ChildBirthValues(object):
@@ -151,8 +152,9 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 
 
 class DashboardView(
-        EdcBaseViewMixin, SubjectDashboardViewMixin, NavbarViewMixin,
-        BaseDashboardView, ChildBirthButtonCls, CaregiverRegisteredSubjectCls):
+        DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
+        NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
+        CaregiverRegisteredSubjectCls):
 
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
@@ -194,8 +196,34 @@ class DashboardView(
             'flourish_caregiver.caregiverchildconsent')
         child_consent = child_consent_cls.objects.get(
             subject_identifier=self.subject_identifier)
-        wrapped_assent = CaregiverChildConsentModelWrapper(child_consent)
-        return wrapped_assent
+        wrapped_caregiver_child_consent = CaregiverChildConsentModelWrapper(child_consent)
+        return wrapped_caregiver_child_consent
+
+    @property
+    def prior_screening(self):
+        bhp_prior_screening_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpriorbhpparticipants')
+        try:
+            bhp_prior = bhp_prior_screening_cls.objects.get(
+                screening_identifier=self.consent_wrapped.screening_identifier)
+        except bhp_prior_screening_cls.DoesNotExist:
+            return None
+        else:
+            return bhp_prior
+
+    @property
+    def child_dataset(self):
+        """Returns a wrapped child dataset obj
+        """
+        child_dataset_cls = django_apps.get_model(
+            'flourish_child.childdataset')
+        try:
+            child_dataset = child_dataset_cls.objects.get(
+                study_maternal_identifier=self.prior_screening.study_maternal_identifier)
+        except child_dataset_cls.DoesNotExist:
+            return None
+        else:
+            return ChildDatasetModelWrapper(child_dataset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -208,12 +236,13 @@ class DashboardView(
         # self.update_messages(offstudy_cls=child_offstudy_cls)
         # self.get_death_or_message(visit_cls=child_visit_cls,
         #                           death_cls=child_death_cls)
-        # self.get_offstudy_or_message(visit_cls=child_visit_cls,
-        #                              offstudy_cls=child_offstudy_cls)
-                                     # offstudy_action=CHILDOFF_STUDY_ACTION)
+        self.get_offstudy_or_message(visit_cls=child_visit_cls,
+                                     offstudy_cls=child_offstudy_cls,
+                                     offstudy_action=CHILDOFF_STUDY_ACTION)
         # self.get_covid_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
+            child_dataset=self.child_dataset,
             schedule_names=[model.schedule_name for model in self.onschedule_models],
         )
         context = self.add_url_to_context(
