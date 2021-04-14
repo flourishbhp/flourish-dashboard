@@ -23,7 +23,7 @@ from ....model_wrappers import (
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
-    MaternalRegisteredSubjectModelWrapper)
+    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
 
 
 class ChildBirthValues(object):
@@ -199,6 +199,32 @@ class DashboardView(
         wrapped_assent = CaregiverChildConsentModelWrapper(child_consent)
         return wrapped_assent
 
+    @property
+    def prior_screening(self):
+        bhp_prior_screening_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpriorbhpparticipants')
+        try:
+            bhp_prior = bhp_prior_screening_cls.objects.get(
+                screening_identifier=self.consent_wrapped.screening_identifier)
+        except bhp_prior_screening_cls.DoesNotExist:
+            return None
+        else:
+            return bhp_prior
+
+    @property
+    def child_dataset(self):
+        """Returns a wrapped child dataset obj
+        """
+        child_dataset_cls = django_apps.get_model(
+            'flourish_child.childdataset')
+        try:
+            child_dataset = child_dataset_cls.objects.get(
+                study_maternal_identifier=self.prior_screening.study_maternal_identifier)
+        except child_dataset_cls.DoesNotExist:
+            return None
+        else:
+            return ChildDatasetModelWrapper(child_dataset)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -216,6 +242,7 @@ class DashboardView(
         # self.get_covid_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
+            child_dataset=self.child_dataset,
             schedule_names=[model.schedule_name for model in self.onschedule_models],
         )
         context = self.add_url_to_context(

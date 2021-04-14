@@ -201,3 +201,11 @@ def maternal_dataset_button(model_wrapper):
         screening_identifier=model_wrapper.object.screening_identifier,
         href=model_wrapper.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_dataset_button.html')
+def child_dataset_button(model_wrapper):
+    title = ['View Child Dataset form.']
+    return dict(
+        href=model_wrapper.href,
+        title=' '.join(title))
