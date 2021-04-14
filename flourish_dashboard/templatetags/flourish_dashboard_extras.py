@@ -209,3 +209,11 @@ def child_dataset_button(model_wrapper):
     return dict(
         href=model_wrapper.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/caregiver_child_consent_button.html')
+def caregiver_child_consent_button(model_wrapper):
+    title = ['View Caregiver Consent on Behalf of Child form.']
+    return dict(
+        href=model_wrapper.href,
+        title=' '.join(title))

@@ -17,5 +17,13 @@
 			</td>
 		</tr>
 		{% endif %}
+
+		{% if caregiver_child_consent %}
+		<tr>
+			<td>
+			{% caregiver_child_consent_button caregiver_child_consent %}
+			</td>
+		</tr>
+		{% endif %}
 	</tbody>
 </table>

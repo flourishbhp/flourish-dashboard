@@ -196,8 +196,8 @@ class DashboardView(
             'flourish_caregiver.caregiverchildconsent')
         child_consent = child_consent_cls.objects.get(
             subject_identifier=self.subject_identifier)
-        wrapped_assent = CaregiverChildConsentModelWrapper(child_consent)
-        return wrapped_assent
+        wrapped_caregiver_child_consent = CaregiverChildConsentModelWrapper(child_consent)
+        return wrapped_caregiver_child_consent
 
     @property
     def prior_screening(self):
