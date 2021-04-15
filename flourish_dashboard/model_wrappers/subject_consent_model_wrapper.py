@@ -23,7 +23,14 @@ class SubjectConsentModelWrapper(ChildAssentModelWrapperMixin,
         'subject_listboard_url')
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
-                         'first_name', 'last_name', 'initials', 'gender']
+                         'first_name', 'last_name', 'initials', 'gender',
+                         'study_maternal_identifier', ]
+
+    @property
+    def study_maternal_identifier(self):
+        if getattr(self, 'bhp_prior_screening_model_obj', None):
+            return self.bhp_prior_screening_model_obj.study_maternal_identifier
+        return ''
 
     @property
     def create_caregiver_locator_options(self):
