@@ -1,6 +1,9 @@
 from django.apps import apps as django_apps
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from edc_base.utils import age, get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
+
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
@@ -105,20 +108,43 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
-            child_names=self.child_names,
+            child_names=self.child_names_schedule_dict,
             caregiver_child_consents=self.caregiver_child_consents,
             infant_registered_subjects=self.infant_registered_subjects)
         return context
 
     @property
-    def child_names(self):
+    def child_names_schedule_dict(self):
+        """ Return a key value pair of mother's visit schedule's corresponding child names
+        for dashboard display"""
+
         child_consent_cls = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
         child_consents = child_consent_cls.objects.filter(
-            subject_identifier__icontains=self.subject_identifier).order_by('created')
+            subject_identifier__icontains=self.subject_identifier).exclude(
+                Q(subject_identifier__icontains='-35') | Q(
+                    subject_identifier__icontains='-46') | Q(
+                        subject_identifier__icontains='-56')).order_by('created')
 
-        child_name_list = [child.first_name + ' ' + child.last_name for child in child_consents]
+        if child_consents.count() > 1:
 
-        return child_name_list if child_name_list else []
+            appt_cls = django_apps.get_model('edc_appointment.appointment')
+            cohorts = []
+            for child in child_consents:
+                cohorts.append(child.cohort)
+
+            appointments = appt_cls.objects.filter(
+                subject_identifier=child_consents[0].subject_identifier[:-3],
+                visit_code='2000M')
+
+            schedule_child_dict = {}
+            for child in child_consents:
+                for appt in appointments:
+                    if (str(child.caregiver_visit_count)
+                            in appt.visit_schedule_name.split('_')[0]):
+                        schedule_child_dict[appt.visit_schedule_name] = (
+                                    child.first_name + ' ' + child.last_name)
+
+            return schedule_child_dict
 
     @property
     def get_cohorts(self):
