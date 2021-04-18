@@ -1,10 +1,12 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
@@ -98,7 +100,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             offstudy_cls=caregiver_offstudy_cls,
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
 
+        locator_obj = self.get_locator_info()
         context.update(
+            locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in self.onschedule_models],
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
@@ -182,3 +186,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return None
         else:
             return registered_subject
+
+    def get_locator_info(self):
+
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            obj = self.subject_locator_model_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except ObjectDoesNotExist:
+            return None
+        return obj
