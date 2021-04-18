@@ -1,6 +1,7 @@
 from django import template
 from django.apps import apps as django_apps
 from django.conf import settings
+from django.template.defaulttags import register
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from urllib.parse import urlencode, unquote
@@ -8,6 +9,11 @@ from urllib.parse import urlencode, unquote
 from edc_visit_schedule.models import SubjectScheduleHistory
 
 register = template.Library()
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
@@ -205,6 +211,23 @@ def maternal_dataset_button(model_wrapper):
         screening_identifier=model_wrapper.object.screening_identifier,
         href=model_wrapper.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag(
+    'flourish_dashboard/maternal_subject/dashboard/infant_dashboard_links.html')
+def infant_dash_link(subject_identifier):
+    caregiver_child_consent = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
+
+    try:
+        child_obj = caregiver_child_consent.objects.get(
+            subject_identifier=subject_identifier)
+    except caregiver_child_consent.DoesNotExist:
+        return None
+    else:
+        return dict(
+            full_names=child_obj.first_name + " " + child_obj.last_name,
+            first_name=child_obj.first_name,
+            last_name=child_obj.last_name)
 
 
 @register.inclusion_tag('edc_visit_schedule/subject_schedule_footer_row.html')
