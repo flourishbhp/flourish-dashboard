@@ -219,7 +219,7 @@ class DashboardView(
             'flourish_child.childdataset')
         try:
             child_dataset = child_dataset_cls.objects.get(
-                study_maternal_identifier=self.prior_screening.study_maternal_identifier)
+                study_child_identifier=self.caregiver_child_consent.study_child_identifier)
         except child_dataset_cls.DoesNotExist:
             return None
         else:

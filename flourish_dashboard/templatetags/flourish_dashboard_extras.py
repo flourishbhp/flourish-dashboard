@@ -180,8 +180,10 @@ def caregiverchildconsent_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
 def assents_button(model_wrapper):
     title = ['Child Assent(s)']
+    unsaved = any(instance.id is None for instance in model_wrapper.child_assents)
     return dict(
         wrapped_assents=model_wrapper.child_assents,
+        unsaved=unsaved,
         title=' '.join(title),)
 
 
