@@ -1,0 +1,15 @@
+{% load flourish_dashboard_extras %}
+{% if infant_registered_subjects %}
+<table class="table table-condensed">
+    <thead></thead>
+    <tbody>
+    	{% for infant_registered_subject in infant_registered_subjects %}
+	        <tr>
+	        <td>
+				{% child_dashboard_button infant_registered_subject %} {{infant_registered_subject.subject_identifier}}
+			</td>
+			</tr>
+		{% endfor %}
+    </tbody>
+</table>
+{% endif %}

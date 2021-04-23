@@ -1,0 +1,19 @@
+| <a href="{{data_action_item_add_url}}" class="btn btn-sm btn-primary" role="button"><i class="fa fa-plus fa-sm"></i> Add</a>
+| 
+<a href="{% url data_manager_listboard_url subject_identifier %}" class="btn btn-sm btn-primary" role="button"></i>See all</a>
+<div class="panel-body">
+{%if data_action_items %}
+  	<table class="table table-condensed">
+		<thead></thead>
+		<tbody>
+		{% for data_action in data_action_items %}
+			<tr>
+				<td>{{data_action.snippet}}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% else%}
+	<p>No user actioned items</p>
+{% endif %}
+</div>

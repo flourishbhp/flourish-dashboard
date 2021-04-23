@@ -1,0 +1,14 @@
+ {% if preg_screening_obj %}
+ <a id="antenatalenrollment_add_{{ subject_identifier }}" 
+ 	title="{{ title }}"
+
+ 	{% if antenatal_enrollment_model_obj%}
+            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+            href="{{ add_anternatal_enrollment_href }}">
+        {% else %}
+            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+        	href="{{ add_anternatal_enrollment_href }}">
+        {% endif %}
+     	Antenatal Enroll
+ </a>
+ {% endif %}

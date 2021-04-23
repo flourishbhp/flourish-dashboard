@@ -1,0 +1,59 @@
+{% extends "edc_dashboard/listboard.html" %}
+{% load admin_urls %}
+{% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
+             
+{% block listboard_panel %}
+    <a id="maternal_screening_add" title="add screening" class="btn btn-sm btn-default" role="button"
+        href="{{ maternal_screening_add_url }}?next={{ maternal_screening_listboard_url }}">
+            <i class="fa fa-plus fa-sm"></i>Add Antenatal Screening
+    </a>
+{% endblock listboard_panel %}
+
+{% block listboard_table_header %}
+    <!-- begin results header -->
+    <th>#</th>
+    <th></th>
+    <th>Screening Identifier</th>
+    <th>Age</th>
+    <th>User</th>
+    <th>Modified</th>
+    <th>Host</th>
+    <!-- end results header -->
+{% endblock listboard_table_header %}
+
+
+{% block listboard_table_button_column %}
+    <td style="white-space: nowrap;">
+    <div class="btn-group">
+    {% edit_screening_button result %}
+    {% if result.is_eligible %}
+	    {% consent_button result True %}
+	    {% if result.consent %}
+	    	{% antenatal_enrollment_button result %}
+	    	{% if result.antenatal_enrollment_model_obj %}
+	    	  {% if result.antenatal_enrollment_model_obj.is_eligible %}
+	    		{% dashboard_button result %}
+	    	  {% else %}
+	    	     {% eligibility_button result.antenatal_enrollment %}
+	    	  {% endif %}
+	    	{% endif %}
+		{% endif %}
+	{% else %}
+			{% eligibility_button result %}
+	{% endif %}
+	
+    </div>
+    </td>
+{% endblock listboard_table_button_column %}		
+
+
+{% block listboard_table_columns %}
+
+    <td>{{ result.screening_identifier }} </td>
+    <td nowrap>{% age_in_years result.consent_model_obj.dob %}yrs {{ result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}</td>
+    <td nowrap>{{ result.user_created }}</td>
+    <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>  
+    <td nowrap>{{ result.hostname_created }}</td>
+
+{% endblock listboard_table_columns %}

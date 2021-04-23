@@ -1,0 +1,77 @@
+<style>
+	.dropdown-menu .dropdown-toggle:after{
+		border-top: .3em solid transparent;
+	    border-right: 0;
+	    border-bottom: .3em solid transparent;
+	    border-left: .3em solid;
+	}
+	.dropdown-menu .dropdown-menu{
+		margin-left:0; margin-right: 0;
+	}
+	.dropdown-menu li{
+		position: relative;
+	}
+	.nav-item .submenu{ 
+		display: none;
+		position: absolute;
+		left:100%; top:-7px;
+	}
+	.nav-item .submenu-left{ 
+		right:100%; left:auto;
+	}
+	.dropdown-menu > li:hover { background-color: lightgray }
+	.dropdown-menu > li:hover > .submenu{
+		display: block;
+	}
+</style>
+
+<div class="btn-group nav-item">
+	<a class="btn btn-sm btn-default nav-link dropdown-toggle" type="button" data-toggle="dropdown">
+    	Not eligible <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" role="menu">
+   	{% for ineligible, comment in consent_ineligible_pair %}
+     	<li>
+       		<a class="droppdown-item" href="#" id={{ineligible.identity}}>
+       			<small>{{ineligible.first_name}} {{ineligible.last_name}}, ID: {{ineligible.identity}}</small> <span class="caret"></span>
+       		</a>
+       		<ul class="dropdown-menu submenu" id="submenu-{{ineligible.identity}}">
+       		{% for line in comment %}
+       			<li><a class="dropdown-item" href="#"><small>{{ line }}</small></a></li>
+       		{% endfor %}
+       		</ul>
+     	</li>
+     {% endfor %}
+   	</ul>
+</div>
+
+<script>
+	$(document).on('click', '.dropdown-menu', function (e) {
+	  	e.stopPropagation();
+	});
+	
+	$(document).ready(function(e) {
+	  	$('.droppdown-item').onmouseover(function(e) {
+	    	e.preventDefault();
+	    	var getID = $(this).attr('id');
+	    	$(".submenu").hide();
+	    	$("#submenu-" + getID).show();
+	  	});
+	  	$('.droppdown-item').onmouseout(function(e) {
+		  	document.getElementByClass('submenu').style.display = 'none';
+	  	});
+	});
+
+	// make it as accordion for smaller screens
+	if ($(window).width() < 992) {
+	  $('.dropdown-menu a').click(function(e){
+	    e.preventDefault();
+	      if($(this).next('.submenu').length){
+	        $(this).next('.submenu').toggle();
+	      }
+	      $('.dropdown').on('hide.bs.dropdown', function () {
+	     $(this).find('.submenu').hide();
+	  })
+	  });
+	}
+</script>

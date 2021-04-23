@@ -1,0 +1,29 @@
+{% load flourish_dashboard_extras %}
+<table class="table table-condensed">
+	<thead></thead>
+	<tbody>
+		{% if caregiver_child_consent %}
+		<tr>
+			<td>
+			{% assent_button caregiver_child_consent %}
+			</td>
+		</tr>
+		{% endif %}
+
+		{% if child_dataset %}
+		<tr>
+			<td>
+			{% child_dataset_button child_dataset %}
+			</td>
+		</tr>
+		{% endif %}
+
+		{% if caregiver_child_consent %}
+		<tr>
+			<td>
+			{% caregiver_child_consent_button caregiver_child_consent %}
+			</td>
+		</tr>
+		{% endif %}
+	</tbody>
+</table>

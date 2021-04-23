@@ -1,0 +1,40 @@
+{% load flourish_dashboard_extras %}
+<table class="table table-condensed">
+    <thead></thead>
+    <tbody>
+      	<tr>
+		<td>
+			{% locator_button subject_consent %}
+		</td>
+		</tr>
+		{% for caregiver_child_consent in caregiver_child_consents %}
+			{% if caregiver_child_consent.object.child_age_at_enrollment > 7 %}
+				<tr>
+					<td>
+						{% assent_button caregiver_child_consent %}
+					</td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+		{% if screening_preg_women %}
+		<tr>
+			<td>
+				{% antenatal_enrollment_button screening_preg_women %}
+			</td>
+		</tr>
+		{% endif %}
+		{% if maternal_dataset %}
+		<tr>
+			<td>
+				{% caregiver_enrolment_info_button subject_consent %}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{% maternal_dataset_button maternal_dataset %}
+			</td>
+		</tr>
+		{% endif %}
+
+    </tbody>
+</table>
