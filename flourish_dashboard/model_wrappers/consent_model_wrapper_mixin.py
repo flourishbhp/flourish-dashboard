@@ -111,14 +111,15 @@ class ConsentModelWrapperMixin:
                 break
         return show_dashboard
 
-    def set_initials(self, first_name, last_name):
+    def set_initials(self, first_name=None, last_name=None):
         initials = ''
-        if (len(first_name.split(' ')) > 1):
-            first = first_name.split(' ')[0]
-            middle = first_name.split(' ')[1]
-            initials = f'{first[:1]}{middle[:1]}{last_name[:1]}'
-        else:
-            initials = f'{first_name[:1]}{last_name[:1]}'
+        if first_name and last_name:
+            if (len(first_name.split(' ')) > 1):
+                first = first_name.split(' ')[0]
+                middle = first_name.split(' ')[1]
+                initials = f'{first[:1]}{middle[:1]}{last_name[:1]}'
+            else:
+                initials = f'{first_name[:1]}{last_name[:1]}'
         return initials
 
     @property
