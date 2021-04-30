@@ -1,7 +1,6 @@
 from django import template
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.template.defaulttags import register
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from urllib.parse import urlencode, unquote
