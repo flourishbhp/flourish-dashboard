@@ -1,11 +1,14 @@
 # from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
 # # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
 
+from datetime import date
 from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.contrib import messages
 from django.views.generic.base import ContextMixin
+from django.utils.safestring import mark_safe
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
@@ -30,6 +33,7 @@ class ChildBirthValues(object):
 
     subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
     maternal_delivery_cls = django_apps.get_model('flourish_caregiver.maternaldelivery')
+    child_consent_cls = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
 
     def __init__(self, subject_identifier=None):
         self.subject_identifier = subject_identifier
@@ -56,6 +60,16 @@ class ChildBirthValues(object):
             return None
 
     @property
+    def caregiver_child_consent_obj(self):
+        """Returns a caregiver consent on behalf of child model instance or None.
+        """
+        try:
+            return self.child_consent_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except ObjectDoesNotExist:
+            return None
+
+    @property
     def maternal_delivery_obj(self):
         """Returns a child birth model instance or None.
         """
@@ -70,14 +84,14 @@ class ChildBirthValues(object):
 
     @property
     def child_age(self):
-        if self.subject_consent_obj:
-            birth_date = self.subject_consent_obj.child_dob
-            self.get_difference(birth_date)
+        if self.caregiver_child_consent_obj:
+            birth_date = self.caregiver_child_consent_obj.child_dob
+            return self.get_difference(birth_date)
 
         elif self.maternal_delivery_obj:
             birth_date_time = self.maternal_delivery_obj.delivery_datetime
             birth_date = birth_date_time.date()
-            self.get_difference(birth_date)
+            return self.get_difference(birth_date)
 
         return None
 
@@ -239,7 +253,7 @@ class DashboardView(
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
-        # self.get_covid_object_or_message()
+        self.get_continued_consent_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
             child_dataset=self.child_dataset,
@@ -279,23 +293,18 @@ class DashboardView(
         """
         pass
 
-    # def get_covid_object_or_message(self):
-    #     subject_identifier = self.kwargs.get('subject_identifier')
-    #     child_visit_cls = django_apps.get_model('flourish_child.childvisit')
-    #     infant_covid_screening_cls = django_apps.get_model(
-    #         'td_infant.infantcovidscreening')
-    #
-    #     infant_visits = infant_visit_cls.objects.filter(
-    #         appointment__subject_identifier=subject_identifier,
-    #         appointment__appt_status=IN_PROGRESS_APPT,
-    #         report_datetime__gte=date(2020, 4, 2))
-    #
-    #     for visit in infant_visits:
-    #         try:
-    #             infant_covid_screening_cls.objects.get(
-    #                 infant_visit=visit)
-    #         except infant_covid_screening_cls.DoesNotExist:
-    #             form = infant_covid_screening_cls._meta.verbose_name
-    #             msg = mark_safe(
-    #                 f'Please complete {form} for visit {visit.visit_code} as.')
-    #             messages.add_message(self.request, messages.WARNING, msg)
+    def get_continued_consent_object_or_message(self):
+        child_continued_consent_cls = django_apps.get_model(
+            'flourish_child.childcontinuedconsent')
+
+        child_age = ChildBirthValues(
+            subject_identifier=self.subject_identifier).child_age
+
+        if (child_age/12) >= 18:
+            try:
+                child_continued_consent_cls.objects.get(
+                    subject_identifier=self.subject_identifier)
+            except child_continued_consent_cls.DoesNotExist:
+                form = child_continued_consent_cls._meta.verbose_name
+                msg = mark_safe(f'Please complete the {form} for the child.')
+                messages.add_message(self.request, messages.WARNING, msg)
