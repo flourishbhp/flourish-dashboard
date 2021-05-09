@@ -1,6 +1,6 @@
 {% extends 'edc_subject_dashboard/dashboard.html' %}
-{% load flourish_dashboard_extras %}
 {% load edc_visit_schedule_extras %}
+{% load flourish_dashboard_extras %}
 {% load edc_subject_dashboard_extras %}
 {% load static %}
 
@@ -50,7 +50,7 @@
 			</div>
 
 				{% block appointments_schedule_footer %}
-		
+					{% subject_schedule_footer_row subject_identifier visit_schedule schedule subject_dashboard_url %}
 				{% endblock appointments_schedule_footer %}	
 	     	</div>
 	     {% endif %}
