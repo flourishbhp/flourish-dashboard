@@ -191,6 +191,16 @@ def caregiverchildconsent_button(model_wrapper):
         title=' '.join(title))
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/childcontinuedconsent_button.html')
+def childcontinuedconsent_button(model_wrapper):
+    title = ['Child Continued Consent']
+    return dict(
+        child_age=model_wrapper.child_age,
+        childcontinuedconsent=model_wrapper.child_continued_consent_model_obj,
+        add_childcontinuedconsent_href=model_wrapper.child_continued_consent.href,
+        title=' '.join(title))
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
 def assents_button(model_wrapper):
     title = ['Child Assent(s)']
