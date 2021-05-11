@@ -1,8 +1,10 @@
 {% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
 
 <div class="list-group" >
 <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
 {{ dob|date:"d/m/Y" }}
+{% get_age dob %} 
 
  {% if hiv_status == 'POS' %}
  	<span data-toggle="tooltip" data-placement="right" title="HIV Status" > <i class="fa  fa-plus-circle  fa-fw"></i> </span>

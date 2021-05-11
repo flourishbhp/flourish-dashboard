@@ -1,8 +1,11 @@
 {% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
 
 <div class="list-group" >
 <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
 {{ consent.child_dob|date:"d/m/Y" }}
+{% get_age consent.child_dob %}
+
 </a>
 <a class="list-group-item"><i class="far fa-address-card fa-fw"></i>
 {{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ consent.child_name_initial }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
