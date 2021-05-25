@@ -66,12 +66,12 @@ class ConsentModelWrapperMixin:
             flourish_participation = bhp_prior_screening.flourish_participation
             locator_obj = getattr(self, 'locator_model_obj', None)
             if flourish_participation == 'interested' and locator_obj:
-                first_name = self.locator_model_obj.first_name
-                last_name = self.locator_model_obj.last_name
+                first_name = locator_obj.first_name.upper() if locator_obj.first_name else None
+                last_name = locator_obj.last_name.upper() if locator_obj.last_name else None
                 initials = self.set_initials(first_name, last_name)
                 options.update(
-                    {'first_name': first_name.upper(),
-                     'last_name': last_name.upper(),
+                    {'first_name': first_name,
+                     'last_name': last_name,
                      'initials': initials,
                      'gender': FEMALE})
         return options

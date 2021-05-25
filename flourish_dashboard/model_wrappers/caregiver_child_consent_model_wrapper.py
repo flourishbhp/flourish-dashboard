@@ -3,12 +3,14 @@ from edc_model_wrapper import ModelWrapper
 
 from .caregiver_child_consent_model_wrapper_mixin import CaregiverChildConsentModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
+from .child_continued_consent_model_wrapper_mixin import ChildContinuedConsentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 
 
 class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
                                         ConsentModelWrapperMixin,
                                         ChildAssentModelWrapperMixin,
+                                        ChildContinuedConsentModelWrapperMixin,
                                         ModelWrapper):
 
     model = 'flourish_caregiver.caregiverchildconsent'
