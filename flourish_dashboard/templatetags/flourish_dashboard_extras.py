@@ -4,7 +4,6 @@ from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from urllib.parse import urlencode, unquote
-from edc_base.exceptions import AgeValueError
 from edc_base.utils import age, get_utcnow
 
 from edc_visit_schedule.models import SubjectScheduleHistory

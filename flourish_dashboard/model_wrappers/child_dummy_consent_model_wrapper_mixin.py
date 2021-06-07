@@ -72,6 +72,15 @@ class ChildDummyConsentModelWrapperMixin:
         return 0
 
     @property
+    def gender(self):
+        if getattr(self, 'assent_model_obj'):
+            return self.assent_model_obj.gender
+        elif getattr(self, 'consent_model_obj'):
+            caregiverchildconsent_obj = self.consent_model_obj.caregiverchildconsent_set.get(
+                subject_identifier=self.object.subject_identifier)
+            return caregiverchildconsent_obj.gender
+
+    @property
     def child_dob(self):
         if getattr(self, 'assent_model_obj'):
             birth_date = self.assent_model_obj.dob

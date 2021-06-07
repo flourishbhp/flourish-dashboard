@@ -256,6 +256,7 @@ class DashboardView(
         self.get_continued_consent_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
+            gender=self.caregiver_child_consent.gender,
             child_dataset=self.child_dataset,
             schedule_names=[model.schedule_name for model in self.onschedule_models],
         )

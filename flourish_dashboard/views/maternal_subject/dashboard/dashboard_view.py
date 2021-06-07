@@ -108,6 +108,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             schedule_names=[model.schedule_name for model in self.onschedule_models],
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
+            gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
