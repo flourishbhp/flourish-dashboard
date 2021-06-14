@@ -155,10 +155,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         subject_consent = self.consent_wrapped.object
         child_consent = subject_consent.caregiverchildconsent_set.all()
         cohorts_query = child_consent.values_list('cohort', flat=True).distinct()
+
         cohorts = ''
+        for a in self.onschedule_models:
+            if a.schedule_name == 'a_enrol1_schedule1':
+                cohorts = 'COHORT A'
+
         for cohort in cohorts_query:
             if cohort:
-                cohorts = ''.join(cohort.upper())
+                cohorts = cohorts + '|'
+                cohorts += '|'.join(cohort.upper())
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,
