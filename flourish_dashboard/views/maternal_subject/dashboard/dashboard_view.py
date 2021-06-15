@@ -159,12 +159,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         cohorts = ''
         for a in self.onschedule_models:
             if a.schedule_name == 'a_enrol1_schedule1':
-                cohorts = 'COHORT A'
+                cohorts = 'COHORT_A'
 
         for cohort in cohorts_query:
             if cohort:
-                cohorts = cohorts + '|'
-                cohorts += '|'.join(cohort.upper())
+                cohorts += ' ' + cohort.upper()
+
+        cohorts = cohorts.strip().replace(' ', '| ')
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,
