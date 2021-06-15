@@ -158,7 +158,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         cohorts = ''
         for a in self.onschedule_models:
-            if a.schedule_name == 'a_enrol1_schedule1':
+            if a.schedule_name == 'a_antenatal1_schedule1':
                 cohorts = 'COHORT_A'
 
         for cohort in cohorts_query:
