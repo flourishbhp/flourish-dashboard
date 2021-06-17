@@ -1,14 +1,9 @@
-{% if child_age >= 18 %}
 <a id="childcontinuedconsent_{{ subject_identifier }}"
  	title="{{ title }}"
  
 	{% if childcontinuedconsent %}
 		class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
         href="{{ add_childcontinuedconsent_href }}">
-    {% else %}
-        class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-        href="{{ add_childcontinuedconsent_href }}">
-        {% endif %}
      	Child Continued Consent
+    {% endif %}
 </a>
-{% endif %}
