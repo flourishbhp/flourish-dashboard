@@ -1,7 +1,6 @@
 # from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
 # # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
 
-from datetime import date
 from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
@@ -13,11 +12,12 @@ from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
 
-from edc_appointment.constants import IN_PROGRESS_APPT
+from edc_action_item.site_action_items import site_action_items
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_registration.models import RegisteredSubject
+from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
 from ...view_mixin import DashboardViewMixin
@@ -295,17 +295,22 @@ class DashboardView(
         pass
 
     def get_continued_consent_object_or_message(self):
+        obj = None
         child_continued_consent_cls = django_apps.get_model(
             'flourish_child.childcontinuedconsent')
-
+        subject_identifier = self.kwargs.get('subject_identifier')
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
-
         if (child_age/12) >= 18:
             try:
-                child_continued_consent_cls.objects.get(
-                    subject_identifier=self.subject_identifier)
-            except child_continued_consent_cls.DoesNotExist:
-                form = child_continued_consent_cls._meta.verbose_name
-                msg = mark_safe(f'Please complete the {form} for the child.')
+                obj = child_continued_consent_cls.objects.get(
+                    subject_identifier=subject_identifier)
+            except ObjectDoesNotExist:
+                self.action_cls_item_creator(
+                    subject_identifier=subject_identifier,
+                    action_cls=child_continued_consent_cls,
+                    action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)
+                msg = mark_safe(
+                    'Please complete the continued consent for the child.')
                 messages.add_message(self.request, messages.WARNING, msg)
+            return obj
