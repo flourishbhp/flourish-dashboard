@@ -109,6 +109,9 @@ class ConsentModelWrapperMixin:
                     is_eligible=True)
                 show_dashboard = True if child_assent else False
                 break
+        ae_model_obj = getattr(self, 'antenatal_enrollment_model_obj', None)
+        if ae_model_obj and ae_model_obj.is_eligible:
+            show_dashboard = True
         return show_dashboard
 
     def set_initials(self, first_name=None, last_name=None):

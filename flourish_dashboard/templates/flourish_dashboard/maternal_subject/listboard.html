@@ -44,7 +44,7 @@
          		{% child_eligibility_button result.assents_ineligible %}
          	{% else %}
          		{% caregiver_enrolment_info_button result %}
-         		{% if result.caregiver_enrolment_info_obj %}
+         		{% if result.caregiver_enrolment_info_obj or result.antenatal_enrollment_model_obj.is_eligible %}
 		 			{% dashboard_button result %}
 		 		{% endif %}
 		 	{% endif %}
