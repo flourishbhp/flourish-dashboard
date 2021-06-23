@@ -34,6 +34,10 @@ class SubjectConsentModelWrapper(ChildAssentModelWrapperMixin,
         return ''
 
     @property
+    def gender(self):
+        return self.object.gender
+
+    @property
     def create_caregiver_locator_options(self):
         """Returns a dictionary of options to create a new
         unpersisted caregiver locator model instance.

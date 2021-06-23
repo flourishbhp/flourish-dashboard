@@ -87,7 +87,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
         child_consents = child_consent_cls.objects.filter(
-            subject_identifier__istartswith=self.subject_identifier)
+            subject_identifier__startswith=self.subject_identifier)
         for child_consent in child_consents:
             wrapped_assents.append(CaregiverChildConsentModelWrapper(child_consent))
         return wrapped_assents
@@ -108,6 +108,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             schedule_names=[model.schedule_name for model in self.onschedule_models],
             cohorts=self.get_cohorts,
             subject_consent=self.consent_wrapped,
+            gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
             hiv_status=self.hiv_status,
@@ -136,16 +137,22 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 cohorts.append(child.cohort)
 
             appointments = appt_cls.objects.filter(
-                subject_identifier=child_consents[0].subject_identifier[:-3],
-                visit_code='2000M')
+                subject_identifier=self.subject_identifier,
+                visit_code__endswith='010M')
 
             schedule_child_dict = {}
-            for child in child_consents:
-                for appt in appointments:
-                    if (str(child.caregiver_visit_count)
-                            in appt.visit_schedule_name.split('_')[0]):
-                        schedule_child_dict[appt.visit_schedule_name] = (
-                                    child.first_name + ' ' + child.last_name)
+
+            for onschedule_model in self.onschedule_models:
+                if ('quarterly' in onschedule_model.schedule_name
+                        or 'sec' in onschedule_model.schedule_name):
+
+                    child = child_consents.get(
+                        subject_identifier=onschedule_model.child_subject_identifier)
+
+                    appt = appointments.get(schedule_name=onschedule_model.schedule_name)
+
+                    schedule_child_dict[appt.visit_schedule_name] = (
+                                child.first_name + ' ' + child.last_name)
 
             return schedule_child_dict
 
@@ -154,10 +161,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         subject_consent = self.consent_wrapped.object
         child_consent = subject_consent.caregiverchildconsent_set.all()
         cohorts_query = child_consent.values_list('cohort', flat=True).distinct()
+
         cohorts = ''
+        for a in self.onschedule_models:
+            if a.schedule_name == 'a_antenatal1_schedule1':
+                cohorts = 'COHORT_A'
+
         for cohort in cohorts_query:
             if cohort:
-                cohorts = ''.join(cohort.upper())
+                cohorts += ' ' + cohort.upper()
+
+        cohorts = cohorts.strip().replace(' ', '| ')
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,

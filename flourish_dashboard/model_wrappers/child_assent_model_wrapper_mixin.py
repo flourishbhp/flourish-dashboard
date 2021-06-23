@@ -81,6 +81,7 @@ class ChildAssentModelWrapperMixin:
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
         initials = self.set_initials(first_name, last_name)
+
         options = dict(
             screening_identifier=self.screening_identifier,
             subject_identifier=caregiverchildconsent.subject_identifier,

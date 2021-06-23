@@ -1,3 +1,4 @@
+from django.apps import apps as django_apps
 from django.conf import settings
 from django.db.models import Q
 from edc_model_wrapper import ModelWrapper
@@ -77,3 +78,14 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
     def screening_report_datetime(self):
         if self.bhp_prior_screening_model_obj:
             return self.bhp_prior_screening_model_obj.report_datetime
+
+    @property
+    def multiple_births(self):
+        """Returns value of births if the mother has twins/triplets.
+        """
+        if self.object:
+            child_dataset_cls = django_apps.get_model('flourish_child.childdataset')
+            children = child_dataset_cls.objects.filter(
+                study_maternal_identifier=self.object.study_maternal_identifier)
+            return children.count()
+        return 0

@@ -15,8 +15,8 @@
     <th>#</th>
     <th></th>
     <th>Screening Identifier</th>
+    <th>Subject Identifier</th>
     <th>Age</th>
-    <th>User</th>
     <th>Modified</th>
     <th>Host</th>
     <!-- end results header -->
@@ -29,7 +29,7 @@
     {% edit_screening_button result %}
     {% if result.is_eligible %}
 	    {% consent_button result True %}
-	    {% if result.consent %}
+	    {% if result.consent.is_eligible %}
 	    	{% antenatal_enrollment_button result %}
 	    	{% if result.antenatal_enrollment_model_obj %}
 	    	  {% if result.antenatal_enrollment_model_obj.is_eligible %}
@@ -38,6 +38,8 @@
 	    	     {% eligibility_button result.antenatal_enrollment %}
 	    	  {% endif %}
 	    	{% endif %}
+	    {% else %}
+	    	{% eligibility_button result.consent %}
 		{% endif %}
 	{% else %}
 			{% eligibility_button result %}
@@ -51,8 +53,8 @@
 {% block listboard_table_columns %}
 
     <td>{{ result.screening_identifier }} </td>
+    <td>{{ result.consent.subject_identifier }}</td>
     <td nowrap>{% age_in_years result.consent_model_obj.dob %}yrs {{ result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}</td>
-    <td nowrap>{{ result.user_created }}</td>
     <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>  
     <td nowrap>{{ result.hostname_created }}</td>
 
