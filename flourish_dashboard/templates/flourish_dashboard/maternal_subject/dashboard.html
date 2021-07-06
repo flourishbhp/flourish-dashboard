@@ -4,6 +4,17 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
+{% block other_special_buttons %}
+	{% child_ineligible_button subject_consent %}
+	{% antenatal_enrollment_button subject_consent %}
+	{% assents_button subject_consent %}
+	{% if not subject_consent.assents_eligibility %}
+		{% child_eligibility_button subject_consent.assents_ineligible %}
+	{% else %}
+		{% caregiver_enrolment_info_button subject_consent %}
+	{% endif %}
+	
+{% endblock other_special_buttons %}
 
 {% block locator_information %}{% endblock locator_information %}
 
