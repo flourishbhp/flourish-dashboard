@@ -24,10 +24,6 @@
 <div class="btn-group">
 	{% caregiverchildconsent_button result %}
 	{% if result.object.is_eligible %}
-    	{% assent_button result %}
-    	{% if result.assent_model_obj and not result.assent_model_obj.is_eligible %}
-    		{% eligibility_button result.child_assent %}
-    	{% endif %}
     	{% dashboard_button result %}
     {% else %}
     	{% eligibility_button result %}
