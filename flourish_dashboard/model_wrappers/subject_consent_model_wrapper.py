@@ -3,6 +3,7 @@ from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 from itertools import chain
 
+from .caregiver_contact_model_wrapper_mixin import CaregiverContactModelWrapperMixin
 from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfoModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
@@ -11,7 +12,8 @@ from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperM
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 
 
-class SubjectConsentModelWrapper(ChildAssentModelWrapperMixin,
+class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
+                                 ChildAssentModelWrapperMixin,
                                  CaregiverEnrolmentInfoModelWrapperMixin,
                                  CaregiverLocatorModelWrapperMixin,
                                  ConsentModelWrapperMixin,

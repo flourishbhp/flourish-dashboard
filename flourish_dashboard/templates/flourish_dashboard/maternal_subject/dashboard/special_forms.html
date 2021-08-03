@@ -3,9 +3,12 @@
     <thead></thead>
     <tbody>
       	<tr>
-		<td>
-			{% locator_button subject_consent %}
-		</td>
+			<td>
+				{% locator_button subject_consent %}
+			</td>
+		</tr>
+		<tr>
+			<td>{% caregiver_contact_button subject_consent %}</td>
 		</tr>
 		{% for caregiver_child_consent in caregiver_child_consents %}
 			{% if caregiver_child_consent.object.child_age_at_enrollment > 7 %}

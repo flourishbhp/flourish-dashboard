@@ -190,6 +190,15 @@ def caregiverchildconsent_button(model_wrapper):
         title=' '.join(title))
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/caregiver_contact_button.html')
+def caregiver_contact_button(model_wrapper):
+    title = ['subject caregiver contact.']
+    return dict(
+        subject_identifier=model_wrapper.object.subject_identifier,
+        add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
+        title=' '.join(title),)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/childcontinuedconsent_button.html')
 def childcontinuedconsent_button(model_wrapper):
     title = ['Child Continued Consent']

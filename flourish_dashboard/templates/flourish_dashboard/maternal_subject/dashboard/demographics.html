@@ -3,16 +3,18 @@
 
 <div class="list-group" >
 <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
+{% if dob %}
 {{ dob|date:"d/m/Y" }}
 {% get_age dob %} 
+{% endif %}
 
  {% if hiv_status == 'POS' %}
- 	<span data-toggle="tooltip" data-placement="right" title="HIV Status" > <i class="fa  fa-plus-circle  fa-fw"></i> </span>
+ 	<span data-toggle="tooltip" data-placement="right" title="Biological Mother's HIV Status" > <i class="fa  fa-plus-circle  fa-fw"></i> </span>
  {% else %}
  	{% if hiv_status == 'NEG' %}
- 		<span data-toggle="tooltip" data-placement="right" title="HIV Status"> <i  class="fa  fa-minus-circle  fa-fw"></i> </span>
+ 		<span data-toggle="tooltip" data-placement="right" title="Biological Mother's HIV Status"> <i  class="fa  fa-minus-circle  fa-fw"></i> </span>
 	 	{% else %}
-	 		<span data-toggle="tooltip" data-placement="right" title="HIV Status" > <i class="fa  fa-question-circle  fa-fw"></i> </span>
+	 		<span data-toggle="tooltip" data-placement="right" title="Biological Mother's HIV Status" > <i class="fa  fa-question-circle  fa-fw"></i> </span>
 	 	{% endif %}
  {% endif %}
 </a>
