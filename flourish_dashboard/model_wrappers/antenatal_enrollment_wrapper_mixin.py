@@ -13,7 +13,8 @@ class AntenatalEnrollmentModelWrapperMixin:
         """Returns a antenatal enrollment model instance or None.
         """
         try:
-            return self.antenatal_enrollment_cls.objects.get(**self.antenatal_enrollment_options)
+            return self.antenatal_enrollment_cls.objects.get(
+                **self.antenatal_enrollment_options)
         except ObjectDoesNotExist:
             return None
 

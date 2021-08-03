@@ -35,19 +35,8 @@
         <i class="fa fa-pencil-alt fa-sm"></i>
     </a>
     {% if result.is_eligible %}
-    	{% child_ineligible_button result %}
-    	{% if result.children_eligibility %}
-    		{% antenatal_enrollment_button result %}
-    		
-         	{% assents_button result %}
-         	{% if not result.assents_eligibility %}
-         		{% child_eligibility_button result.assents_ineligible %}
-         	{% else %}
-         		{% caregiver_enrolment_info_button result %}
-         		{% if result.caregiver_enrolment_info_obj or result.antenatal_enrollment_model_obj.is_eligible %}
-		 			{% dashboard_button result %}
-		 		{% endif %}
-		 	{% endif %}
+    	{% if result.children_eligibility or result.antenatal_enrollment_model_obj.is_eligible %}
+		 	{% dashboard_button result %}
 		{% else %}
 			{% child_eligibility_button result.children_ineligible %}
 		{% endif %}

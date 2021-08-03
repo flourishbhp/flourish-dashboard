@@ -92,27 +92,27 @@ class ConsentModelWrapperMixin:
             return self.consent_model_obj.caregiverchildconsent_set.all()
         return []
 
-    @property
-    def show_dashboard(self):
-        show_dashboard = False
-        child_consents = self.child_consents.filter(is_eligible=True)
-        for child_consent in child_consents:
-            child_age = child_consent.child_age_at_enrollment
-            if child_age < 7:
-                show_dashboard = True
-                break
-
-            assent_obj = getattr(self, 'child_assent_obj', None)
-            if assent_obj:
-                child_assent = assent_obj(
-                    subject_identifier=child_consent.subject_identifier,
-                    is_eligible=True)
-                show_dashboard = True if child_assent else False
-                break
-        ae_model_obj = getattr(self, 'antenatal_enrollment_model_obj', None)
-        if ae_model_obj and ae_model_obj.is_eligible:
-            show_dashboard = True
-        return show_dashboard
+#     @property
+#     def show_dashboard(self):
+#         show_dashboard = False
+#         child_consents = self.child_consents.filter(is_eligible=True)
+#         for child_consent in child_consents:
+#             child_age = child_consent.child_age_at_enrollment
+#             if child_age < 7:
+#                 show_dashboard = True
+#                 break
+#
+#             assent_obj = getattr(self, 'child_assent_obj', None)
+#             if assent_obj:
+#                 child_assent = assent_obj(
+#                     subject_identifier=child_consent.subject_identifier,
+#                     is_eligible=True)
+#                 show_dashboard = True if child_assent else False
+#                 break
+#         ae_model_obj = getattr(self, 'antenatal_enrollment_model_obj', None)
+#         if ae_model_obj and ae_model_obj.is_eligible:
+#             show_dashboard = True
+#         return show_dashboard
 
     def set_initials(self, first_name=None, last_name=None):
         initials = ''
@@ -127,14 +127,11 @@ class ConsentModelWrapperMixin:
 
     @property
     def children_eligibility(self):
-        child_eligibility = True
-
-        if self.child_consents:
-            eligble_children = self.child_consents.filter(is_eligible=True)
-            if not eligble_children:
-                child_eligibility = False
-
-        return child_eligibility
+        if self.object.caregiverchildconsent_set.all():
+            eligible_children = self.object.caregiverchildconsent_set.filter(
+                is_eligible=True)
+            return False if not eligible_children else True
+        return True
 
     @property
     def children_ineligible(self):
