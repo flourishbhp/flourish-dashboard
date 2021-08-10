@@ -16,9 +16,9 @@
     <!-- end results header -->
 
 {% endblock listboard_table_header %}
-	
+
 {% block listboard_table_button_column %}
-	{% comment %}
+    {% comment %}
 
     result: model_wrapper, usually the SubjectConsentModelWrapper
         Required attributes:
@@ -27,42 +27,46 @@
             href: (model_wrapper.href)
 
 	{% endcomment %}
-	<td style="white-space: nowrap">
-    <div class="btn-group">
-    <a title="Edit subject's consent form" role="button" 
-       class="btn btn-default btn-sm"
-           href="{{ result.href }}&antenatal={{result.is_pregnant}}">
-        <i class="fa fa-pencil-alt fa-sm"></i>
-    </a>
-    {% if result.is_eligible %}
-    	{% if result.children_eligibility or result.antenatal_enrollment_model_obj.is_eligible %}
-		 	{% dashboard_button result %}
-		{% else %}
-			{% child_eligibility_button result.children_ineligible %}
-		{% endif %}
-	{% else %}
-		{% eligibility_button result %}
-    {% endif %}
-    </div>
-	</td>
+    <td style="white-space: nowrap">
+        <div class="btn-group">
+            <a title="Edit subject's consent form" role="button"
+               class="btn btn-default btn-sm"
+               href="{{ result.href }}&antenatal={{ result.is_pregnant }}">
+                <i class="fa fa-pencil-alt fa-sm"></i>
+            </a>
+            {% if result.is_eligible %}
+                {% if not result.locator_exists %}
+                    {% locator_button result %}
+                {% elif result.children_eligibility or result.antenatal_enrollment_model_obj.is_eligible %}
+{#                    #put locator button here#}
+{#                    #put dashboard button in a condition, be sure to inherit the locator wrapper mixin#}
+                    {% dashboard_button result %}
+                {% else %}
+                    {% child_eligibility_button result.children_ineligible %}
+                {% endif %}
+            {% else %}
+                {% eligibility_button result %}
+            {% endif %}
+        </div>
+    </td>
 {% endblock listboard_table_button_column %}
 
 {% block listboard_table_columns %}
-	
-	
+
+
 
     <td>{{ result.subject_identifier }}
     </td>
     <td>
-       {% if result.gender == 'M' %}
-           <i class="fa fa-male fa-lg"></i>
-       {% else %}
-           <i class="fa fa-female fa-lg"></i>
-       {% endif %}
-       {{ result.first_name }} {{ result.initials }}
+        {% if result.gender == 'M' %}
+            <i class="fa fa-male fa-lg"></i>
+        {% else %}
+            <i class="fa fa-female fa-lg"></i>
+        {% endif %}
+        {{ result.first_name }} {{ result.initials }}
     </td>
     <td>{% age_in_years result.object.dob %}yrs {{ result.object.dob|date:"SHORT_DATE_FORMAT" }}</td>
-    <td>{{ result.object.consent_datetime|date:"SHORT_DATE_FORMAT" }}</td>  
+    <td>{{ result.object.consent_datetime|date:"SHORT_DATE_FORMAT" }}</td>
     <td>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
     <td>{{ result.hostname_created }}</td>
 

@@ -2,7 +2,7 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 from itertools import chain
-
+from flourish_caregiver.models import CaregiverLocator
 from .caregiver_contact_model_wrapper_mixin import CaregiverContactModelWrapperMixin
 from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfoModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
@@ -12,15 +12,14 @@ from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperM
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 
 
-class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
-                                 ChildAssentModelWrapperMixin,
-                                 CaregiverEnrolmentInfoModelWrapperMixin,
-                                 CaregiverLocatorModelWrapperMixin,
-                                 ConsentModelWrapperMixin,
-                                 BHPPriorScreeningModelWrapperMixin,
-                                 AntenatalEnrollmentModelWrapperMixin,
-                                 ModelWrapper):
-
+class SubjectConsentModelWrapper(
+    ChildAssentModelWrapperMixin,
+    CaregiverEnrolmentInfoModelWrapperMixin,
+    CaregiverLocatorModelWrapperMixin,
+    ConsentModelWrapperMixin,
+    BHPPriorScreeningModelWrapperMixin,
+    AntenatalEnrollmentModelWrapperMixin,
+    ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'subject_listboard_url')
@@ -45,7 +44,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,)
+            screening_identifier=self.object.screening_identifier, )
         if self.assent_model_obj:
             options.update(
                 {'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier})
@@ -79,3 +78,11 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                 else:
                     return False
             return True
+
+    @property
+    def locator_exists(self):
+        subject_identifier = getattr(self.object, 'subject_identifier')
+        exists = False
+        if CaregiverLocator.objects.filter(subject_identifier=subject_identifier):
+            exists = True
+        return exists
