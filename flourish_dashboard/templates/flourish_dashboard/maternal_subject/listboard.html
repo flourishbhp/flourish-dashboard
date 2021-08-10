@@ -38,8 +38,6 @@
                 {% if not result.locator_exists %}
                     {% locator_button result %}
                 {% elif result.children_eligibility or result.antenatal_enrollment_model_obj.is_eligible %}
-{#                    #put locator button here#}
-{#                    #put dashboard button in a condition, be sure to inherit the locator wrapper mixin#}
                     {% dashboard_button result %}
                 {% else %}
                     {% child_eligibility_button result.children_ineligible %}
