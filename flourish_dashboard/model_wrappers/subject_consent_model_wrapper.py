@@ -13,6 +13,7 @@ from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapp
 
 
 class SubjectConsentModelWrapper(
+    CaregiverContactModelWrapperMixin,
     ChildAssentModelWrapperMixin,
     CaregiverEnrolmentInfoModelWrapperMixin,
     CaregiverLocatorModelWrapperMixin,
