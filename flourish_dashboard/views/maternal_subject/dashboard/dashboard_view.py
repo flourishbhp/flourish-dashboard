@@ -138,7 +138,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             appointments = appt_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
-                visit_code__endswith='010M')
+                visit_code__endswith='001M')
 
             schedule_child_dict = {}
 
