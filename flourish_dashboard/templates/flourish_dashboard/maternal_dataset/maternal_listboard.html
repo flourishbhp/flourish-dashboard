@@ -35,20 +35,22 @@
 	{% if result.locator_exists %}
 		{% locator_button result %}
 	{% endif %}
-	{% if result.call_or_home_visit_success %}
-		{% bhp_prior_screening_button result %}
+
+	{% if result.consent_model_obj %}
+    	{% if result.consent_model_obj.is_eligible %}
+    			{% dashboard_button result.consent %}
+    	{% else %}
+    		{% eligibility_button result.consent %}
+    	{% endif %}
+    {% else %}
+    	{% if result.call_or_home_visit_success %}
+			{% bhp_prior_screening_button result %}
 		{% if result.bhp_prior_screening_model_obj %}
-		{% if result.bhp_prior_screening_model_obj.is_eligible %}
-			{% consent_button result %}
-		    {% if result.consent %}
-		    	{% if result.consent_model_obj.is_eligible %}
-		    			{% dashboard_button result.consent %}
-		    	{% else %}
-		    		{% eligibility_button result.consent %}
-		    	{% endif %}
+			{% if result.bhp_prior_screening_model_obj.is_eligible %}
+				{% consent_button result %}
+			{% else %}
+				{% eligibility_button result.bhp_prior_screening %}
 			{% endif %}
-		{% else %}
-			{% eligibility_button result.bhp_prior_screening %}
 		{% endif %}
 		{% endif %}
 	{% endif %}

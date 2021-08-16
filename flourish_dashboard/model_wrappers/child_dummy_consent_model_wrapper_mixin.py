@@ -41,57 +41,57 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def child_name_initial(self):
-        if getattr(self, 'assent_model_obj'):
-            name = self.assent_model_obj.first_name
-            initials = self.assent_model_obj.initials
+        if self.get_assent:
+            name = self.get_assent.first_name
+            initials = self.get_assent.initials
             return f'{name} {initials}'
-        elif getattr(self, 'consent_model_obj'):
-            caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
-            for caregiverchildconsent_obj in caregiverchildconsent_objs:
-                first_name = caregiverchildconsent_obj.first_name
-                last_name = caregiverchildconsent_obj.first_name
-                return f'{first_name} {first_name[0]}{last_name[0]}'
+        elif self.get_consent:
+            childconsent = self.get_consent.caregiverchildconsent_set.get(
+                subject_identifier=self.object.subject_identifier)
+            first_name = childconsent.first_name
+            last_name = childconsent.last_name
+            return f'{first_name} {first_name[0]}{last_name[0]}'
         return None
 
     @property
     def child_age(self):
-        if getattr(self, 'assent_model_obj'):
-            birth_date = self.assent_model_obj.dob
+        if self.get_assent:
+            birth_date = self.get_assent.dob
             years = age(birth_date, get_utcnow()).years
             return years
-        elif getattr(self, 'consent_model_obj'):
-            caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
-            for caregiverchildconsent_obj in caregiverchildconsent_objs:
-                birth_date = caregiverchildconsent_obj.child_dob
-                years = age(birth_date, get_utcnow()).years
-                return years
-        elif getattr(self, 'maternal_delivery_obj'):
-            birth_date = self.maternal_delivery_obj.delivery_datetime.date()
+        elif self.get_consent:
+            childconsent = self.get_consent.caregiverchildconsent_set.get(
+                subject_identifier=self.object.subject_identifier)
+            birth_date = childconsent.child_dob
+            years = age(birth_date, get_utcnow()).years
+            return years
+        elif self.get_antenatal:
+            birth_date = self.get_antenatal.delivery_datetime.date()
             years = age(birth_date, get_utcnow()).months
             return years
         return 0
 
     @property
     def gender(self):
-        if getattr(self, 'assent_model_obj'):
-            return self.assent_model_obj.gender
-        elif getattr(self, 'consent_model_obj'):
-            caregiverchildconsent_obj = self.consent_model_obj.caregiverchildconsent_set.get(
+        if self.get_assent:
+            return self.get_assent.gender
+        elif self.get_consent:
+            childconsent = self.get_consent.caregiverchildconsent_set.get(
                 subject_identifier=self.object.subject_identifier)
-            return caregiverchildconsent_obj.gender
+            return childconsent.gender
 
     @property
     def child_dob(self):
-        if getattr(self, 'assent_model_obj'):
-            birth_date = self.assent_model_obj.dob
+        if self.get_assent:
+            birth_date = self.get_assent.dob
             return birth_date
-        elif getattr(self, 'consent_model_obj'):
-            caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
-            for caregiverchildconsent_obj in caregiverchildconsent_objs:
-                birth_date = caregiverchildconsent_obj.child_dob
-                return birth_date
-        elif getattr(self, 'maternal_delivery_obj'):
-            birth_date = self.maternal_delivery_obj.delivery_datetime.date()
+        elif self.get_consent:
+            childconsent = self.get_consent.caregiverchildconsent_set.get(
+                subject_identifier=self.object.subject_identifier)
+            birth_date = childconsent.child_dob
+            return birth_date
+        elif self.get_antenatal:
+            birth_date = self.get_antenatal.delivery_datetime.date()
             return birth_date
         return 0
 
@@ -103,19 +103,36 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def assent_date(self):
-        if getattr(self, 'assent_model_obj'):
-            return self.assent_model_obj.consent_datetime.date()
-        elif getattr(self, 'consent_model_obj'):
-            caregiverchildconsent_objs = self.consent_model_obj.caregiverchildconsent_set.all()
-            for caregiverchildconsent_obj in caregiverchildconsent_objs:
-                consent_date = caregiverchildconsent_obj.consent_datetime.date()
-                return consent_date
+        if self.get_assent:
+            return self.get_assent.consent_datetime.date()
+        elif self.get_consent:
+            childconsent = self.get_consent.caregiverchildconsent_set.get(
+                subject_identifier=self.object.subject_identifier)
+
+            consent_date = childconsent.consent_datetime.date()
+            return consent_date
         return 'N/A'
 
     @property
     def maternal_delivery_obj(self):
         maternal_delivery_cls = django_apps.get_model(
             'flourish_caregiver.maternaldelivery')
-        maternal_delivery_obj = maternal_delivery_cls.objects.get(
-            subject_identifier=self.caregiver_subject_identifier)
-        return maternal_delivery_obj
+        try:
+            maternal_delivery_obj = maternal_delivery_cls.objects.get(
+                subject_identifier=self.caregiver_subject_identifier)
+        except maternal_delivery_cls.DoesNotExist:
+            return None
+        else:
+            return maternal_delivery_obj
+
+    @property
+    def get_assent(self):
+        return getattr(self, 'assent_model_obj')
+
+    @property
+    def get_consent(self):
+        return getattr(self, 'consent_model_obj')
+
+    @property
+    def get_antenatal(self):
+        getattr(self, 'maternal_delivery_obj')
