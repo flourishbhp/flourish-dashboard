@@ -21,6 +21,13 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
     navbar_selected_item = 'consented_subject'
     search_form_url = 'subject_listboard_url'
 
+    def get_queryset_filter_options(self, request, *args, **kwargs):
+        options = super().get_queryset_filter_options(request, *args, **kwargs)
+        if kwargs.get('subject_identifier'):
+            options.update(
+                {'subject_identifier': kwargs.get('subject_identifier')})
+        return options
+
     def extra_search_options(self, search_term):
         q = Q()
         if re.match('^[A-Z]+$', search_term):
