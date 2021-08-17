@@ -35,7 +35,7 @@
                 <i class="fa fa-pencil-alt fa-sm"></i>
             </a>
             {% if result.is_eligible %}
-                {% if not result.locator_exists %}
+                {% if not result.locator_model_obj %}
                     {% locator_button result %}
                 {% elif result.children_eligibility or result.antenatal_enrollment_model_obj.is_eligible %}
                     {% dashboard_button result %}

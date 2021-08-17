@@ -80,10 +80,10 @@ class SubjectConsentModelWrapper(
                     return False
             return True
 
-    @property
-    def locator_exists(self):
-        subject_identifier = getattr(self.object, 'subject_identifier')
-        exists = False
-        if CaregiverLocator.objects.filter(subject_identifier=subject_identifier):
-            exists = True
-        return exists
+    # @property
+    # def locator_exists(self):
+    #     subject_identifier = getattr(self.object, 'subject_identifier')
+    #     exists = False
+    #     if CaregiverLocator.objects.filter(subject_identifier=subject_identifier):
+    #         exists = True
+    #     return exists
