@@ -133,3 +133,9 @@ dmypy.json
 .pyre/
 
 ./.idea/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/flourish-dashboard.iml
