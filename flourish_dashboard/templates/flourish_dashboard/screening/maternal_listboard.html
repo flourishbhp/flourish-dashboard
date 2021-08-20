@@ -1,16 +1,16 @@
-{% extends "edc_dashboard/listboard.html" %} {% load admin_urls %} {% load
-edc_base_extras %} {% load flourish_dashboard_extras %} {% block listboard_panel
-    %}
-    <a
-            id="maternal_screening_add"
-            title="add screening"
-            class="btn btn-sm btn-default"
-            role="button"
-            href="{{ maternal_screening_add_url }}?next={{ maternal_screening_listboard_url }}"
-    >
+{% extends "edc_dashboard/listboard.html" %}
+{% load admin_urls %}
+{% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
+
+{% block listboard_panel %}
+    <a id="maternal_screening_add" title="add screening" class="btn btn-sm btn-default" role="button"
+       href="{{ maternal_screening_add_url }}?next={{ maternal_screening_listboard_url }}">
         <i class="fa fa-plus fa-sm"></i>Add Antenatal Screening
     </a>
-{% endblock listboard_panel %} {% block listboard_table_header %}
+{% endblock listboard_panel %}
+
+{% block listboard_table_header %}
     <!-- begin results header -->
     <th>#</th>
     <th></th>
@@ -57,13 +57,10 @@ edc_base_extras %} {% load flourish_dashboard_extras %} {% block listboard_panel
 
 {% block listboard_table_columns %}
 
-    <td>{{ result.screening_identifier }}</td>
+    <td>{{ result.screening_identifier }} </td>
     <td>{{ result.consent.subject_identifier }}</td>
-    <td nowrap>
-        {% age_in_years result.consent_model_obj.dob %}yrs {{
-            result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}
-    </td>
-    <td nowrap>{{ result.user_created }}</td>
+    <td nowrap>{% age_in_years result.consent_model_obj.dob %}yrs {{ result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}</td>
     <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
+    <td nowrap>{{ result.hostname_created }}</td>
 
 {% endblock listboard_table_columns %}
