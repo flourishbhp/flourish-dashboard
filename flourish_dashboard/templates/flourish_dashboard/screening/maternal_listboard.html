@@ -60,7 +60,7 @@
     <td>{{ result.screening_identifier }} </td>
     <td>{{ result.consent.subject_identifier }}</td>
     <td nowrap>{% age_in_years result.consent_model_obj.dob %}yrs {{ result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}</td>
+    <td nowrap>{{ result.user_created }}</td>
     <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
-    <td nowrap>{{ result.hostname_created }}</td>
 
 {% endblock listboard_table_columns %}
