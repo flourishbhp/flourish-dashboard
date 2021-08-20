@@ -28,8 +28,6 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                 {'subject_identifier': kwargs.get('subject_identifier')})
         return options
 
-    # def get_context(self):
-    #     ge
 
     def extra_search_options(self, search_term):
         q = Q()
