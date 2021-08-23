@@ -76,19 +76,13 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
         return self.object.is_eligible
 
     @property
-    def study_maternal_identifier(self):
-        if getattr(self, 'bhp_prior_screening_model_obj', None):
-            return self.bhp_prior_screening_model_obj.study_maternal_identifier
-        return ''
-
-    @property
     def create_caregiver_locator_options(self):
         """
-        Overrided the method to remove some of the functions to remove some the attr. not needed
+        Override-(ed) the method to remove some of the fields not needed
         in this context
 
         Returns a dictionary of options to create a new
-        unpersisted caregiver locator model instance.
+        (un)persisted caregiver locator model instance.
         """
 
         # Get the current screening identifier
@@ -100,6 +94,5 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
             screening_identifier=screening_identifier,
             subject_identifier=subject_identifier,
         )
-        if self.study_maternal_identifier and getattr(self, 'study_maternal_identifier'):
-            options.update({'study_maternal_identifier': self.study_maternal_identifier})
+
         return options
