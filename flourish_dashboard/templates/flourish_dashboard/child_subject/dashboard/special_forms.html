@@ -2,13 +2,6 @@
 <table class="table table-condensed">
 	<thead></thead>
 	<tbody>
-		{% if caregiver_child_consent %}
-		<tr>
-			<td>
-			{% assent_button caregiver_child_consent %}
-			</td>
-		</tr>
-		{% endif %}
 
 		{% if child_dataset %}
 		<tr>
@@ -18,17 +11,5 @@
 		</tr>
 		{% endif %}
 
-		{% if caregiver_child_consent %}
-		<tr>
-			<td>
-			{% caregiver_child_consent_button caregiver_child_consent %}
-			</td>
-		</tr>
-		<tr>
-			<td>
-			{% childcontinuedconsent_button caregiver_child_consent %}
-			</td>
-		</tr>
-		{% endif %}
 	</tbody>
 </table>
