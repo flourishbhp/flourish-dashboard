@@ -23,8 +23,6 @@ class SubjectConsentModelWrapper(
     AntenatalEnrollmentModelWrapperMixin,
     ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
-    # After save the user will be taken back to the screen listboard so s/he can fill
-    # the locaator details
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
