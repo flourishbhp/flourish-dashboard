@@ -14,19 +14,18 @@ from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperM
 
 
 class SubjectConsentModelWrapper(
-        CaregiverContactModelWrapperMixin,
-        ChildAssentModelWrapperMixin,
-        CaregiverEnrolmentInfoModelWrapperMixin,
-        CaregiverLocatorModelWrapperMixin,
-        ConsentModelWrapperMixin,
-        BHPPriorScreeningModelWrapperMixin,
-        AntenatalEnrollmentModelWrapperMixin,
-        ModelWrapper):
+    CaregiverContactModelWrapperMixin,
+    ChildAssentModelWrapperMixin,
+    CaregiverEnrolmentInfoModelWrapperMixin,
+    CaregiverLocatorModelWrapperMixin,
+    ConsentModelWrapperMixin,
+    BHPPriorScreeningModelWrapperMixin,
+    AntenatalEnrollmentModelWrapperMixin,
+    ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     # After save the user will be taken back to the screen listboard so s/he can fill
     # the locaator details
-    next_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'maternal_screening_listboard_url')
+    next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
                          'first_name', 'last_name', 'initials', 'gender',
@@ -57,7 +56,7 @@ class SubjectConsentModelWrapper(
                 {'subject_identifier': self.subject_identifier})
         if getattr(self, 'first_name'):
             options.update({'first_name': self.first_name,
-                           'last_name': self.last_name})
+                            'last_name': self.last_name})
         return options
 
     @property
