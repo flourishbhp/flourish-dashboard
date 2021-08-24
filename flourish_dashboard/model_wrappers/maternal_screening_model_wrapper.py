@@ -4,23 +4,26 @@ from django.core.exceptions import ObjectDoesNotExist
 from edc_model_wrapper import ModelWrapper
 from edc_base.utils import get_uuid
 from edc_consent import ConsentModelWrapperMixin
-
+from flourish_caregiver.models.subject_consent import SubjectConsent
+from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
+from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 
 
 class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
+                                    CaregiverLocatorModelWrapperMixin,
                                     ConsentModelWrapperMixin,
                                     ChildAssentModelWrapperMixin,
+                                    BHPPriorScreeningModelWrapperMixin,
                                     ModelWrapper):
-
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.screeningpregwomen'
     querystring_attrs = ['screening_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'maternal_screening_listboard_url')
-    next_url_attrs = ['screening_identifier']
+    next_url_attrs = ['screening_identifier', 'subject_identifier', ]
 
     @property
     def consent_version(self):
@@ -71,3 +74,25 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
 
     def eligible_at_enrol(self):
         return self.object.is_eligible
+
+    @property
+    def create_caregiver_locator_options(self):
+        """
+        Override-(ed) the method to remove some of the fields not needed
+        in this context
+
+        Returns a dictionary of options to create a new
+        (un)persisted caregiver locator model instance.
+        """
+
+        # Get the current screening identifier
+        screening_identifier = self.object.screening_identifier
+        # Get the subject identifier using the screening identifier after consent
+        subject_identifier = SubjectConsent.objects.get(screening_identifier=screening_identifier).subject_identifier
+
+        options = dict(
+            screening_identifier=screening_identifier,
+            subject_identifier=subject_identifier,
+        )
+
+        return options
