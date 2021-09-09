@@ -1,3 +1,4 @@
+import django.apps
 from django import template
 from django.apps import apps as django_apps
 from django.conf import settings
@@ -135,7 +136,7 @@ def antenatal_enrollment_button(model_wrapper):
         antenatal_enrollment_model_obj=model_wrapper.antenatal_enrollment_model_obj,
         screening_identifier=model_wrapper.object.screening_identifier,
         preg_screening_obj=preg_screening_obj,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
@@ -196,7 +197,7 @@ def caregiver_contact_button(model_wrapper):
     return dict(
         subject_identifier=model_wrapper.object.subject_identifier,
         add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/childcontinuedconsent_button.html')
@@ -216,7 +217,7 @@ def assents_button(model_wrapper):
     return dict(
         wrapped_assents=model_wrapper.child_assents,
         unsaved=unsaved,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')
@@ -266,7 +267,6 @@ def infant_dash_link(subject_identifier):
 @register.inclusion_tag('edc_visit_schedule/subject_schedule_footer_row.html')
 def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
                                 subject_dashboard_url):
-
     context = {}
     try:
         history_obj = SubjectScheduleHistory.objects.get(
@@ -277,7 +277,7 @@ def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
     except SubjectScheduleHistory.DoesNotExist:
         onschedule_model_obj = schedule.onschedule_model_cls.objects.get(
             subject_identifier=subject_identifier,
-            schedule_name=schedule.name,)
+            schedule_name=schedule.name, )
         options = dict(subject_identifier=subject_identifier)
         query = unquote(urlencode(options))
         href = (f'{visit_schedule.offstudy_model_cls().get_absolute_url()}?next='
