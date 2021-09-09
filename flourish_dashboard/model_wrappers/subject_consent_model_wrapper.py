@@ -1,7 +1,6 @@
 from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
-from flourish_caregiver.models import CaregiverLocator
 from itertools import chain
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
@@ -22,8 +21,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  ModelWrapper):
 
     model = 'flourish_caregiver.subjectconsent'
-    next_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'subject_listboard_url')
+    next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
                          'first_name', 'last_name', 'initials', 'gender',
@@ -53,7 +51,8 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
             options.update(
                 {'subject_identifier': self.subject_identifier})
         if getattr(self, 'first_name'):
-            options.update({'first_name': self.first_name, 'last_name': self.last_name})
+            options.update({'first_name': self.first_name,
+                            'last_name': self.last_name})
         return options
 
     @property
@@ -61,7 +60,8 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
         return list(chain(self.assents_ineligible, self.children_ineligible))
 
     def is_pregnant(self):
-        screening_preg_cls = django_apps.get_model('flourish_caregiver.screeningpregwomen')
+        screening_preg_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomen')
 
         if self.consent_model_obj:
             try:
@@ -70,7 +70,8 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
             except screening_preg_cls.DoesNotExist:
                 return False
             else:
-                delivery_cls = django_apps.get_model('flourish_caregiver.maternaldelivery')
+                delivery_cls = django_apps.get_model(
+                    'flourish_caregiver.maternaldelivery')
                 try:
                     delivery_cls.objects.get(
                         subject_identifier=self.consent_model_obj.subject_identifier)

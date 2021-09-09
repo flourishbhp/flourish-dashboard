@@ -1,8 +1,41 @@
 {% extends 'edc_subject_dashboard/dashboard/sidebar.html' %}
+{% load flourish_dashboard_extras %}
+
 {% load edc_base_extras %}
 
 {% block demographics %}
 
-    	{% include 'flourish_dashboard/child_subject/dashboard/demographics.html' %}
+    {% include 'flourish_dashboard/child_subject/dashboard/demographics.html' %}
 
 {% endblock demographics %}
+
+{% block consents %}
+{#    {% include 'edc_subject_dashboard/dashboard/sidebar/consents.html' %}#}
+    <table class="table table-condensed">
+        <thead></thead>
+        <tbody>
+        {% if caregiver_child_consent %}
+            <tr>
+                <td>
+                    {% assent_button caregiver_child_consent %}
+                </td>
+            </tr>
+        {% endif %}
+
+        {% if caregiver_child_consent %}
+            <tr>
+                <td>
+                    {% caregiver_child_consent_button caregiver_child_consent %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {% childcontinuedconsent_button caregiver_child_consent %}
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+
+{% endblock consents %}
