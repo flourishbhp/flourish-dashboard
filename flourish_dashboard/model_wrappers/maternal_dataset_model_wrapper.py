@@ -89,3 +89,19 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
                 study_maternal_identifier=self.object.study_maternal_identifier)
             return children.count()
         return 0
+
+    @property
+    def is_td_onstudy(self):
+        """Returns true if participant is TD prior and is still onstudy
+        """
+        child_dataset_cls = django_apps.get_model('flourish_child.childdataset')
+        if self.object and self.object.protocol == 'Tshilo Dikotla':
+            try:
+                child_datase_obj = child_dataset_cls.objects.get(
+                    study_maternal_identifier=self.object.study_maternal_identifier)
+            except child_dataset_cls.DoesNotExist:
+                pass
+            else:
+                return child_datase_obj.infant_offstudy_complete == 0
+        return False
+

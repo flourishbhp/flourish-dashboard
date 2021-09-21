@@ -43,7 +43,7 @@
     		{% eligibility_button result.consent %}
     	{% endif %}
     {% else %}
-    	{% if result.call_or_home_visit_success %}
+    	{% if result.call_or_home_visit_success or result.is_td_onstudy %}
 			{% bhp_prior_screening_button result %}
 		{% if result.bhp_prior_screening_model_obj %}
 			{% if result.bhp_prior_screening_model_obj.is_eligible %}
