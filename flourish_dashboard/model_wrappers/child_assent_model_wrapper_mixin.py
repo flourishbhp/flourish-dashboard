@@ -33,7 +33,7 @@ class ChildAssentModelWrapperMixin:
         """"Returns a wrapped saved or unsaved child assent
         """
         model_obj = self.assent_model_obj or self.assent_model_cls(
-            **self.create_assent_options)
+            **self.create_child_assent_options(self.caregiverchildconsent_obj))
         return ChildAssentModelWrapper(model_obj=model_obj)
 
     @property
