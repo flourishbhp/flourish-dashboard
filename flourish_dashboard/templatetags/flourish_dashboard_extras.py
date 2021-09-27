@@ -1,13 +1,15 @@
-import django.apps
+from urllib.parse import urlencode, unquote
+
 from django import template
 from django.apps import apps as django_apps
+import django.apps
 from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
-from urllib.parse import urlencode, unquote
 from edc_base.utils import age, get_utcnow
 
 from edc_visit_schedule.models import SubjectScheduleHistory
+
 
 register = template.Library()
 
@@ -18,16 +20,18 @@ def get_item(dictionary, key):
 
 
 @register.simple_tag(takes_context=True)
-def get_age(context, born):
-    reference_datetime = context.get('reference_datetime', get_utcnow())
-    participant_age = age(born, reference_datetime)
-    age_str = ''
-    age_months = participant_age.months % 12
-    if participant_age.years > 0:
-        age_str += str(participant_age.years) + ' yrs '
-    if age_months > 0:
-        age_str += str(age_months) + ' months'
-    return age_str
+def get_age(context, born=None):
+
+    if born:
+        reference_datetime = context.get('reference_datetime', get_utcnow())
+        participant_age = age(born, reference_datetime)
+        age_str = ''
+        age_months = participant_age.months % 12
+        if participant_age.years > 0:
+            age_str += str(participant_age.years) + ' yrs '
+        if age_months > 0:
+            age_str += str(age_months) + ' months'
+        return age_str
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
