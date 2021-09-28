@@ -1,6 +1,5 @@
-from django.apps import apps as django_apps
-
 from dateutil.relativedelta import relativedelta
+from django.apps import apps as django_apps
 from edc_base.utils import age, get_utcnow
 
 
@@ -50,7 +49,8 @@ class ChildDummyConsentModelWrapperMixin:
                 subject_identifier=self.object.subject_identifier)
             first_name = childconsent.first_name
             last_name = childconsent.last_name
-            return f'{first_name} {first_name[0]}{last_name[0]}'
+            if first_name and last_name:
+                return f'{first_name} {first_name[0]}{last_name[0]}'
         return None
 
     @property
@@ -63,8 +63,9 @@ class ChildDummyConsentModelWrapperMixin:
             childconsent = self.get_consent.caregiverchildconsent_set.get(
                 subject_identifier=self.object.subject_identifier)
             birth_date = childconsent.child_dob
-            years = age(birth_date, get_utcnow()).years
-            return years
+            if birth_date:
+                years = age(birth_date, get_utcnow()).years
+                return years
         elif self.get_antenatal:
             birth_date = self.get_antenatal.delivery_datetime.date()
             years = age(birth_date, get_utcnow()).months
