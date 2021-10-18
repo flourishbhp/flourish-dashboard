@@ -1,23 +1,21 @@
 from django.apps import apps as django_apps
-from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
-
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
+from edc_dashboard.views import DashboardView as BaseDashboardView
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
-from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, SubjectConsentModelWrapper
+from ....model_wrappers import CaregiverChildConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, MaternalScreeningModelWrapper
-from ....model_wrappers import MaternalDatasetModelWrapper
-from ....model_wrappers import CaregiverChildConsentModelWrapper
+from ....model_wrappers import MaternalDatasetModelWrapper, CaregiverRequisitionModelWrapper
+from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
@@ -30,6 +28,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     crf_model_wrapper_cls = MaternalCrfModelWrapper
     consent_model = 'flourish_caregiver.subjectconsent'
     consent_model_wrapper_cls = SubjectConsentModelWrapper
+    requisition_model_wrapper_cls = CaregiverRequisitionModelWrapper
     navbar_name = 'flourish_dashboard'
     visit_attr = 'maternalvisit'
     navbar_selected_item = 'consented_subject'
