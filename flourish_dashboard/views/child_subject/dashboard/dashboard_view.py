@@ -254,6 +254,7 @@ class DashboardView(
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
         self.get_continued_consent_object_or_message()
+        self.get_assent_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
@@ -293,6 +294,20 @@ class DashboardView(
         action items for child.
         """
         pass
+
+    def get_assent_object_or_message(self):
+        obj = None
+        assent_cls = django_apps.get_model('flourish_child.childassent')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        child_age = ChildBirthValues(
+            subject_identifier=self.subject_identifier).child_age
+        if child_age and (child_age/12) > 7:
+            try:
+                obj = assent_cls.objects.get(subject_identifier=subject_identifier)
+            except assent_cls.DoesNotExist:
+                msg = mark_safe('Please complete the child assent form.')
+                messages.add_message(self.request, messages.WARNING, msg)
+            return obj
 
     def get_continued_consent_object_or_message(self):
         obj = None
