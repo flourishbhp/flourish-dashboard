@@ -60,7 +60,8 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
     def locator_exists(self):
         locator_log = getattr(self.object, 'locatorlog')
         exists = False
-        if LocatorLogEntry.objects.filter(locator_log=locator_log, log_status='exist'):
+        if (LocatorLogEntry.objects.filter(locator_log=locator_log, log_status='exist') or
+                self.locator_model_obj):
             exists = True
         return exists
 
