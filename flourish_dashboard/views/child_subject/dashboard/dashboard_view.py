@@ -12,12 +12,11 @@ from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
 
-from edc_action_item.site_action_items import site_action_items
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_registration.models import RegisteredSubject
-from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
+from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, CHILDASSENT_ACTION
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
 from ...view_mixin import DashboardViewMixin
@@ -208,10 +207,13 @@ class DashboardView(
     def caregiver_child_consent(self):
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
-        child_consent = child_consent_cls.objects.get(
-            subject_identifier=self.subject_identifier)
-        wrapped_caregiver_child_consent = CaregiverChildConsentModelWrapper(child_consent)
-        return wrapped_caregiver_child_consent
+        try:
+            child_consent = child_consent_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except child_consent_cls.DoesNotExist:
+            return None
+        else:
+            return CaregiverChildConsentModelWrapper(child_consent)
 
     @property
     def prior_screening(self):
@@ -254,6 +256,7 @@ class DashboardView(
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
         self.get_continued_consent_object_or_message()
+        self.get_assent_object_or_message()
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
@@ -293,6 +296,24 @@ class DashboardView(
         action items for child.
         """
         pass
+
+    def get_assent_object_or_message(self):
+        obj = None
+        assent_cls = django_apps.get_model('flourish_child.childassent')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        child_age = ChildBirthValues(
+            subject_identifier=self.subject_identifier).child_age
+        if child_age and ((child_age/12) >= 7 and (child_age/12 < 18)):
+            try:
+                obj = assent_cls.objects.get(subject_identifier=subject_identifier)
+            except assent_cls.DoesNotExist:
+                self.action_cls_item_creator(
+                    subject_identifier=subject_identifier,
+                    action_cls=assent_cls,
+                    action_type=CHILDASSENT_ACTION)
+                msg = mark_safe('Please complete the child assent form.')
+                messages.add_message(self.request, messages.WARNING, msg)
+            return obj
 
     def get_continued_consent_object_or_message(self):
         obj = None

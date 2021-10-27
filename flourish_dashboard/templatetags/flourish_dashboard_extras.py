@@ -177,7 +177,7 @@ def assent_button(model_wrapper):
     title = ['Assent child to participate.']
     return dict(
         consent_obj=model_wrapper.object,
-        assent_age=model_wrapper.child_age > 7,
+        assent_age=model_wrapper.child_age >= 7,
         child_assent=model_wrapper.child_assent,
         add_assent_href=model_wrapper.child_assent.href,
         title=' '.join(title))

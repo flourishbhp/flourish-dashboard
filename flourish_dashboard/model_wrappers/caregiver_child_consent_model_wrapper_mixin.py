@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from edc_base.utils import age, get_utcnow
 
 
 class CaregiverChildConsentModelWrapperMixin:
@@ -20,7 +21,13 @@ class CaregiverChildConsentModelWrapperMixin:
 
     @property
     def child_age(self):
-        return int(self.object.child_age_at_enrollment)
+        birth_date = self.object.child_dob
+        child_age = age(birth_date, get_utcnow())
+        months = 0
+        if child_age.years > 0:
+            months = child_age.years * 12
+        years = round((months + child_age.months) / 12, 2)
+        return years if years else 0
 
     @property
     def caregiverchildconsent_obj(self):
