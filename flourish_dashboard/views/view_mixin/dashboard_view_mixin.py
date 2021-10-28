@@ -1,6 +1,11 @@
+from django.apps import apps as django_apps
+from django.contrib import messages
+from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
 from edc_action_item.site_action_items import site_action_items
 from edc_constants.constants import OFF_STUDY, NEW
+
+from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, CHILDASSENT_ACTION
 
 
 class DashboardViewMixin:
@@ -53,3 +58,37 @@ class DashboardViewMixin:
         except action_item_model_cls.DoesNotExist:
             return None
         return action_item_obj
+
+    def get_assent_object_or_message(self, child_age=None, subject_identifier=None):
+        obj = None
+        assent_cls = django_apps.get_model('flourish_child.childassent')
+        if child_age and ((child_age/12) >= 7 and (child_age/12 < 18)):
+            try:
+                obj = assent_cls.objects.get(subject_identifier=subject_identifier)
+            except assent_cls.DoesNotExist:
+                self.action_cls_item_creator(
+                    subject_identifier=subject_identifier,
+                    action_cls=assent_cls,
+                    action_type=CHILDASSENT_ACTION)
+                msg = mark_safe(
+                    f'Please complete the assent for child {subject_identifier}.')
+                messages.add_message(self.request, messages.WARNING, msg)
+            return obj
+
+    def get_continued_consent_object_or_message(self, child_age=None, subject_identifier=None):
+        obj = None
+        child_continued_consent_cls = django_apps.get_model(
+            'flourish_child.childcontinuedconsent')
+        if child_age and (child_age/12) >= 18:
+            try:
+                obj = child_continued_consent_cls.objects.get(
+                    subject_identifier=subject_identifier)
+            except ObjectDoesNotExist:
+                self.action_cls_item_creator(
+                    subject_identifier=subject_identifier,
+                    action_cls=child_continued_consent_cls,
+                    action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)
+                msg = mark_safe(
+                    f'Please complete the continued consent for child {subject_identifier}.')
+                messages.add_message(self.request, messages.WARNING, msg)
+            return obj
