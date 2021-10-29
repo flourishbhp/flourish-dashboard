@@ -10,7 +10,6 @@ from edc_base.utils import age, get_utcnow
 
 from edc_visit_schedule.models import SubjectScheduleHistory
 
-
 register = template.Library()
 
 
@@ -21,7 +20,6 @@ def get_item(dictionary, key):
 
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
-
     if born:
         reference_datetime = context.get('reference_datetime', get_utcnow())
         participant_age = age(born, reference_datetime)
