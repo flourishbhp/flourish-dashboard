@@ -5,19 +5,15 @@ from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.contrib import messages
 from django.views.generic.base import ContextMixin
-from django.utils.safestring import mark_safe
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
 
-from edc_action_item.site_action_items import site_action_items
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_registration.models import RegisteredSubject
-from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
 from ...view_mixin import DashboardViewMixin
@@ -208,10 +204,13 @@ class DashboardView(
     def caregiver_child_consent(self):
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
-        child_consent = child_consent_cls.objects.get(
-            subject_identifier=self.subject_identifier)
-        wrapped_caregiver_child_consent = CaregiverChildConsentModelWrapper(child_consent)
-        return wrapped_caregiver_child_consent
+        try:
+            child_consent = child_consent_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except child_consent_cls.DoesNotExist:
+            return None
+        else:
+            return CaregiverChildConsentModelWrapper(child_consent)
 
     @property
     def prior_screening(self):
@@ -253,8 +252,12 @@ class DashboardView(
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
-        self.get_continued_consent_object_or_message()
-        self.get_assent_object_or_message()
+        child_age = ChildBirthValues(
+            subject_identifier=self.subject_identifier).child_age
+        self.get_continued_consent_object_or_message(
+            subject_identifier=self.subject_identifier, child_age=child_age)
+        self.get_assent_object_or_message(
+            subject_identifier=self.subject_identifier, child_age=child_age)
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
@@ -294,38 +297,3 @@ class DashboardView(
         action items for child.
         """
         pass
-
-    def get_assent_object_or_message(self):
-        obj = None
-        assent_cls = django_apps.get_model('flourish_child.childassent')
-        subject_identifier = self.kwargs.get('subject_identifier')
-        child_age = ChildBirthValues(
-            subject_identifier=self.subject_identifier).child_age
-        if child_age and (child_age/12) > 7:
-            try:
-                obj = assent_cls.objects.get(subject_identifier=subject_identifier)
-            except assent_cls.DoesNotExist:
-                msg = mark_safe('Please complete the child assent form.')
-                messages.add_message(self.request, messages.WARNING, msg)
-            return obj
-
-    def get_continued_consent_object_or_message(self):
-        obj = None
-        child_continued_consent_cls = django_apps.get_model(
-            'flourish_child.childcontinuedconsent')
-        subject_identifier = self.kwargs.get('subject_identifier')
-        child_age = ChildBirthValues(
-            subject_identifier=self.subject_identifier).child_age
-        if (child_age/12) >= 18:
-            try:
-                obj = child_continued_consent_cls.objects.get(
-                    subject_identifier=subject_identifier)
-            except ObjectDoesNotExist:
-                self.action_cls_item_creator(
-                    subject_identifier=subject_identifier,
-                    action_cls=child_continued_consent_cls,
-                    action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)
-                msg = mark_safe(
-                    'Please complete the continued consent for the child.')
-                messages.add_message(self.request, messages.WARNING, msg)
-            return obj

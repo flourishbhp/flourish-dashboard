@@ -7,7 +7,6 @@ from .child_assent_model_wrapper import ChildAssentModelWrapper
 
 
 class ChildAssentModelWrapperMixin:
-
     assent_model_wrapper_cls = ChildAssentModelWrapper
 
     @property
@@ -68,19 +67,21 @@ class ChildAssentModelWrapperMixin:
     def child_assents(self):
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
-            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set.filter(
-                is_eligible=True, child_age_at_enrollment__gte=7)
+            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
+                .only('child_age_at_enrollment', 'is_eligible') \
+                .filter(is_eligible=True, child_age_at_enrollment__gte=7)
+
             for caregiverchildconsent in caregiverchildconsents:
-                model_obj = self.child_assent_model_obj(caregiverchildconsent) or\
-                    self.assent_model_cls(
-                        **self.create_child_assent_options(caregiverchildconsent))
+                model_obj = self.child_assent_model_obj(caregiverchildconsent) or \
+                            self.assent_model_cls(
+                                **self.create_child_assent_options(caregiverchildconsent))
                 wrapped_entries.append(ChildAssentModelWrapper(model_obj))
         return wrapped_entries
 
     def create_child_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
-        initials = self.set_initials(first_name, last_name)
+        initials = f'{first_name[0].upper()}{last_name[0].upper()}' or 'No Initials'
 
         options = dict(
             screening_identifier=self.screening_identifier,
