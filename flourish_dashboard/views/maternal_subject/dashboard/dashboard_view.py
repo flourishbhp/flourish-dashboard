@@ -140,13 +140,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             appointments = appt_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
-                visit_code__endswith='001M')
+                visit_code__endswith='000M')
 
             schedule_child_dict = {}
 
             for onschedule_model in self.onschedule_models:
-                if ('quarterly' in onschedule_model.schedule_name
-                        or 'sec' in onschedule_model.schedule_name):
+                if ('enrol' in onschedule_model.schedule_name
+                    or ('sec' in onschedule_model.schedule_name
+                        and 'quart' not in onschedule_model.schedule_name)):
 
                     child = child_consents.get(
                         subject_identifier=onschedule_model.child_subject_identifier)
