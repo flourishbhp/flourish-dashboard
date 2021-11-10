@@ -222,6 +222,22 @@ def assents_button(model_wrapper):
         title=' '.join(title), )
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
+def new_child_assents_button(model_wrapper):
+    """
+    Created to be used with the new method named new_child_assents instead of child_assents
+
+    NB: Same template was used with assents_button because changes are not that radical (DRY)
+
+    """
+    title = ['Child Assent(s)']
+    unsaved = any(instance.id is None for instance in model_wrapper.new_child_assents)
+    return dict(
+        wrapped_assents=model_wrapper.new_child_assents,
+        unsaved=unsaved,
+        title=' '.join(title), )
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')
 def dashboard_button(model_wrapper):
     subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
