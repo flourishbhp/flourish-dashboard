@@ -15,6 +15,7 @@ from ....model_wrappers import CaregiverChildConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, CaregiverRequisitionModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
 from ...view_mixin import DashboardViewMixin
 
 
@@ -82,14 +83,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     @property
     def caregiver_child_consents(self):
-        wrapped_assents = []
+        wrapped_consents = []
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
         child_consents = child_consent_cls.objects.filter(
             subject_identifier__startswith=self.subject_identifier)
         for child_consent in child_consents:
-            wrapped_assents.append(CaregiverChildConsentModelWrapper(child_consent))
-        return wrapped_assents
+            wrapped_consents.append(CaregiverChildConsentModelWrapper(child_consent))
+        return wrapped_consents
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -100,6 +101,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             visit_cls=caregiver_visit_cls,
             offstudy_cls=caregiver_offstudy_cls,
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
+
+        self.get_assent_continued_consent_obj_or_msg()
 
         locator_obj = self.get_locator_info()
         context.update(
@@ -137,13 +140,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             appointments = appt_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
-                visit_code__endswith='001M')
+                visit_code__endswith='000M')
 
             schedule_child_dict = {}
 
             for onschedule_model in self.onschedule_models:
-                if ('quarterly' in onschedule_model.schedule_name
-                        or 'sec' in onschedule_model.schedule_name):
+                if ('enrol' in onschedule_model.schedule_name
+                    or ('sec' in onschedule_model.schedule_name
+                        and 'quart' not in onschedule_model.schedule_name)):
 
                     child = child_consents.get(
                         subject_identifier=onschedule_model.child_subject_identifier)
@@ -234,3 +238,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         except ObjectDoesNotExist:
             return None
         return obj
+
+    def get_assent_continued_consent_obj_or_msg(self):
+        child_consents = self.caregiver_child_consents
+        for consent in child_consents:
+            subject_identifier = consent.subject_identifier
+            child_age = ChildBirthValues(
+                subject_identifier=subject_identifier).child_age
+            self.get_continued_consent_object_or_message(
+                subject_identifier=subject_identifier, child_age=child_age)
+            self.get_assent_object_or_message(
+                subject_identifier=subject_identifier, child_age=child_age)
