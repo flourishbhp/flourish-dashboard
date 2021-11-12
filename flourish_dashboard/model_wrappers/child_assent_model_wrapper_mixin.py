@@ -1,7 +1,9 @@
 from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from edc_base.utils import get_utcnow
+from flourish_child.models import ChildAssent
 
 from .child_assent_model_wrapper import ChildAssentModelWrapper
 
@@ -76,36 +78,6 @@ class ChildAssentModelWrapperMixin:
                             self.assent_model_cls(
                                 **self.create_child_assent_options(caregiverchildconsent))
                 wrapped_entries.append(ChildAssentModelWrapper(model_obj))
-        return wrapped_entries
-
-    @property
-    def new_child_assents(self):
-        """
-        This method is created for the purpose of creating a new child assent at the same time
-        checking if the child to already exist without disturbing the child_assents function which
-        already exist and being used in other parts of the EDC
-        """
-        wrapped_entries = []
-        if getattr(self, 'consent_model_obj', None):
-
-            # filter by age if the child because only >= 7 children are needed
-            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
-                .only('child_age_at_enrollment', 'is_eligible') \
-                .filter(is_eligible=True, child_age_at_enrollment__gte=7)
-
-            for caregiverchildconsent in caregiverchildconsents:
-
-                # check if the child was already assented
-                assent_exist = self.assent_model_cls.objects.filter(
-                    subject_identifier=caregiverchildconsent.subject_identifier).exists()
-
-                # if the child already exist, wrapped entried will remain zero
-                # hence the button will not be rendered to the dashboard
-                if not assent_exist:
-                    model_obj = self.assent_model_cls(
-                        **self.create_child_assent_options(caregiverchildconsent))
-                    wrapped_entries.append(ChildAssentModelWrapper(model_obj))
-
         return wrapped_entries
 
     def create_child_assent_options(self, caregiverchildconsent):
