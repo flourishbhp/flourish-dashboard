@@ -102,6 +102,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             offstudy_cls=caregiver_offstudy_cls,
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
 
+        self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
+
         self.get_assent_continued_consent_obj_or_msg()
 
         locator_obj = self.get_locator_info()
