@@ -17,14 +17,19 @@ class DashboardViewMixin:
         obj = visit_cls.objects.filter(
             appointment__subject_identifier=subject_identifier,
             study_status=OFF_STUDY).order_by('report_datetime').last()
-        if not obj:
-            self.delete_action_item_if_new(offstudy_cls)
-        else:
+        if obj:
             self.action_cls_item_creator(
                 subject_identifier=subject_identifier,
                 action_cls=offstudy_cls,
                 action_type=offstudy_action)
         return obj
+
+    def get_offstudy_message(self, offstudy_cls=None):
+        action_item_obj = self.get_action_item_obj(offstudy_cls)
+        if action_item_obj:
+            msg = mark_safe(
+                f'Please complete the off-study form to take subject off-study.')
+            messages.add_message(self.request, messages.ERROR, msg)
 
     def action_cls_item_creator(
             self, subject_identifier=None, action_cls=None, action_type=None):
