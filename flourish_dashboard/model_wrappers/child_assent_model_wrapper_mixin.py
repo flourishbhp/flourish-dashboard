@@ -83,7 +83,7 @@ class ChildAssentModelWrapperMixin:
     def create_child_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
-        initials = f'{first_name[0].upper()}{last_name[0].upper()}' or 'No Initials'
+        initials = self.set_initials(first_name, last_name)
 
         options = dict(
             screening_identifier=self.screening_identifier,
