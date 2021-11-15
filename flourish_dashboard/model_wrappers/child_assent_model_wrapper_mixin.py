@@ -1,7 +1,9 @@
 from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from edc_base.utils import get_utcnow
+from flourish_child.models import ChildAssent
 
 from .child_assent_model_wrapper import ChildAssentModelWrapper
 
@@ -81,7 +83,7 @@ class ChildAssentModelWrapperMixin:
     def create_child_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
-        initials = f'{first_name[0].upper()}{last_name[0].upper()}' or 'No Initials'
+        initials = self.set_initials(first_name, last_name)
 
         options = dict(
             screening_identifier=self.screening_identifier,
