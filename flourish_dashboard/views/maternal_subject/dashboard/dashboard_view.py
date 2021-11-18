@@ -21,7 +21,6 @@ from ...view_mixin import DashboardViewMixin
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
                     NavbarViewMixin, BaseDashboardView):
-
     dashboard_url = 'subject_dashboard_url'
     dashboard_template = 'subject_dashboard_template'
     appointment_model = 'edc_appointment.appointment'
@@ -103,6 +102,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
 
         self.get_assent_continued_consent_obj_or_msg()
+        self.get_assent_object_or_message()
 
         locator_obj = self.get_locator_info()
         context.update(
@@ -127,9 +127,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_consent_cls = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
         child_consents = child_consent_cls.objects.filter(
             subject_identifier__icontains=self.subject_identifier).exclude(
-                Q(subject_identifier__icontains='-35') | Q(
-                    subject_identifier__icontains='-46') | Q(
-                        subject_identifier__icontains='-56')).order_by('created')
+            Q(subject_identifier__icontains='-35') | Q(
+                subject_identifier__icontains='-46') | Q(
+                subject_identifier__icontains='-56')).order_by('created')
 
         if child_consents.count() > 1:
 
@@ -146,16 +146,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             for onschedule_model in self.onschedule_models:
                 if ('enrol' in onschedule_model.schedule_name
-                    or ('sec' in onschedule_model.schedule_name
-                        and 'quart' not in onschedule_model.schedule_name)):
-
+                        or ('sec' in onschedule_model.schedule_name
+                            and 'quart' not in onschedule_model.schedule_name)):
                     child = child_consents.get(
                         subject_identifier=onschedule_model.child_subject_identifier)
 
                     appt = appointments.get(schedule_name=onschedule_model.schedule_name)
 
                     schedule_child_dict[appt.visit_schedule_name] = (
-                                child.first_name + ' ' + child.last_name)
+                            child.first_name + ' ' + child.last_name)
 
             return schedule_child_dict
 
@@ -205,7 +204,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier,).order_by(
+            subject_identifier=subject_identifier, ).order_by(
             '-report_datetime').first()
 
         if latest_visit:

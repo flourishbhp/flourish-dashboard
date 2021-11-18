@@ -4,7 +4,6 @@ from edc_base.utils import age, get_utcnow
 
 
 class CaregiverChildConsentModelWrapperMixin:
-
     child_consent_model_wrapper_cls = None
 
     @property
@@ -31,7 +30,7 @@ class CaregiverChildConsentModelWrapperMixin:
 
     @property
     def caregiverchildconsent_obj(self):
-        """Returns a caregiver consent model instance or None.
+        """Returns a caregiver child consent model instance or None.
         """
         try:
             return self.caregiver_childconsent_cls.objects.get(

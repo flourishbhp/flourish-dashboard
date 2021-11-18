@@ -80,6 +80,22 @@ class ChildAssentModelWrapperMixin:
                 wrapped_entries.append(ChildAssentModelWrapper(model_obj))
         return wrapped_entries
 
+    def child_assents_exists(self) -> bool:
+
+        exists_conditions = list()
+
+        if getattr(self, 'consent_model_obj', None):
+            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
+                .only('child_age_at_enrollment', 'is_eligible') \
+                .filter(is_eligible=True, child_age_at_enrollment__gte=7)
+
+            for caregiver_childconsent in caregiverchildconsents:
+                model_objs = ChildAssent.objects.filter(
+                    subject_identifier=caregiver_childconsent.subject_identifier).exists()
+                exists_conditions.append(model_objs)
+
+            return all(exists_conditions)
+
     def create_child_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
