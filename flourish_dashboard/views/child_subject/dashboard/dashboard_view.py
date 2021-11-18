@@ -263,6 +263,7 @@ class DashboardView(
             gender=self.caregiver_child_consent.gender,
             child_dataset=self.child_dataset,
             schedule_names=[model.schedule_name for model in self.onschedule_models],
+
         )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
