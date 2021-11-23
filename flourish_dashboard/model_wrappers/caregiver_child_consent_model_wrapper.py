@@ -22,3 +22,4 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
     @property
     def screening_identifier(self):
         return self.object.subject_consent.screening_identifier
+

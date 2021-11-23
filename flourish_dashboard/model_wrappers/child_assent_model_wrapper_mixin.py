@@ -1,7 +1,9 @@
 from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from edc_base.utils import get_utcnow
+from flourish_child.models import ChildAssent
 
 from .child_assent_model_wrapper import ChildAssentModelWrapper
 
@@ -78,10 +80,28 @@ class ChildAssentModelWrapperMixin:
                 wrapped_entries.append(ChildAssentModelWrapper(model_obj))
         return wrapped_entries
 
+    def child_assents_exists(self) -> bool:
+
+        exists_conditions = list()
+
+        if getattr(self, 'consent_model_obj', None):
+            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
+                .only('child_age_at_enrollment', 'is_eligible') \
+                .filter(is_eligible=True,
+                        child_age_at_enrollment__gte=7,
+                        child_age_at_enrollment__lt=18)
+
+            for caregiver_childconsent in caregiverchildconsents:
+                model_objs = ChildAssent.objects.filter(
+                    subject_identifier=caregiver_childconsent.subject_identifier).exists()
+                exists_conditions.append(model_objs)
+
+            return all(exists_conditions)
+
     def create_child_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
-        initials = f'{first_name[0].upper()}{last_name[0].upper()}' or 'No Initials'
+        initials = self.set_initials(first_name, last_name)
 
         options = dict(
             screening_identifier=self.screening_identifier,
