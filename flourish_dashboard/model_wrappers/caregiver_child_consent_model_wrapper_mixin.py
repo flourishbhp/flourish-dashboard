@@ -20,12 +20,14 @@ class CaregiverChildConsentModelWrapperMixin:
 
     @property
     def child_age(self):
-        birth_date = self.object.child_dob
-        child_age = age(birth_date, get_utcnow())
-        months = 0
-        if child_age.years > 0:
-            months = child_age.years * 12
-        years = round((months + child_age.months) / 12, 2)
+        years = None
+        if self.object.child_dob:
+            birth_date = self.object.child_dob
+            child_age = age(birth_date, get_utcnow())
+            months = 0
+            if child_age.years > 0:
+                months = child_age.years * 12
+            years = round((months + child_age.months) / 12, 2)
         return years if years else 0
 
     @property

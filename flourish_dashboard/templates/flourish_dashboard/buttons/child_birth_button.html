@@ -1,0 +1,14 @@
+{% if maternal_deliv_obj %}
+<a id="infantbirth_add_{{ subject_identifier }}"
+ 	title="{{ title }}"
+ 	
+ 	{% if child_birth_model_obj %}
+            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+            href="{{ add_child_birth_href }}">
+        {% else %}
+            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+        href="{{ add_child_birth_href }}">
+        {% endif %}
+     	Infant Birth
+ </a>
+{% endif %}

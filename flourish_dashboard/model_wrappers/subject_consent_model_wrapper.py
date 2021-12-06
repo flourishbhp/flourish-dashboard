@@ -1,7 +1,9 @@
+from itertools import chain
+
 from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
-from itertools import chain
+
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .caregiver_contact_model_wrapper_mixin import CaregiverContactModelWrapperMixin
@@ -9,6 +11,7 @@ from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfo
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
+from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
 class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
@@ -18,6 +21,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  ConsentModelWrapperMixin,
                                  BHPPriorScreeningModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
+                                 MaternalDeliveryModelWrapperMixin,
                                  ModelWrapper):
 
     model = 'flourish_caregiver.subjectconsent'

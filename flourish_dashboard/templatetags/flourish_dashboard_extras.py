@@ -141,6 +141,17 @@ def antenatal_enrollment_button(model_wrapper):
         title=' '.join(title), )
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/maternal_delivery_button.html')
+def maternal_delivery_button(model_wrapper):
+    title = ['subject maternal delivery.']
+    return dict(
+        subject_identifier=model_wrapper.object.subject_identifier,
+        add_maternal_delivery_href=model_wrapper.maternal_delivery.href,
+        maternal_delivery_model_obj=model_wrapper.maternal_delivery_model_obj,
+        maternal_ultrasound_initial_obj=model_wrapper.maternal_ultrasound_initial_obj,
+        title=' '.join(title),)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
 def locator_button(model_wrapper):
     return dict(
@@ -327,6 +338,18 @@ def child_dataset_button(model_wrapper):
     return dict(
         href=model_wrapper.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_birth_button.html')
+def child_birth_button(child_birth_values):
+    title = ['child birth.']
+    # import pdb; pdb.set_trace()
+    return dict(
+        subject_identifier=child_birth_values.subject_identifier,
+        add_child_birth_href=child_birth_values.child_birth.href,
+        child_birth_model_obj=child_birth_values.child_birth_obj,
+        maternal_deliv_obj=child_birth_values.maternal_delivery_model_obj,
+        title=' '.join(title),)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/caregiver_child_consent_button.html')
