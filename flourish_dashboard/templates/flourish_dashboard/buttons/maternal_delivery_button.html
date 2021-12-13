@@ -1,0 +1,13 @@
+<a id="maternaldelivery_add_{{ subject_identifier }}" 
+ 	title="{{ title }}"
+ 	{% if maternal_ultrasound_initial_obj %}
+	 	{% if maternal_delivery_model_obj %}
+	            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+	            href="{{ add_maternal_delivery_href }}">
+	        {% else %}
+	            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+	        href="{{ add_maternal_delivery_href }}">
+	        {% endif %}
+	     	Maternal Delivery
+	{% endif %}
+ </a>

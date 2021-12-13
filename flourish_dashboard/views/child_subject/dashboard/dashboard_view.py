@@ -8,21 +8,21 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
+from edc_registration.models import RegisteredSubject
 
 from edc_dashboard.views import DashboardView as BaseDashboardView
-from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
-from edc_registration.models import RegisteredSubject
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
-from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
+from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
