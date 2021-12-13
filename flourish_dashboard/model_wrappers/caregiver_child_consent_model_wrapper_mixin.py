@@ -52,6 +52,6 @@ class CaregiverChildConsentModelWrapperMixin:
     def caregiverchildconsent_options(self):
         options = dict(
             subject_consent=self.object.subject_consent,
-            identity=self.identity or None,
+            identity=self.identity or '',
             version=self.consent_version)
         return options
