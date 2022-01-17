@@ -2,38 +2,45 @@
 <table class="table table-condensed">
     <thead></thead>
     <tbody>
-      	<tr>
-			<td>
-				{% locator_button subject_consent %}
-			</td>
-		</tr>
-		<tr>
-			<td>{% caregiver_contact_button subject_consent %}</td>
-		</tr>
-		{% if screening_preg_women %}
-		<tr>
-			<td>
-				{% antenatal_enrollment_button screening_preg_women %}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				{% maternal_delivery_button subject_consent %}
-			</td>
-		</tr>
-		{% endif %}
-		{% if maternal_dataset %}
-		<tr>
-			<td>
-				{% caregiver_enrolment_info_button subject_consent %}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				{% maternal_dataset_button maternal_dataset %}
-			</td>
-		</tr>
-		{% endif %}
+    <tr>
+        <td>
+            {% locator_button subject_consent %}
+        </td>
+    </tr>
+    <tr>
+        <td>{% caregiver_contact_button subject_consent %}</td>
+    </tr>
+    {% if screening_preg_women %}
+        <tr>
+            <td>
+                {% antenatal_enrollment_button screening_preg_women %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% maternal_delivery_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
+    {% if maternal_dataset %}
+        <tr>
+            <td>
+                {% caregiver_enrolment_info_button subject_consent %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% maternal_dataset_button maternal_dataset %}
+            </td>
+        </tr>
+    {% endif %}
 
+    {% if caregiver_offstudy %}
+        <tr>
+            <td>
+                {% off_study_button caregiver_offstudy %}
+            </td>
+        </tr>
+    {% endif %}
     </tbody>
 </table>
