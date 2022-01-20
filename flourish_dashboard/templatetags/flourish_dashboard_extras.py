@@ -2,7 +2,6 @@ from urllib.parse import urlencode, unquote
 
 from django import template
 from django.apps import apps as django_apps
-import django.apps
 from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
