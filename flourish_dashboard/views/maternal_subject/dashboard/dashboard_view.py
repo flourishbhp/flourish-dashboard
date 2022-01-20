@@ -113,7 +113,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             hiv_status=self.hiv_status,
             child_names=self.child_names_schedule_dict,
             caregiver_child_consents=self.caregiver_child_consents,
-            infant_registered_subjects=self.infant_registered_subjects)
+            infant_registered_subjects=self.infant_registered_subjects,
+            is_pregnant=self.is_pregnant)
         return context
 
     @property
@@ -234,3 +235,26 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         except ObjectDoesNotExist:
             return None
         return obj
+
+    @property
+    def is_pregnant(self):
+        screening_preg_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomen')
+
+        if self.consent_wrapped:
+            try:
+                screening_preg_cls.objects.get(
+                    screening_identifier=self.consent_wrapped.screening_identifier)
+            except screening_preg_cls.DoesNotExist:
+                return False
+            else:
+                delivery_cls = django_apps.get_model(
+                    'flourish_caregiver.maternaldelivery')
+                try:
+                    delivery_cls.objects.get(
+                        subject_identifier=self.consent_wrapped.subject_identifier)
+                except delivery_cls.DoesNotExist:
+                    return True
+                else:
+                    return False
+            return True

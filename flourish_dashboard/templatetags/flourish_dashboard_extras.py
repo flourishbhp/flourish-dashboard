@@ -337,3 +337,13 @@ def caregiver_child_consent_button(model_wrapper):
     return dict(
         href=model_wrapper.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/consent_version_add_button.html')
+def consent_version_button(model_wrapper):
+    title = ['Add Consent Version.']
+    return dict(
+        consent_versioned=model_wrapper.flourish_consent_version,
+        screening_identifier=model_wrapper.object.screening_identifier,
+        add_consent_version_href=model_wrapper.flourish_consent_version.href,
+        title=' '.join(title))

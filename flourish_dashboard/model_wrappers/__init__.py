@@ -19,3 +19,4 @@ from .maternal_registered_subject_model_wrapper import MaternalRegisteredSubject
 from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
 from .maternal_visit_model_wrapper import MaternalVisitModelWrapper
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
+from .flourish_consent_version_model_wrapper import FlourishConsentVersionModelWrapper

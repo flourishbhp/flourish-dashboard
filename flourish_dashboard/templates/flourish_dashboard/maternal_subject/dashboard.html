@@ -11,15 +11,18 @@
 	{% subject_schedule_footer_row subject_identifier current_visit_schedule current_schedule subject_dashboard_url %}
 {% endblock dashboard_schedule_footer %}
 
+
 {% block visit_schedules_panel %}
 
 	{% if  visit_schedules|length > 1 and child_names %}
 	  <ul class="nav nav-tabs">
 	  	 {% for visit_schedule in visit_schedules.values %}
-	       <li  {% if forloop.counter == 1 %} class="active" {% endif %}><a data-toggle="tab" href="#id_{{visit_schedule}}">{{child_names|get_item:visit_schedule.name }}</a></li>
+	       <li  {% if forloop.counter == 1 %} class="active" {% endif %}>
+	       		<a data-toggle="tab" href="#id_{{visit_schedule}}">{{child_names|get_item:visit_schedule.name }}</a>
+	       </li>
 	  	 {% endfor %}
 	  </ul>
-	  {% endif %}
+	{% endif %}
 
 	<div class="tab-content">
 	 {% for visit_schedule in visit_schedules.values %}

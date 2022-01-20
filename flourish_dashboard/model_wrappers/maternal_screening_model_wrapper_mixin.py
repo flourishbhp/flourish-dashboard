@@ -45,7 +45,6 @@ class MaternalScreeningModelWrapperMixin:
             screening_identifier=self.object.screening_identifier)
         return options
 
-    @property
     def maternal_screening_options(self):
         """Returns a dictionary of options to get an existing
         maternal screening model instance.

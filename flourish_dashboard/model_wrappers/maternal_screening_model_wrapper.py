@@ -1,15 +1,18 @@
+from flourish_caregiver.models.subject_consent import SubjectConsent
+
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from edc_model_wrapper import ModelWrapper
 from edc_base.utils import get_uuid
 from edc_consent import ConsentModelWrapperMixin
-from flourish_caregiver.models.subject_consent import SubjectConsent
-from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
-from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
-from .subject_consent_model_wrapper import SubjectConsentModelWrapper
+from edc_model_wrapper import ModelWrapper
+
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
+from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
+from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
+from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
+from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 
 
 class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
@@ -17,6 +20,7 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
                                     ConsentModelWrapperMixin,
                                     ChildAssentModelWrapperMixin,
                                     BHPPriorScreeningModelWrapperMixin,
+                                    FlourishConsentVersionModelWrapperMixin,
                                     ModelWrapper):
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.screeningpregwomen'
@@ -26,8 +30,20 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
     next_url_attrs = ['screening_identifier', 'subject_identifier', ]
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
     def consent_version(self):
-        return '1'
+        version = '2'
+        try:
+            consent_version_obj = self.consent_version_cls.objects.get(
+                screening_identifier=self.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            pass
+        else:
+            version = consent_version_obj.version
+        return version
 
     @property
     def subject_identifier(self):
@@ -64,6 +80,7 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
         """Returns a dictionary of options to get an existing
         consent model instance.
         """
+
         options = dict(
             screening_identifier=self.object.screening_identifier,
             version=self.consent_version)
@@ -88,7 +105,9 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
         # Get the current screening identifier
         screening_identifier = self.object.screening_identifier
         # Get the subject identifier using the screening identifier after consent
-        subject_identifier = SubjectConsent.objects.get(screening_identifier=screening_identifier).subject_identifier
+        subject_identifier = SubjectConsent.objects.get(
+            screening_identifier=screening_identifier,
+            version=self.consent_version).subject_identifier,
 
         options = dict(
             screening_identifier=screening_identifier,
