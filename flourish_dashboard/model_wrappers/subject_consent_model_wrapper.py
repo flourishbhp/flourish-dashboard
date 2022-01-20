@@ -11,6 +11,7 @@ from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfo
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
+from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
@@ -21,6 +22,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  ConsentModelWrapperMixin,
                                  BHPPriorScreeningModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
+                                 FlourishConsentVersionModelWrapperMixin,
                                  MaternalDeliveryModelWrapperMixin,
                                  ModelWrapper):
 
