@@ -6,7 +6,6 @@ from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
-
 from edc_visit_schedule.models import SubjectScheduleHistory
 
 register = template.Library()
@@ -31,7 +30,8 @@ def get_age(context, born=None):
         return age_str
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/child_dashboard_button.html')
 def child_dashboard_button(model_wrapper):
     child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'child_dashboard_url')
@@ -53,7 +53,8 @@ def eligibility_button(model_wrapper):
                 tooltip=tooltip, obj=obj)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/child_eligibility_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/child_eligibility_button.html')
 def child_eligibility_button(children_ineligible):
     comments = []
     comment = []
@@ -72,7 +73,8 @@ def child_eligibility_button(children_ineligible):
         children_ineligible=children_ineligible)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/child_ineligible_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/child_ineligible_button.html')
 def child_ineligible_button(model_wrapper):
     tooltip = 'See child screening for details.'
     url_name = 'flourish_dashboard:child_screening_listboard_url'
@@ -93,7 +95,8 @@ def edit_screening_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/edit_maternal_dataset_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/edit_maternal_dataset_button.html')
 def edit_maternal_dataset_button(model_wrapper):
     title = ['Edit Maternal Dataset form.']
     return dict(
@@ -111,7 +114,8 @@ def screening_button(model_wrapper):
         caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/bhp_prior_screening_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/bhp_prior_screening_button.html')
 def bhp_prior_screening_button(model_wrapper):
     return dict(
         add_screening_href=model_wrapper.bhp_prior_screening.href,
@@ -120,11 +124,13 @@ def bhp_prior_screening_button(model_wrapper):
         caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/antenatal_enrollment_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/antenatal_enrollment_button.html')
 def antenatal_enrollment_button(model_wrapper):
     title = ['subject antenatal enrollment.']
 
-    preg_screening_cls = django_apps.get_model('flourish_caregiver.screeningpregwomen')
+    preg_screening_cls = django_apps.get_model(
+        'flourish_caregiver.screeningpregwomen')
     try:
         preg_screening_obj = preg_screening_cls.objects.get(
             screening_identifier=model_wrapper.consent.screening_identifier)
@@ -140,7 +146,8 @@ def antenatal_enrollment_button(model_wrapper):
         title=' '.join(title), )
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/maternal_delivery_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/maternal_delivery_button.html')
 def maternal_delivery_button(model_wrapper):
     title = ['subject maternal delivery.']
     return dict(
@@ -148,7 +155,7 @@ def maternal_delivery_button(model_wrapper):
         add_maternal_delivery_href=model_wrapper.maternal_delivery.href,
         maternal_delivery_model_obj=model_wrapper.maternal_delivery_model_obj,
         maternal_ultrasound_initial_obj=model_wrapper.maternal_ultrasound_initial_obj,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
@@ -159,9 +166,11 @@ def locator_button(model_wrapper):
         caregiver_locator_obj=model_wrapper.locator_model_obj)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/caregiver_enrolment_info_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/caregiver_enrolment_info_button.html')
 def caregiver_enrolment_info_button(model_wrapper):
-    bhp_prior_screening = getattr(model_wrapper, 'bhp_prior_screening_model_obj', None)
+    bhp_prior_screening = getattr(model_wrapper,
+                                  'bhp_prior_screening_model_obj', None)
     return dict(
         add_caregiver_enrol_info_href=model_wrapper.caregiver_enrolment_info.href,
         subject_identifier=model_wrapper.object.subject_identifier,
@@ -193,7 +202,8 @@ def assent_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/caregiverchildconsent_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/caregiverchildconsent_button.html')
 def caregiverchildconsent_button(model_wrapper):
     title = ['Caregiver Child Consent']
     return dict(
@@ -203,7 +213,8 @@ def caregiverchildconsent_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/caregiver_contact_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/caregiver_contact_button.html')
 def caregiver_contact_button(model_wrapper):
     title = ['subject caregiver contact.']
     return dict(
@@ -212,7 +223,8 @@ def caregiver_contact_button(model_wrapper):
         title=' '.join(title), )
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/childcontinuedconsent_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/childcontinuedconsent_button.html')
 def childcontinuedconsent_button(model_wrapper):
     title = ['Child Continued Consent']
     return dict(
@@ -225,7 +237,8 @@ def childcontinuedconsent_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
 def assents_button(model_wrapper):
     title = ['Child Assent(s)']
-    unsaved = any(instance.id is None for instance in model_wrapper.child_assents)
+    unsaved = any(
+        instance.id is None for instance in model_wrapper.child_assents)
     return dict(
         wrapped_assents=model_wrapper.child_assents,
         unsaved=unsaved,
@@ -241,7 +254,8 @@ def dashboard_button(model_wrapper):
         subject_identifier=model_wrapper.consent_model_obj.subject_identifier)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/caregiver_dashboard_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/caregiver_dashboard_button.html')
 def caregiver_dashboard_button(model_wrapper):
     subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'subject_dashboard_url')
@@ -250,7 +264,8 @@ def caregiver_dashboard_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier)
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/maternal_dataset_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/maternal_dataset_button.html')
 def maternal_dataset_button(model_wrapper):
     title = ['View Maternal Dataset form.']
     return dict(
@@ -262,7 +277,8 @@ def maternal_dataset_button(model_wrapper):
 @register.inclusion_tag(
     'flourish_dashboard/maternal_subject/dashboard/infant_dashboard_links.html')
 def infant_dash_link(subject_identifier):
-    caregiver_child_consent = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
+    caregiver_child_consent = django_apps.get_model(
+        'flourish_caregiver.caregiverchildconsent')
 
     try:
         child_obj = caregiver_child_consent.objects.get(
@@ -292,8 +308,9 @@ def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
             schedule_name=schedule.name, )
         options = dict(subject_identifier=subject_identifier)
         query = unquote(urlencode(options))
-        href = (f'{visit_schedule.offstudy_model_cls().get_absolute_url()}?next='
-                f'{subject_dashboard_url},subject_identifier')
+        href = (
+            f'{visit_schedule.offstudy_model_cls().get_absolute_url()}?next='
+            f'{subject_dashboard_url},subject_identifier')
         href = '&'.join([href, query])
         context = dict(
             offschedule_datetime=None,
@@ -342,18 +359,37 @@ def child_dataset_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/child_birth_button.html')
 def child_birth_button(child_birth_values):
     title = ['child birth.']
-    # import pdb; pdb.set_trace()
     return dict(
         subject_identifier=child_birth_values.subject_identifier,
         add_child_birth_href=child_birth_values.child_birth.href,
         child_birth_model_obj=child_birth_values.child_birth_obj,
         maternal_deliv_obj=child_birth_values.maternal_delivery_model_obj,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/caregiver_child_consent_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/caregiver_child_consent_button.html')
 def caregiver_child_consent_button(model_wrapper):
     title = ['View Caregiver Consent on Behalf of Child form.']
     return dict(
         href=model_wrapper.href,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/consent_version_add_button.html')
+def consent_version_button(model_wrapper):
+    title = ['Add Consent Version.']
+    return dict(
+        consent_versioned=model_wrapper.flourish_consent_version,
+        screening_identifier=model_wrapper.object.screening_identifier,
+        add_consent_version_href=model_wrapper.flourish_consent_version.href,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/off_study.html')
+def off_study_button(model_wrapper):
+    title = 'Subject Offstudy'
+    return dict(
+        title=title,
+        href=model_wrapper.href
+    )

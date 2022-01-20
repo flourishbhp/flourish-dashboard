@@ -29,7 +29,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
                          'first_name', 'last_name', 'initials', 'gender',
-                         'study_maternal_identifier', ]
+                         'study_maternal_identifier', 'subject_identifier' ]
 
     @property
     def study_maternal_identifier(self):
@@ -40,6 +40,12 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
     @property
     def gender(self):
         return self.object.gender
+
+    @property
+    def subject_identifier(self):
+        if self.consent_model_obj:
+            return self.consent_model_obj.subject_identifier
+        return None
 
     @property
     def create_caregiver_locator_options(self):

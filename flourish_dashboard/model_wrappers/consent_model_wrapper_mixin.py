@@ -31,8 +31,28 @@ class ConsentModelWrapperMixin:
         return django_apps.get_model('flourish_caregiver.subjectconsent')
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
     def consent_version(self):
-        return '1'
+        version = '1'
+        try:
+            consent_version_obj = self.consent_version_cls.objects.get(
+                screening_identifier=self.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            pass
+        else:
+            version = consent_version_obj.version
+        return version
+
+    @property
+    def consent_version_model_obj(self):
+        try:
+            return self.consent_version_cls.objects.get(
+                screening_identifier=self.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            return None
 
     @property
     def consent_model_obj(self):
@@ -41,16 +61,25 @@ class ConsentModelWrapperMixin:
         try:
             return self.subject_consent_cls.objects.get(**self.consent_options)
         except ObjectDoesNotExist:
-            return None
+            try:
+                options = dict(screening_identifier=self.screening_identifier,
+                               version='1')
+                return self.subject_consent_cls.objects.get(**options)
+            except ObjectDoesNotExist:
+                return None
 
     @property
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
         """
-        consent_model_wrapper_cls = self.consent_model_wrapper_cls or self.__class__
-        model_obj = self.consent_model_obj or self.consent_object.model_cls(
-            **self.create_consent_options)
-        return consent_model_wrapper_cls(model_obj=model_obj)
+
+        model_obj = self.consent_version_model_obj or self.consent_version_cls(
+            **self.consent_version_options, version='2')
+        if not model_obj:
+            model_obj = self.consent_version_model_obj or self.consent_version_cls(
+                **self.consent_version_options, version='1')
+
+        return self.consent_version_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):

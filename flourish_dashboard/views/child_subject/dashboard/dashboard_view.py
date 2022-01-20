@@ -1,5 +1,6 @@
-# from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
-# # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
+# from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper
+# import InfantDeathReportModelWrapper # from flourish_prn.action_items
+# import CHILD_DEATH_REPORT_ACTION
 
 from dateutil import relativedelta
 from django.apps import apps as django_apps
@@ -8,28 +9,29 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
-from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
-
-    subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
-    maternal_delivery_cls = django_apps.get_model('flourish_caregiver.maternaldelivery')
-    child_consent_cls = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
+    subject_consent_cls = django_apps.get_model(
+        'flourish_caregiver.subjectconsent')
+    maternal_delivery_cls = django_apps.get_model(
+        'flourish_caregiver.maternaldelivery')
+    child_consent_cls = django_apps.get_model(
+        'flourish_caregiver.caregiverchildconsent')
 
     def __init__(self, subject_identifier=None):
         self.subject_identifier = subject_identifier
@@ -100,7 +102,8 @@ class ChildBirthValues(object):
         """Returns a child offstudy model instance or None.
         """
         try:
-            return self.child_offstudy_cls.objects.get(**self.child_offstudy_options)
+            return self.child_offstudy_cls.objects.get(
+                **self.child_offstudy_options)
         except ObjectDoesNotExist:
             return None
 
@@ -129,7 +132,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values,)
+            infant_birth_values=infant_birth_values, )
         return context
 
 
@@ -162,10 +165,9 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 
 
 class DashboardView(
-        DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
-        NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
-        CaregiverRegisteredSubjectCls):
-
+    DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
+    NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
+    CaregiverRegisteredSubjectCls):
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
     appointment_model = 'flourish_child.appointment'
@@ -187,6 +189,7 @@ class DashboardView(
     special_forms_include_value = 'flourish_dashboard/child_subject/dashboard/special_forms.html'
     maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
     data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
+
 
     @property
     def data_action_item(self):
@@ -238,6 +241,27 @@ class DashboardView(
         else:
             return ChildDatasetModelWrapper(child_dataset)
 
+    @property
+    def child_offstudy(self):
+        """
+        Returns a wrapped offstudy obj
+        """
+        offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffStudy'
+        )
+
+        try:
+
+            child_offstudy = offstudy_cls.objects.get(
+                subject_identifier=self.subject_identifier
+            )
+
+        except offstudy_cls.DoesNotExist:
+            return None
+
+        else:
+            return ChildOffstudyModelWrapper(model_obj=child_offstudy)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -262,13 +286,16 @@ class DashboardView(
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
             child_dataset=self.child_dataset,
-            schedule_names=[model.schedule_name for model in self.onschedule_models],
+            schedule_names=[model.schedule_name for model in
+                            self.onschedule_models],
+            child_offstudy=self.child_offstudy,
 
         )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
-            context=context)
+            context=context
+        )
         return context
 
     def set_current_schedule(self, onschedule_model_obj=None,

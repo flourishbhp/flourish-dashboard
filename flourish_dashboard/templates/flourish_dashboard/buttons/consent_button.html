@@ -2,8 +2,8 @@
  	title="{{ title }}"
  	
  	{% if subject_screening_obj %}
- 	   {% if not subject_identifier %}
-	    class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+ 		{% if not subject_identifier %}
+	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
 	        href="{{ add_consent_href }}&antenatal={{antenatal}}">
 		{% else %}
 		     class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
@@ -12,3 +12,14 @@
 	 {% endif %}
     Consent (v{{ consent_version }})
  </a>
+
+<!-- <div class="btn-group">
+<a type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+Not eligible <span class="caret"></span>
+</a>
+<ul class="dropdown-menu" role="menu">
+	{% for consent_version in consent_versions %}
+		<li><a href="#"><small>{{ consent_version }}</small></a></li>
+	{% endfor %}
+</ul>
+</div> -->

@@ -1,27 +1,34 @@
 {% load flourish_dashboard_extras %}
 <table class="table table-condensed">
-	<thead></thead>
-	<tbody>
+    <thead></thead>
+    <tbody>
 
-		{% if child_dataset %}
-		<tr>
-			<td>
-			{% child_dataset_button child_dataset %}
-			</td>
-		</tr>
-		{% endif %}
+    {% if child_dataset %}
+        <tr>
+            <td>
+                {% child_dataset_button child_dataset %}
+            </td>
+        </tr>
+    {% endif %}
 
 
-		<tr>
-			<td>
-			{% child_birth_button caregiver_child_consent %}
-			</td>
-		</tr>
+    <tr>
+        <td>
+            {% child_birth_button caregiver_child_consent %}
+        </td>
+    </tr>
 
-		<tr>
-			<td>
-				{% assent_button caregiver_child_consent %}
-			</td>
-		</tr>
-	</tbody>
+    <tr>
+        <td>
+            {% assent_button caregiver_child_consent %}
+        </td>
+    </tr>
+    {% if child_offstudy %}
+        <tr>
+            <td>
+                {% off_study_button child_offstudy %}
+            </td>
+        </tr>
+    {% endif %}
+    </tbody>
 </table>

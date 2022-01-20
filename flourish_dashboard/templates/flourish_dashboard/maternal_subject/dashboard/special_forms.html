@@ -2,6 +2,7 @@
 <table class="table table-condensed">
     <thead></thead>
     <tbody>
+
       	<tr>
 			<td>
 				{% locator_button subject_consent %}
@@ -40,6 +41,12 @@
 		</tr>
 		{% endif %}
 		
-
+    {% if caregiver_offstudy %}
+        <tr>
+            <td>
+                {% off_study_button caregiver_offstudy %}
+            </td>
+        </tr>
+    {% endif %}
     </tbody>
 </table>
