@@ -4,7 +4,6 @@ from edc_base.utils import age, get_utcnow
 
 
 class CaregiverChildConsentModelWrapperMixin:
-
     child_consent_model_wrapper_cls = None
 
     @property
@@ -21,17 +20,19 @@ class CaregiverChildConsentModelWrapperMixin:
 
     @property
     def child_age(self):
-        birth_date = self.object.child_dob
-        child_age = age(birth_date, get_utcnow())
-        months = 0
-        if child_age.years > 0:
-            months = child_age.years * 12
-        years = round((months + child_age.months) / 12, 2)
+        years = None
+        if self.object.child_dob:
+            birth_date = self.object.child_dob
+            child_age = age(birth_date, get_utcnow())
+            months = 0
+            if child_age.years > 0:
+                months = child_age.years * 12
+            years = round((months + child_age.months) / 12, 2)
         return years if years else 0
 
     @property
     def caregiverchildconsent_obj(self):
-        """Returns a caregiver consent model instance or None.
+        """Returns a caregiver child consent model instance or None.
         """
         try:
             return self.caregiver_childconsent_cls.objects.get(
@@ -51,6 +52,6 @@ class CaregiverChildConsentModelWrapperMixin:
     def caregiverchildconsent_options(self):
         options = dict(
             subject_consent=self.object.subject_consent,
-            identity=self.identity,
+            identity=self.identity or '',
             version=self.consent_version)
         return options

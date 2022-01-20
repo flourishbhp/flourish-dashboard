@@ -2,6 +2,7 @@ from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
+from .child_birth_model_wrapper import ChildBirthModelWrapper
 from .child_dummy_consent_model_wrapper_mixin import \
     ChildDummyConsentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
@@ -10,6 +11,7 @@ from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
                                     ChildAssentModelWrapperMixin,
                                     ConsentModelWrapperMixin,
+                                    ChildBirthModelWrapper,
                                     ModelWrapper):
 
     model = 'flourish_child.childdummysubjectconsent'
