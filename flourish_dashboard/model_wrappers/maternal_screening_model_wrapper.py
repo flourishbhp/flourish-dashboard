@@ -38,7 +38,7 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=self.screening_identifier)
         except self.consent_version_cls.DoesNotExist:
-            version = '1'
+            version = '2'
         else:
             version = consent_version_obj.version
         return version
