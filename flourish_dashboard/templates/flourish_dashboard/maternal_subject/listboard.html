@@ -36,6 +36,10 @@
                 <i class="fa fa-pencil-alt fa-sm"></i>
             </a>
             {% if result.is_eligible %}
+                 {% if result.is_pregnant and not result.version == '2' %}
+                  	{% consent_version_button result %}
+                  {% endif %}
+                  
                 {% if not result.locator_model_obj %}
                     {% locator_button result %}
                 {% elif result.children_eligibility or result.antenatal_enrollment_model_obj.is_eligible %}

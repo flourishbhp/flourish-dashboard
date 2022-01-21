@@ -1,5 +1,3 @@
-from flourish_caregiver.models.subject_consent import SubjectConsent
-
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,11 +5,12 @@ from edc_base.utils import get_uuid
 from edc_consent import ConsentModelWrapperMixin
 from edc_model_wrapper import ModelWrapper
 
+from flourish_caregiver.models.subject_consent import SubjectConsent
+
 from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
-from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 
 
@@ -20,7 +19,6 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
                                     ConsentModelWrapperMixin,
                                     ChildAssentModelWrapperMixin,
                                     BHPPriorScreeningModelWrapperMixin,
-                                    FlourishConsentVersionModelWrapperMixin,
                                     ModelWrapper):
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.screeningpregwomen'
@@ -35,12 +33,12 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
 
     @property
     def consent_version(self):
-        version = '2'
+        version = None
         try:
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=self.screening_identifier)
         except self.consent_version_cls.DoesNotExist:
-            pass
+            version = '1'
         else:
             version = consent_version_obj.version
         return version
