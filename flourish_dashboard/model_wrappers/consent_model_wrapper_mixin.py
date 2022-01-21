@@ -36,12 +36,12 @@ class ConsentModelWrapperMixin:
 
     @property
     def consent_version(self):
-        version = '2'
+        version = None
         try:
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=self.screening_identifier)
         except self.consent_version_cls.DoesNotExist:
-            pass
+            version = '1'
         else:
             version = consent_version_obj.version
         return version
