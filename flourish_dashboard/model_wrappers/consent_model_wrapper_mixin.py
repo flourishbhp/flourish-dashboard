@@ -64,7 +64,6 @@ class ConsentModelWrapperMixin:
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
         """
-
         model_obj = self.consent_model_obj or self.subject_consent_cls(
             screening_identifier=self.screening_identifier,
             version='2')
@@ -104,7 +103,7 @@ class ConsentModelWrapperMixin:
         consent model instance.
         """
         options = dict(
-            screening_identifier=self.screening_identifier,
+            screening_identifier=self.object.screening_identifier,
             version=self.consent_version)
         return options
 
