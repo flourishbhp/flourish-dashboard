@@ -65,13 +65,13 @@ class ConsentModelWrapperMixin:
         """Returns a wrapped saved or unsaved consent.
         """
 
-        model_obj = self.consent_version_model_obj or self.consent_version_cls(
+        model_obj = self.consent_model_obj or self.consent_version_cls(
             **self.consent_version_options, version='2')
         if not model_obj:
-            model_obj = self.consent_version_model_obj or self.consent_version_cls(
+            model_obj = self.consent_model_obj or self.consent_version_cls(
                 **self.consent_version_options, version='1')
 
-        return self.consent_version_model_wrapper_cls(model_obj=model_obj)
+        return self.consent_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):
