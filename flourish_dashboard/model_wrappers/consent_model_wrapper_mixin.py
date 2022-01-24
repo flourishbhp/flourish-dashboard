@@ -66,10 +66,11 @@ class ConsentModelWrapperMixin:
         """
 
         model_obj = self.consent_model_obj or self.consent_version_cls(
-            **self.consent_options, version='2')
+            screening_identifier=self.screening_identifier,
+            version='2')
         if not model_obj:
             model_obj = self.consent_model_obj or self.consent_version_cls(
-                **self.consent_options, version='1')
+                screening_identifier=self.screening_identifier, version='1')
 
         return self.consent_model_wrapper_cls(model_obj=model_obj)
 
