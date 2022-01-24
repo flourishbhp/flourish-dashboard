@@ -37,14 +37,6 @@ class MaternalScreeningModelWrapperMixin:
         return django_apps.get_model('flourish_caregiver.screeningpregwomen')
 
     @property
-    def create_maternal_screening_options(self):
-        """Returns a dictionary of options to create a new
-        unpersisted maternal screening model instance.
-        """
-        options = dict(
-            screening_identifier=self.object.screening_identifier)
-        return options
-
     def maternal_screening_options(self):
         """Returns a dictionary of options to get an existing
         maternal screening model instance.
