@@ -10,12 +10,14 @@ from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapp
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .locator_log_entry_model_wrapper import LocatorLogEntryModelWrapper
+from .maternal_screening_model_wrapper_mixin import MaternalScreeningModelWrapperMixin
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 
 
 class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
                                   CaregiverLocatorModelWrapperMixin,
                                   BHPPriorScreeningModelWrapperMixin,
+                                  MaternalScreeningModelWrapperMixin,
                                   ModelWrapper):
 
     consent_model_wrapper_cls = SubjectConsentModelWrapper
