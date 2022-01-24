@@ -31,11 +31,7 @@
                 {% consent_button result True %}
                 {% if result.consent_model_obj %}
                     {% if result.consent.is_eligible %}
-                        {% if not result.child_assents %}
-                            {% assents_button result %}
-                        {% else %}
-                            {% antenatal_enrollment_button result %}
-                        {% endif %}
+
                         {% if result.antenatal_enrollment_model_obj %}
                             {% if result.antenatal_enrollment_model_obj.is_eligible %}
                                 {% locator_button result %}
@@ -45,6 +41,8 @@
                             {% else %}
                                 {% eligibility_button result.antenatal_enrollment %}
                             {% endif %}
+                        {% else %}
+                            {% antenatal_enrollment_button result %}
                         {% endif %}
                     {% else %}
                         {% eligibility_button result.consent %}
