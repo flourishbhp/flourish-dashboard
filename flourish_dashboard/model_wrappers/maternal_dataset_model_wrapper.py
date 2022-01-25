@@ -30,6 +30,12 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
                                 'maternal_dataset_listboard_url')
 
     @property
+    def screening_identifier(self):
+        if self.object:
+            return self.object.screening_identifier
+        return None
+
+    @property
     def consent_version(self):
         version = None
         try:
