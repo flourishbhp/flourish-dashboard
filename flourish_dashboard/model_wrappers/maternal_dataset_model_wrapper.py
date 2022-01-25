@@ -30,6 +30,18 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
                                 'maternal_dataset_listboard_url')
 
     @property
+    def consent_version(self):
+        version = None
+        try:
+            consent_version_obj = self.consent_version_cls.objects.get(
+                screening_identifier=self.bhp_prior_screening.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            version = '1'
+        else:
+            version = consent_version_obj.version
+        return version
+
+    @property
     def log_entries(self):
         locator_log = getattr(self.object, 'locatorlog')
         wrapped_entries = []
