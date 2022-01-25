@@ -103,13 +103,15 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
         # Get the current screening identifier
         screening_identifier = self.object.screening_identifier
         # Get the subject identifier using the screening identifier after consent
-        subject_identifier = SubjectConsent.objects.get(
+        consent = SubjectConsent.objects.get(
             screening_identifier=screening_identifier,
-            version=self.consent_version).subject_identifier,
+            version=self.consent_version)
 
         options = dict(
             screening_identifier=screening_identifier,
-            subject_identifier=subject_identifier,
+            subject_identifier=consent.subject_identifier,
+            first_name=consent.first_name,
+            last_name=consent.last_name
         )
 
         return options

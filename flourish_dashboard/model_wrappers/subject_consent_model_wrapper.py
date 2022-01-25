@@ -31,7 +31,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
     next_url_attrs = ['subject_identifier', ]
     querystring_attrs = ['screening_identifier', 'subject_identifier',
                          'first_name', 'last_name', 'initials', 'gender',
-                         'study_maternal_identifier', 'subject_identifier' ]
+                         'study_maternal_identifier', 'subject_identifier', ]
 
     @property
     def study_maternal_identifier(self):

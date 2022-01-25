@@ -65,23 +65,35 @@ class ConsentModelWrapperMixin:
         """Returns a wrapped saved or unsaved consent.
         """
         model_obj = self.consent_model_obj or self.subject_consent_cls(
-            screening_identifier=self.screening_identifier,
-            version='2')
+            **self.create_consent_options, version='2')
         if not model_obj:
             model_obj = self.consent_model_obj or self.subject_consent_cls(
-                screening_identifier=self.screening_identifier, version='1')
+                **self.create_consent_options, version='1')
 
         return self.consent_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):
-        """Returns a dictionary of options to create a new
-        unpersisted consent model instance.
+        """Returns a dictionary of options to create a new unpersisted consent model instance.
         """
         options = dict(
             screening_identifier=self.screening_identifier,
             consent_identifier=get_uuid(),
-            version=self.consent_version)
+        )
+        if self.consent_model_obj:
+            options.update({
+                        'identity_type': self.consent_model_obj.identity_type,
+                        'recruit_source': self.consent_model_obj.recruit_source,
+                        'recruit_source_other': self.consent_model_obj.recruit_source_other,
+                        'recruitment_clinic': self.consent_model_obj.recruitment_clinic,
+                        'recruitment_clinic_other': self.consent_model_obj.recruitment_clinic_other,
+                        'remain_in_study': self.consent_model_obj.remain_in_study,
+                        'biological_caregiver': self.consent_model_obj.biological_caregiver,
+                        'hiv_testing': self.consent_model_obj.hiv_testing,
+                        'breastfeed_intent': self.consent_model_obj.breastfeed_intent,
+                        'future_contact': self.consent_model_obj.future_contact,
+                        'child_consent': self.consent_model_obj.child_consent,})
+
         if getattr(self, 'bhp_prior_screening_model_obj'):
             bhp_prior_screening = self.bhp_prior_screening_model_obj
             flourish_participation = bhp_prior_screening.flourish_participation
@@ -94,7 +106,8 @@ class ConsentModelWrapperMixin:
                     {'first_name': first_name,
                      'last_name': last_name,
                      'initials': initials,
-                     'gender': FEMALE})
+                     'gender': FEMALE,
+                    })
         return options
 
     @property
