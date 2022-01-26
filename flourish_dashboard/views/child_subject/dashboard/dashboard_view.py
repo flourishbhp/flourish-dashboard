@@ -50,16 +50,27 @@ class ChildBirthValues(object):
         return django_apps.get_model('flourish_caregiver.flourishconsentversion')
 
     @property
-    def consent_version(self):
+    def latest_consent_version(self):
+        subject_identifier = self.subject_identifier.split('-')
+        subject_identifier.pop()
+        caregiver_subject_identifier = '-'.join(subject_identifier)
+
         version = None
         try:
-            consent_version_obj = self.consent_version_cls.objects.get(
-                screening_identifier=self.subject_consent_obj.screening_identifier)
-        except self.consent_version_cls.DoesNotExist:
-            version = '1'
+            consent = self.subject_consent_cls.objects.filter(
+                subject_identifier=caregiver_subject_identifier,)
+        except ObjectDoesNotExist:
+            return None
         else:
-            version = consent_version_obj.version
-        return version
+            screening_identifier = consent[0]
+            try:
+                consent_version_obj = self.consent_version_cls.objects.get(
+                    screening_identifier=screening_identifier)
+            except self.consent_version_cls.DoesNotExist:
+                version = '1'
+            else:
+                version = consent_version_obj.version
+            return version
 
     @property
     def subject_consent_obj(self):
@@ -70,7 +81,8 @@ class ChildBirthValues(object):
         caregiver_subject_identifier = '-'.join(subject_identifier)
         try:
             return self.subject_consent_cls.objects.get(
-                subject_identifier=caregiver_subject_identifier)
+                subject_identifier=caregiver_subject_identifier,
+                version=self.latest_consent_version)
         except ObjectDoesNotExist:
             return None
 
@@ -81,7 +93,7 @@ class ChildBirthValues(object):
         try:
             return self.child_consent_cls.objects.get(
                 subject_identifier=self.subject_identifier,
-                version=self.consent_version)
+                version=self.latest_consent_version)
         except ObjectDoesNotExist:
             return None
 
