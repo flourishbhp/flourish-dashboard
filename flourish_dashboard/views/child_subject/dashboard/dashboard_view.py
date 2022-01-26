@@ -10,19 +10,20 @@ from django.views.generic.base import ContextMixin
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_dashboard.views import DashboardView as BaseDashboardView
-from edc_data_manager.model_wrappers import DataActionItemModelWrapper
-from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
-from ...view_mixin import DashboardViewMixin
+from edc_data_manager.model_wrappers import DataActionItemModelWrapper
+from edc_navbar import NavbarViewMixin
+
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
+from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
@@ -45,6 +46,22 @@ class ChildBirthValues(object):
         return months + difference.months
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
+    def consent_version(self):
+        version = None
+        try:
+            consent_version_obj = self.consent_version_cls.objects.get(
+                screening_identifier=self.subject_consent_obj.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            version = '1'
+        else:
+            version = consent_version_obj.version
+        return version
+
+    @property
     def subject_consent_obj(self):
         """Returns a child birth model instance or None.
         """
@@ -63,7 +80,8 @@ class ChildBirthValues(object):
         """
         try:
             return self.child_consent_cls.objects.get(
-                subject_identifier=self.subject_identifier)
+                subject_identifier=self.subject_identifier,
+                version=self.consent_version)
         except ObjectDoesNotExist:
             return None
 
@@ -132,7 +150,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values, )
+            infant_birth_values=infant_birth_values,)
         return context
 
 
@@ -189,7 +207,6 @@ class DashboardView(
     special_forms_include_value = 'flourish_dashboard/child_subject/dashboard/special_forms.html'
     maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
     data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
-
 
     @property
     def data_action_item(self):
