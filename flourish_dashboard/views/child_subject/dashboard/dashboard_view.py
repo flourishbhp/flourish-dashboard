@@ -233,12 +233,40 @@ class DashboardView(
         return model_wrapper
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
+    def latest_consent_version(self):
+        subject_identifier = self.subject_identifier.split('-')
+        subject_identifier.pop()
+        caregiver_subject_identifier = '-'.join(subject_identifier)
+
+        version = None
+        try:
+            consent = self.subject_consent_cls.objects.filter(
+                subject_identifier=caregiver_subject_identifier,)
+        except ObjectDoesNotExist:
+            return None
+        else:
+            screening_identifier = consent[0]
+            try:
+                consent_version_obj = self.consent_version_cls.objects.get(
+                    screening_identifier=screening_identifier)
+            except self.consent_version_cls.DoesNotExist:
+                version = '1'
+            else:
+                version = consent_version_obj.version
+            return version
+
+    @property
     def caregiver_child_consent(self):
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
         try:
             child_consent = child_consent_cls.objects.get(
-                subject_identifier=self.subject_identifier)
+                subject_identifier=self.subject_identifier,
+                version=self.latest_consent_version)
         except child_consent_cls.DoesNotExist:
             return None
         else:
