@@ -31,8 +31,20 @@ class ConsentModelWrapperMixin:
         return django_apps.get_model('flourish_caregiver.subjectconsent')
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
     def consent_version(self):
-        return '1'
+        version = None
+        try:
+            consent_version_obj = self.consent_version_cls.objects.get(
+                screening_identifier=self.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            version = '1'
+        else:
+            version = consent_version_obj.version
+        return version
 
     @property
     def consent_model_obj(self):
@@ -41,16 +53,20 @@ class ConsentModelWrapperMixin:
         try:
             return self.subject_consent_cls.objects.get(**self.consent_options)
         except ObjectDoesNotExist:
-            return None
+            try:
+                options = dict(screening_identifier=self.screening_identifier,
+                               version='1')
+                return self.subject_consent_cls.objects.get(**options)
+            except ObjectDoesNotExist:
+                return None
 
     @property
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
         """
-        consent_model_wrapper_cls = self.consent_model_wrapper_cls or self.__class__
-        model_obj = self.consent_model_obj or self.consent_object.model_cls(
+        model_obj = self.consent_model_obj or self.subject_consent_cls(
             **self.create_consent_options)
-        return consent_model_wrapper_cls(model_obj=model_obj)
+        return self.consent_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):
@@ -60,7 +76,22 @@ class ConsentModelWrapperMixin:
         options = dict(
             screening_identifier=self.screening_identifier,
             consent_identifier=get_uuid(),
-            version=self.consent_version)
+            version=self.consent_version
+        )
+        if self.consent_version_1_model_obj:
+            consent_version_1 = self.consent_version_1_model_obj.__dict__
+            exclude_options = ['_state', 'consent_datetime', 'report_datetime',
+                               'consent_identifier', 'version', 'id',
+                               'subject_identifier_as_pk', 'created', 'modified',
+                               'site_id', 'device_created', 'device_modified',
+                               'hostname_modified', 'hostname_created', 'user_created',
+                               'subject_identifier', 'screening_identifier'
+                               ]
+            for option in exclude_options:
+                del consent_version_1[option]
+
+            options.update(**consent_version_1)
+
         if getattr(self, 'bhp_prior_screening_model_obj'):
             bhp_prior_screening = self.bhp_prior_screening_model_obj
             flourish_participation = bhp_prior_screening.flourish_participation
@@ -73,7 +104,8 @@ class ConsentModelWrapperMixin:
                     {'first_name': first_name,
                      'last_name': last_name,
                      'initials': initials,
-                     'gender': FEMALE})
+                     'gender': FEMALE,
+                    })
         return options
 
     @property
@@ -82,7 +114,7 @@ class ConsentModelWrapperMixin:
         consent model instance.
         """
         options = dict(
-            screening_identifier=self.screening_identifier,
+            screening_identifier=self.object.screening_identifier,
             version=self.consent_version)
         return options
 
@@ -138,3 +170,15 @@ class ConsentModelWrapperMixin:
         if self.child_consents:
             return self.child_consents.filter(is_eligible=False)
         return []
+
+    @property
+    def consent_version_1_model_obj(self):
+        """Returns a consent version 1 model instance or None.
+        """
+        options = dict(
+            screening_identifier=self.object.screening_identifier,
+            version='1')
+        try:
+            return self.subject_consent_cls.objects.get(**options)
+        except ObjectDoesNotExist:
+            return None

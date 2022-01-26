@@ -11,6 +11,7 @@ from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfo
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
+from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
@@ -21,15 +22,19 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  ConsentModelWrapperMixin,
                                  BHPPriorScreeningModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
+                                 FlourishConsentVersionModelWrapperMixin,
                                  MaternalDeliveryModelWrapperMixin,
                                  ModelWrapper):
 
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
     next_url_attrs = ['subject_identifier', ]
-    querystring_attrs = ['screening_identifier', 'subject_identifier',
-                         'first_name', 'last_name', 'initials', 'gender',
-                         'study_maternal_identifier', ]
+
+    @property
+    def querystring_attrs(self):
+        options = ['subject_identifier', 'screening_identifier']
+        options.extend(self.create_consent_options.keys())
+        return options
 
     @property
     def study_maternal_identifier(self):
@@ -40,6 +45,12 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
     @property
     def gender(self):
         return self.object.gender
+
+    @property
+    def subject_identifier(self):
+        if self.consent_model_obj:
+            return self.consent_model_obj.subject_identifier
+        return None
 
     @property
     def create_caregiver_locator_options(self):

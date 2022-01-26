@@ -25,6 +25,16 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
         'subject_listboard_url')
 
     @property
+    def consent_options(self):
+        """Returns a dictionary of options to get an existing
+        consent model instance.
+        """
+        options = dict(
+            screening_identifier=self.screening_identifier,
+            version=self.consent_version)
+        return options
+
+    @property
     def screening_identifier(self):
         return self.object.subject_consent.screening_identifier
 

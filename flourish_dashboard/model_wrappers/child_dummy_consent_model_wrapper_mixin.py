@@ -7,9 +7,9 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def screening_identifier(self):
-        subject_consent = self.subject_consent_cls.objects.get(
-            subject_identifier=self.caregiver_subject_identifier)
-        return subject_consent.screening_identifier
+        subject_consent = self.subject_consent_cls.objects.filter(
+            subject_identifier=self.caregiver_subject_identifier,)
+        return subject_consent[0].screening_identifier
 
     @property
     def assent_options(self):

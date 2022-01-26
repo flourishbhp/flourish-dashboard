@@ -1,5 +1,6 @@
-# from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper import InfantDeathReportModelWrapper
-# # from flourish_prn.action_items import CHILD_DEATH_REPORT_ACTION
+# from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper
+# import InfantDeathReportModelWrapper # from flourish_prn.action_items
+# import CHILD_DEATH_REPORT_ACTION
 
 from dateutil import relativedelta
 from django.apps import apps as django_apps
@@ -26,10 +27,12 @@ from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
-
-    subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
-    maternal_delivery_cls = django_apps.get_model('flourish_caregiver.maternaldelivery')
-    child_consent_cls = django_apps.get_model('flourish_caregiver.caregiverchildconsent')
+    subject_consent_cls = django_apps.get_model(
+        'flourish_caregiver.subjectconsent')
+    maternal_delivery_cls = django_apps.get_model(
+        'flourish_caregiver.maternaldelivery')
+    child_consent_cls = django_apps.get_model(
+        'flourish_caregiver.caregiverchildconsent')
 
     def __init__(self, subject_identifier=None):
         self.subject_identifier = subject_identifier
@@ -43,6 +46,33 @@ class ChildBirthValues(object):
         return months + difference.months
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
+    def latest_consent_version(self):
+        subject_identifier = self.subject_identifier.split('-')
+        subject_identifier.pop()
+        caregiver_subject_identifier = '-'.join(subject_identifier)
+
+        version = None
+        try:
+            consent = self.subject_consent_cls.objects.filter(
+                subject_identifier=caregiver_subject_identifier,)
+        except ObjectDoesNotExist:
+            return None
+        else:
+            screening_identifier = consent[0]
+            try:
+                consent_version_obj = self.consent_version_cls.objects.get(
+                    screening_identifier=screening_identifier)
+            except self.consent_version_cls.DoesNotExist:
+                version = '1'
+            else:
+                version = consent_version_obj.version
+            return version
+
+    @property
     def subject_consent_obj(self):
         """Returns a child birth model instance or None.
         """
@@ -51,7 +81,8 @@ class ChildBirthValues(object):
         caregiver_subject_identifier = '-'.join(subject_identifier)
         try:
             return self.subject_consent_cls.objects.get(
-                subject_identifier=caregiver_subject_identifier)
+                subject_identifier=caregiver_subject_identifier,
+                version=self.latest_consent_version)
         except ObjectDoesNotExist:
             return None
 
@@ -61,7 +92,8 @@ class ChildBirthValues(object):
         """
         try:
             return self.child_consent_cls.objects.get(
-                subject_identifier=self.subject_identifier)
+                subject_identifier=self.subject_identifier,
+                version=self.latest_consent_version)
         except ObjectDoesNotExist:
             return None
 
@@ -100,7 +132,8 @@ class ChildBirthValues(object):
         """Returns a child offstudy model instance or None.
         """
         try:
-            return self.child_offstudy_cls.objects.get(**self.child_offstudy_options)
+            return self.child_offstudy_cls.objects.get(
+                **self.child_offstudy_options)
         except ObjectDoesNotExist:
             return None
 
@@ -162,10 +195,9 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 
 
 class DashboardView(
-        DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
-        NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
-        CaregiverRegisteredSubjectCls):
-
+    DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
+    NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
+    CaregiverRegisteredSubjectCls):
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
     appointment_model = 'flourish_child.appointment'
@@ -188,6 +220,8 @@ class DashboardView(
     maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
     data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
 
+    subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
+
     @property
     def data_action_item(self):
         """Returns a wrapped saved or unsaved consent version.
@@ -201,12 +235,40 @@ class DashboardView(
         return model_wrapper
 
     @property
+    def consent_version_cls(self):
+        return django_apps.get_model('flourish_caregiver.flourishconsentversion')
+
+    @property
+    def latest_consent_version(self):
+        subject_identifier = self.subject_identifier.split('-')
+        subject_identifier.pop()
+        caregiver_subject_identifier = '-'.join(subject_identifier)
+
+        version = None
+        try:
+            consent = self.subject_consent_cls.objects.filter(
+                subject_identifier=caregiver_subject_identifier,)
+        except ObjectDoesNotExist:
+            return None
+        else:
+            screening_identifier = consent[0]
+            try:
+                consent_version_obj = self.consent_version_cls.objects.get(
+                    screening_identifier=screening_identifier)
+            except self.consent_version_cls.DoesNotExist:
+                version = '1'
+            else:
+                version = consent_version_obj.version
+            return version
+
+    @property
     def caregiver_child_consent(self):
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
         try:
             child_consent = child_consent_cls.objects.get(
-                subject_identifier=self.subject_identifier)
+                subject_identifier=self.subject_identifier,
+                version=self.latest_consent_version)
         except child_consent_cls.DoesNotExist:
             return None
         else:
@@ -238,6 +300,27 @@ class DashboardView(
         else:
             return ChildDatasetModelWrapper(child_dataset)
 
+    @property
+    def child_offstudy(self):
+        """
+        Returns a wrapped offstudy obj
+        """
+        offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffStudy'
+        )
+
+        try:
+
+            child_offstudy = offstudy_cls.objects.get(
+                subject_identifier=self.subject_identifier
+            )
+
+        except offstudy_cls.DoesNotExist:
+            return None
+
+        else:
+            return ChildOffstudyModelWrapper(model_obj=child_offstudy)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -262,13 +345,16 @@ class DashboardView(
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
             child_dataset=self.child_dataset,
-            schedule_names=[model.schedule_name for model in self.onschedule_models],
+            schedule_names=[model.schedule_name for model in
+                            self.onschedule_models],
+            child_offstudy=self.child_offstudy,
 
         )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
-            context=context)
+            context=context
+        )
         return context
 
     def set_current_schedule(self, onschedule_model_obj=None,

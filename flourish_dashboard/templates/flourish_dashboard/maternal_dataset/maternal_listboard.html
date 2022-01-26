@@ -65,7 +65,7 @@
 	<td>{{ result.study_maternal_identifier }}
 	{% if result.multiple_births > 1 %} <sup> {{result.multiple_births}}</sup> {% endif %} </td>
     <td>{{ result.subject_identifier }} </td>
-    <td nowrap>{{ result.screening_identifier }}</td>
+    <td nowrap>{{ result.object.screening_identifier }}</td>
 	</fieldset>
 </form>
 {% endblock listboard_table_columns %}
