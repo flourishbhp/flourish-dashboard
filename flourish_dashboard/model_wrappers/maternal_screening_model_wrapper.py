@@ -67,7 +67,6 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
     #     """Returns a dictionary of options to create a new
     #     unpersisted consent model instance.
     #     """
-    #     import pdb; pdb.set_trace()
     #     options = dict(
     #         screening_identifier=self.screening_identifier,
     #         consent_identifier=get_uuid(),
