@@ -220,6 +220,8 @@ class DashboardView(
     maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
     data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
 
+    subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
+
     @property
     def data_action_item(self):
         """Returns a wrapped saved or unsaved consent version.
