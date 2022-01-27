@@ -247,14 +247,14 @@ class DashboardView(
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier,)
+                subject_identifier=caregiver_subject_identifier)
         except ObjectDoesNotExist:
             return None
         else:
-            screening_identifier = consent[0]
+            latest_consent = consent[0]
             try:
                 consent_version_obj = self.consent_version_cls.objects.get(
-                    screening_identifier=screening_identifier)
+                    screening_identifier=latest_consent.screening_identifier)
             except self.consent_version_cls.DoesNotExist:
                 version = '1'
             else:
