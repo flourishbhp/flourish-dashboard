@@ -25,7 +25,8 @@ class ChildAssentModelWrapperMixin:
 
     @property
     def latest_consent_version(self):
-        subject_identifier = self.subject_identifier.split('-')
+        subject_identifier = self.subject_identifier or self.object.subject_identifier
+        subject_identifier = subject_identifier.split('-')
         subject_identifier.pop()
         caregiver_subject_identifier = '-'.join(subject_identifier)
 
@@ -67,7 +68,6 @@ class ChildAssentModelWrapperMixin:
         """
         model_obj = self.assent_model_obj or self.assent_model_cls(
             **self.create_child_assent_options(self.caregiverchildconsent_obj))
-        
         return ChildAssentModelWrapper(model_obj=model_obj)
 
     @property
