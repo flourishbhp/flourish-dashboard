@@ -385,7 +385,7 @@ def consent_version_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/off_study.html')
+@register.inclusion_tag('flourish_dashboard/buttons/off_study_button.html')
 def off_study_button(model_wrapper):
     title = 'Subject Offstudy'
     return dict(
