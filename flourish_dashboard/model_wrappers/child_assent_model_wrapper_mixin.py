@@ -14,7 +14,7 @@ class ChildAssentModelWrapperMixin:
     @property
     def assent_model_cls(self):
         return django_apps.get_model('flourish_child.childassent')
-    
+
     @property
     def consent_version_cls(self):
         return django_apps.get_model('flourish_caregiver.flourishconsentversion')
@@ -36,19 +36,19 @@ class ChildAssentModelWrapperMixin:
         except self.subject_consent_cls.ObjectDoesNotExist:
             return None
         else:
-            latest_consent = consent[0]
-            try:
-                consent_version_obj = self.consent_version_cls.objects.get(
-                    screening_identifier=latest_consent.screening_identifier)
-            except self.consent_version_cls.DoesNotExist:
-                version = '1'
-            else:
-                version = consent_version_obj.version
+            if consent.count() > 0:
+                latest_consent = consent[0]
+                try:
+                    consent_version_obj = self.consent_version_cls.objects.get(
+                        screening_identifier=latest_consent.screening_identifier)
+                except self.consent_version_cls.DoesNotExist:
+                    version = '1'
+                else:
+                    version = consent_version_obj.version
             return version
 
     @property
     def assent_version(self):
-        
         return self.latest_consent_version
 
     @property
