@@ -32,13 +32,13 @@ class ChildAssentModelWrapperMixin:
 
         version = None
         try:
-            consent = self.subject_consent_cls.objects.filter(
+            consents = self.subject_consent_cls.objects.filter(
                 subject_identifier=caregiver_subject_identifier)
         except self.subject_consent_cls.ObjectDoesNotExist:
             return None
         else:
-            if consent.count() > 0:
-                latest_consent = consent[0]
+            if consents:
+                latest_consent = consents.latest('consent_datetime')
                 try:
                     consent_version_obj = self.consent_version_cls.objects.get(
                         screening_identifier=latest_consent.screening_identifier)
