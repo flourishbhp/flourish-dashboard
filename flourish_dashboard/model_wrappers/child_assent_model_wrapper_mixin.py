@@ -14,7 +14,7 @@ class ChildAssentModelWrapperMixin:
     @property
     def assent_model_cls(self):
         return django_apps.get_model('flourish_child.childassent')
-    
+
     @property
     def consent_version_cls(self):
         return django_apps.get_model('flourish_caregiver.flourishconsentversion')
@@ -25,7 +25,8 @@ class ChildAssentModelWrapperMixin:
 
     @property
     def latest_consent_version(self):
-        subject_identifier = self.subject_identifier.split('-')
+        subject_identifier = self.subject_identifier or self.object.subject_identifier
+        subject_identifier = subject_identifier.split('-')
         subject_identifier.pop()
         caregiver_subject_identifier = '-'.join(subject_identifier)
 
@@ -36,19 +37,19 @@ class ChildAssentModelWrapperMixin:
         except self.subject_consent_cls.ObjectDoesNotExist:
             return None
         else:
-            latest_consent = consent[0]
-            try:
-                consent_version_obj = self.consent_version_cls.objects.get(
-                    screening_identifier=latest_consent.screening_identifier)
-            except self.consent_version_cls.DoesNotExist:
-                version = '1'
-            else:
-                version = consent_version_obj.version
+            if consent.count() > 0:
+                latest_consent = consent[0]
+                try:
+                    consent_version_obj = self.consent_version_cls.objects.get(
+                        screening_identifier=latest_consent.screening_identifier)
+                except self.consent_version_cls.DoesNotExist:
+                    version = '1'
+                else:
+                    version = consent_version_obj.version
             return version
 
     @property
     def assent_version(self):
-        
         return self.latest_consent_version
 
     @property
@@ -67,7 +68,6 @@ class ChildAssentModelWrapperMixin:
         """
         model_obj = self.assent_model_obj or self.assent_model_cls(
             **self.create_child_assent_options(self.caregiverchildconsent_obj))
-        
         return ChildAssentModelWrapper(model_obj=model_obj)
 
     @property
