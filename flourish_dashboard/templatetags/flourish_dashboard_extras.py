@@ -181,7 +181,6 @@ def caregiver_enrolment_info_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/consent_button.html')
 def consent_button(model_wrapper, antenatal=None):
     title = ['Consent subject to participate.']
-
     return dict(
         subject_identifier=model_wrapper.consent.object.subject_identifier,
         subject_screening_obj=model_wrapper.object,
@@ -386,7 +385,7 @@ def consent_version_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/off_study.html')
+@register.inclusion_tag('flourish_dashboard/buttons/off_study_button.html')
 def off_study_button(model_wrapper):
     title = 'Subject Offstudy'
     return dict(

@@ -2,7 +2,6 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from edc_base.utils import get_uuid
-from edc_consent import ConsentModelWrapperMixin
 from edc_model_wrapper import ModelWrapper
 
 from flourish_caregiver.models.subject_consent import SubjectConsent
@@ -11,6 +10,7 @@ from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperM
 from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
 from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
+from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 
 
@@ -62,23 +62,23 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
     def subject_consent_cls(self):
         return django_apps.get_model('flourish_caregiver.subjectconsent')
 
-    @property
-    def create_consent_options(self):
-        """Returns a dictionary of options to create a new
-        unpersisted consent model instance.
-        """
-        options = dict(
-            screening_identifier=self.screening_identifier,
-            consent_identifier=get_uuid(),
-            version=self.consent_version)
-        return options
+    # @property
+    # def create_consent_options(self):
+    #     """Returns a dictionary of options to create a new
+    #     unpersisted consent model instance.
+    #     """
+    #     options = dict(
+    #         screening_identifier=self.screening_identifier,
+    #         consent_identifier=get_uuid(),
+    #         version=self.consent_version
+    #     )
+    #     return options
 
     @property
     def consent_options(self):
         """Returns a dictionary of options to get an existing
         consent model instance.
         """
-
         options = dict(
             screening_identifier=self.object.screening_identifier,
             version=self.consent_version)

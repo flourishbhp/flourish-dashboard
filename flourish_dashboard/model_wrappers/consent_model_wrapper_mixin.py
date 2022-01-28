@@ -65,34 +65,32 @@ class ConsentModelWrapperMixin:
         """Returns a wrapped saved or unsaved consent.
         """
         model_obj = self.consent_model_obj or self.subject_consent_cls(
-            **self.create_consent_options, version='2')
-        if not model_obj:
-            model_obj = self.consent_model_obj or self.subject_consent_cls(
-                **self.create_consent_options, version='1')
-
+            **self.create_consent_options)
         return self.consent_model_wrapper_cls(model_obj=model_obj)
 
     @property
     def create_consent_options(self):
-        """Returns a dictionary of options to create a new unpersisted consent model instance.
+        """Returns a dictionary of options to create a new
+        unpersisted consent model instance.
         """
         options = dict(
             screening_identifier=self.screening_identifier,
             consent_identifier=get_uuid(),
+            version=self.consent_version
         )
-        if self.consent_model_obj:
-            options.update({
-                        'identity_type': self.consent_model_obj.identity_type,
-                        'recruit_source': self.consent_model_obj.recruit_source,
-                        'recruit_source_other': self.consent_model_obj.recruit_source_other,
-                        'recruitment_clinic': self.consent_model_obj.recruitment_clinic,
-                        'recruitment_clinic_other': self.consent_model_obj.recruitment_clinic_other,
-                        'remain_in_study': self.consent_model_obj.remain_in_study,
-                        'biological_caregiver': self.consent_model_obj.biological_caregiver,
-                        'hiv_testing': self.consent_model_obj.hiv_testing,
-                        'breastfeed_intent': self.consent_model_obj.breastfeed_intent,
-                        'future_contact': self.consent_model_obj.future_contact,
-                        'child_consent': self.consent_model_obj.child_consent,})
+        if self.consent_version_1_model_obj:
+            consent_version_1 = self.consent_version_1_model_obj.__dict__
+            exclude_options = ['_state', 'consent_datetime', 'report_datetime',
+                               'consent_identifier', 'version', 'id',
+                               'subject_identifier_as_pk', 'created', 'modified',
+                               'site_id', 'device_created', 'device_modified',
+                               'hostname_modified', 'hostname_created', 'user_created',
+                               'subject_identifier', 'screening_identifier'
+                               ]
+            for option in exclude_options:
+                del consent_version_1[option]
+
+            options.update(**consent_version_1)
 
         if getattr(self, 'bhp_prior_screening_model_obj'):
             bhp_prior_screening = self.bhp_prior_screening_model_obj
@@ -172,3 +170,15 @@ class ConsentModelWrapperMixin:
         if self.child_consents:
             return self.child_consents.filter(is_eligible=False)
         return []
+
+    @property
+    def consent_version_1_model_obj(self):
+        """Returns a consent version 1 model instance or None.
+        """
+        options = dict(
+            screening_identifier=self.object.screening_identifier,
+            version='1')
+        try:
+            return self.subject_consent_cls.objects.get(**options)
+        except ObjectDoesNotExist:
+            return None
