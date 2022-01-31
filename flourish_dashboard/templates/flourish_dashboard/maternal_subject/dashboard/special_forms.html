@@ -3,48 +3,55 @@
     <thead></thead>
     <tbody>
 
-      	<tr>
-			<td>
-				{% locator_button subject_consent %}
-			</td>
-		</tr>
-		<tr>
-			<td>{% caregiver_contact_button subject_consent %}</td>
-		</tr>
-		{% if screening_preg_women %}
-		<tr>
-			<td>
-				{% antenatal_enrollment_button screening_preg_women %}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				{% maternal_delivery_button subject_consent %}
-			</td>
-		</tr>
-		{% endif %}
-		{% if maternal_dataset %}
-		<tr>
-			<td>
-				{% caregiver_enrolment_info_button subject_consent %}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				{% maternal_dataset_button maternal_dataset %}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				{% screening_button maternal_dataset %}
-			</td>
-		</tr>
-		{% endif %}
-		
-    {% if caregiver_offstudy %}
+    <tr>
+        <td>
+            {% locator_button subject_consent %}
+        </td>
+    </tr>
+    <tr>
+        <td>{% caregiver_contact_button subject_consent %}</td>
+    </tr>
+    {% if screening_preg_women %}
         <tr>
             <td>
-                {% off_study_button caregiver_offstudy %}
+                {% antenatal_enrollment_button screening_preg_women %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% maternal_delivery_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
+    {% if maternal_dataset %}
+        <tr>
+            <td>
+                {% caregiver_enrolment_info_button subject_consent %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% maternal_dataset_button maternal_dataset %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% screening_button maternal_dataset %}
+            </td>
+        </tr>
+    {% endif %}
+
+    {% if subject_consent.caregiver_offstudy %}
+        <tr>
+            <td>
+                {% caregiver_off_study_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
+    {% if subject_consent.caregiver_death_report %}
+        <tr>
+            <td>
+                {% caregiver_death_report_button subject_consent %}
             </td>
         </tr>
     {% endif %}
