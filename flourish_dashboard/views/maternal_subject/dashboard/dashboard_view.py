@@ -65,7 +65,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_caregiver.screeningpregwomen')
         try:
             subject_screening = screening_cls.objects.get(
-                screening_identifier=self.consent_wrapped.screening_identifier)
+                subject_identifier=self.kwargs.get('subject_identifier'))
         except screening_cls.DoesNotExist:
             return None
         else:
