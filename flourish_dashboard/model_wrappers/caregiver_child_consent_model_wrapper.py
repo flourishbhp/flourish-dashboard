@@ -8,6 +8,8 @@ from .child_birth_model_wrapper_mixin import ChildBirthModelWrapperMixin
 from .child_continued_consent_model_wrapper_mixin import ChildContinuedConsentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .child_death_report_model_wrapper_mixin import ChildDeathReportModelWrapperMixin
+from .child_offstudy_model_wrapper_mixin import ChildOffstudyModelWrapperMixin
 
 
 class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
@@ -16,6 +18,8 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
                                         ChildContinuedConsentModelWrapperMixin,
                                         ChildBirthModelWrapperMixin,
                                         MaternalDeliveryModelWrapperMixin,
+                                        ChildDeathReportModelWrapperMixin,
+                                        ChildOffstudyModelWrapperMixin,
                                         ModelWrapper):
 
     model = 'flourish_caregiver.caregiverchildconsent'

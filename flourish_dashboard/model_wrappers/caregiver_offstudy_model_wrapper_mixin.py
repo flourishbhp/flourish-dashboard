@@ -1,15 +1,14 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
-from .offstudy_model_wrapper import CaregiverOffstudyModelWrapper
+from .caregiver_offstudy_model_wrapper import CaregiverOffstudyModelWrapper
 
 
 class CaregiverOffstudyModelWrapperMixin:
-
     caregiver_offstudy_model_wrapper_cls = CaregiverOffstudyModelWrapper
 
     @property
-    def caregiver_offstudy_model_obj(self):
+    def caregiver_offstudy_obj(self):
         """Returns a caregiver offstudy model instance or None.
         """
         try:
@@ -20,10 +19,11 @@ class CaregiverOffstudyModelWrapperMixin:
 
     @property
     def caregiver_offstudy(self):
-        """Returns a wrapped saved or unsaved caregiver offstudy.
+        """"Returns a wrapped saved or unsaved caregiver offstudy
         """
-        model_obj = self.caregiver_offstudy_model_obj or self.caregiver_offstudy_cls(
-            **self.create_caregiver_offstudy_options)
+        model_obj = self.caregiver_offstudy_obj or self.caregiver_offstudy_cls(
+            **self.create_caregiver_offstudy_options
+        )
         return self.caregiver_offstudy_model_wrapper_cls(model_obj=model_obj)
 
     @property
@@ -33,22 +33,17 @@ class CaregiverOffstudyModelWrapperMixin:
     @property
     def create_caregiver_offstudy_options(self):
         """Returns a dictionary of options to create a new
-        unpersisted caregiver offstudy model instance.
+        unpersisted subject locator model instance.
         """
         options = dict(
-            subject_identifier=self.consent.subject_identifier,
-            )
+            subject_identifier=self.subject_identifier)
         return options
 
     @property
     def caregiver_offstudy_options(self):
         """Returns a dictionary of options to get an existing
-        caregiver offstudy model instance.
+         caregiver offstudy model instance.
         """
         options = dict(
-            subject_identifier=self.consent.subject_identifier)
+            subject_identifier=self.object.subject_identifier, )
         return options
-
-    @property
-    def show_dashboard(self):
-        return True

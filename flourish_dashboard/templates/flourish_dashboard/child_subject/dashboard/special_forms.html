@@ -23,10 +23,17 @@
             {% assent_button caregiver_child_consent %}
         </td>
     </tr>
-    {% if child_offstudy %}
+    {% if caregiver_child_consent.child_offstudy %}
         <tr>
             <td>
-                {% off_study_button child_offstudy %}
+                {% child_off_study_button caregiver_child_consent %}
+            </td>
+        </tr>
+    {% endif %}
+    {% if caregiver_child_consent.child_death_report %}
+        <tr>
+            <td>
+                {% child_death_report_button caregiver_child_consent %}
             </td>
         </tr>
     {% endif %}
