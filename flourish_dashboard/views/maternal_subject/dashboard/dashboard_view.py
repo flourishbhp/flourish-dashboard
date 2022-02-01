@@ -97,6 +97,22 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 CaregiverChildConsentModelWrapper(child_consent))
         return wrapped_consents
 
+    @property
+    def subject_consent_wrapper(self):
+
+        subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
+
+        try:
+
+            subject_consent = subject_consent_cls.objects.get(
+            subject_identifier=self.kwargs.get('subject_identifier'))
+        except subject_consent_cls.DoesNotExist:
+            return None
+
+        else:
+            return SubjectConsentModelWrapper(model_obj=subject_consent)
+
+
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
@@ -124,7 +140,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
             cohorts=self.get_cohorts,
-            subject_consent=self.consent_wrapped,
+            subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
