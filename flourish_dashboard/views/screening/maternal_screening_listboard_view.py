@@ -1,21 +1,25 @@
 import re
+
 # from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_dashboard.view_mixins import ListboardFilterViewMixin, SearchFormViewMixin
+from edc_dashboard.view_mixins import ListboardFilterViewMixin, \
+    SearchFormViewMixin
 from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
 
 from ...model_wrappers import MaternalScreeningModelWrapper
+
+
 # from .filters import ListboardViewFilters
 
 
 class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
-                                     ListboardFilterViewMixin, SearchFormViewMixin,
+                                     ListboardFilterViewMixin,
+                                     SearchFormViewMixin,
                                      ListboardView):
-
     listboard_template = 'maternal_screening_listboard_template'
     listboard_url = 'maternal_screening_listboard_url'
     listboard_panel_style = 'info'
@@ -42,9 +46,11 @@ class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
 
     def get_queryset_filter_options(self, request, *args, **kwargs):
         options = super().get_queryset_filter_options(request, *args, **kwargs)
+
         if kwargs.get('screening_identifier'):
             options.update(
                 {'screening_identifier': kwargs.get('screening_identifier')})
+
         return options
 
     def extra_search_options(self, search_term):

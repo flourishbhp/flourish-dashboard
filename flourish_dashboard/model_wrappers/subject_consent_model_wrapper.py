@@ -4,14 +4,24 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 
-from .antenatal_enrollment_wrapper_mixin import AntenatalEnrollmentModelWrapperMixin
-from .bhp_prior_screening_model_wrapper_mixin import BHPPriorScreeningModelWrapperMixin
-from .caregiver_contact_model_wrapper_mixin import CaregiverContactModelWrapperMixin
-from .caregiver_enrolment_info_model_wrapper_mixin import CaregiverEnrolmentInfoModelWrapperMixin
-from .caregiver_locator_model_wrapper_mixin import CaregiverLocatorModelWrapperMixin
+from .antenatal_enrollment_wrapper_mixin import \
+    AntenatalEnrollmentModelWrapperMixin
+from .bhp_prior_screening_model_wrapper_mixin import \
+    BHPPriorScreeningModelWrapperMixin
+from .caregiver_contact_model_wrapper_mixin import \
+    CaregiverContactModelWrapperMixin
+from .caregiver_death_report_model_wrapper_mixin import \
+    CaregiverDeathReportModelWrapperMixin
+from .caregiver_enrolment_info_model_wrapper_mixin import \
+    CaregiverEnrolmentInfoModelWrapperMixin
+from .caregiver_locator_model_wrapper_mixin import \
+    CaregiverLocatorModelWrapperMixin
+from .caregiver_offstudy_model_wrapper_mixin import \
+    CaregiverOffstudyModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
-from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
+from .flourish_consent_version_model_wrapper_mixin import \
+    FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
@@ -24,8 +34,9 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
                                  FlourishConsentVersionModelWrapperMixin,
                                  MaternalDeliveryModelWrapperMixin,
+                                 CaregiverOffstudyModelWrapperMixin,
+                                 CaregiverDeathReportModelWrapperMixin,
                                  ModelWrapper):
-
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
     next_url_attrs = ['subject_identifier', ]
@@ -58,10 +69,11 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,)
+            screening_identifier=self.object.screening_identifier, )
         if self.assent_model_obj:
             options.update(
-                {'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier})
+                {
+                    'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier})
         else:
             options.update(
                 {'subject_identifier': self.subject_identifier})
