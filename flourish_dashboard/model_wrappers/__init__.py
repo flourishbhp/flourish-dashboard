@@ -36,3 +36,4 @@ from .maternal_registered_subject_model_wrapper import \
 from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
 from .maternal_visit_model_wrapper import MaternalVisitModelWrapper
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
+from .caregiver_contact_model_wrapper import CaregiverContactModelWrapper

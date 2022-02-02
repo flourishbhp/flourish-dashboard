@@ -1,3 +1,4 @@
+import imp
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -9,6 +10,7 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+
 from ...child_subject.dashboard.dashboard_view import ChildBirthValues
 from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
@@ -20,6 +22,7 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
+from ....model_wrappers import CaregiverContactModelWrapper
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -77,7 +80,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
         maternal_dataset_cls = django_apps.get_model(
             'flourish_caregiver.maternaldataset')
-            
+
         try:
             maternal_dataset = maternal_dataset_cls.objects.get(
                 subject_identifier=self.kwargs.get('subject_identifier'))
@@ -101,17 +104,33 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     @property
     def subject_consent_wrapper(self):
 
-        subject_consent_cls = django_apps.get_model('flourish_caregiver.subjectconsent')
+        subject_consent_cls = django_apps.get_model(
+            'flourish_caregiver.subjectconsent')
 
         try:
 
             subject_consent = subject_consent_cls.objects.get(
-            subject_identifier=self.kwargs.get('subject_identifier'))
+                subject_identifier=self.kwargs.get('subject_identifier'))
+
         except subject_consent_cls.DoesNotExist:
             return None
 
         else:
             return SubjectConsentModelWrapper(model_obj=subject_consent)
+
+    @property
+    def contact_details_wrapper(self):
+        subject_identifier = self.kwargs.get('subject_identifier')
+        contact_details_cls = django_apps.get_model('flourish_caregiver.caregivercontact')
+
+        try:
+            contact_details_obj = contact_details_cls.objects.filter(
+                subject_identifier=subject_identifier).latest('report_datetime')
+        except contact_details_cls.DoesNotExist:
+            contact_details_obj = contact_details_cls(subject_identifier=subject_identifier)
+        finally:
+            return CaregiverContactModelWrapper(model_obj=contact_details_obj)
+
 
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
@@ -140,6 +159,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
+            contact_details=self.contact_details_wrapper,
             cohorts=self.get_cohorts,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
