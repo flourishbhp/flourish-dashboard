@@ -217,21 +217,11 @@ def caregiverchildconsent_button(model_wrapper):
 @register.inclusion_tag(
     'flourish_dashboard/buttons/caregiver_contact_button.html')
 def caregiver_contact_button(model_wrapper):
-    title = ['Caregiver Contact']
-
-    if model_wrapper.contact_details_exist(model_wrapper.object.subject_identifier):
-        return dict(
-            exists=True,
-            subject_identifier=model_wrapper.object.subject_identifier,
-            add_caregiver_contact_href=model_wrapper.href,
-            title=' '.join(title), )
-
-    else:
-        return dict(
-            exists=False,
-            subject_identifier=model_wrapper.object.subject_identifier,
-            add_caregiver_contact_href=model_wrapper.href,
-            title=' '.join(title), )
+    title = ['Caregiver Contact.']
+    return dict(
+        subject_identifier=model_wrapper.object.subject_identifier,
+        add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
+        title=' '.join(title), )
 
 
 

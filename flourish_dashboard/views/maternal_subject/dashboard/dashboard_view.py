@@ -111,26 +111,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             subject_consent = subject_consent_cls.objects.get(
                 subject_identifier=self.kwargs.get('subject_identifier'))
-
+            
         except subject_consent_cls.DoesNotExist:
             return None
 
+        except subject_consent_cls.MultipleObjectsReturned:
+            subject_consent = subject_consent_cls.objects.filter(
+                subject_identifier=self.kwargs.get('subject_identifier')).latest('report_datetime')
         else:
             return SubjectConsentModelWrapper(model_obj=subject_consent)
-
-    @property
-    def contact_details_wrapper(self):
-        subject_identifier = self.kwargs.get('subject_identifier')
-        contact_details_cls = django_apps.get_model('flourish_caregiver.caregivercontact')
-
-        try:
-            contact_details_obj = contact_details_cls.objects.filter(
-                subject_identifier=subject_identifier).latest('report_datetime')
-        except contact_details_cls.DoesNotExist:
-            contact_details_obj = contact_details_cls(subject_identifier=subject_identifier)
-        finally:
-            return CaregiverContactModelWrapper(model_obj=contact_details_obj)
-
 
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
@@ -159,7 +148,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
-            contact_details=self.contact_details_wrapper,
             cohorts=self.get_cohorts,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
