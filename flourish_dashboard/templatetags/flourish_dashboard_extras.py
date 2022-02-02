@@ -1,3 +1,4 @@
+import imp
 from urllib.parse import urlencode, unquote
 
 from django import template
@@ -7,6 +8,7 @@ from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
+from ..model_wrappers.caregiver_contact_model_wrapper import CaregiverContactModelWrapper
 
 register = template.Library()
 
@@ -215,11 +217,12 @@ def caregiverchildconsent_button(model_wrapper):
 @register.inclusion_tag(
     'flourish_dashboard/buttons/caregiver_contact_button.html')
 def caregiver_contact_button(model_wrapper):
-    title = ['subject caregiver contact.']
+    title = ['Caregiver Contact.']
     return dict(
         subject_identifier=model_wrapper.object.subject_identifier,
         add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
         title=' '.join(title), )
+
 
 
 @register.inclusion_tag(
@@ -375,7 +378,8 @@ def caregiver_child_consent_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/consent_version_add_button.html')
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/consent_version_add_button.html')
 def consent_version_button(model_wrapper):
     title = ['Add Consent Version.']
     return dict(
@@ -385,10 +389,44 @@ def consent_version_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/off_study_button.html')
-def off_study_button(model_wrapper):
-    title = 'Subject Offstudy'
+@register.inclusion_tag('flourish_dashboard/buttons/child_off_study.html')
+def child_off_study_button(model_wrapper):
+    title = 'Child Subject Off Study'
     return dict(
         title=title,
-        href=model_wrapper.href
+        href=model_wrapper.child_offstudy.href,
+        subject_identifier=model_wrapper.subject_identifier
+
+    )
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/caregiver_off_study.html')
+def caregiver_off_study_button(model_wrapper):
+    title = 'Caregiver Off Study'
+    return dict(
+        title=title,
+        href=model_wrapper.caregiver_offstudy.href,
+        subject_identifier=model_wrapper.subject_identifier
+    )
+
+
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/caregiver_death_report_button.html')
+def caregiver_death_report_button(model_wrapper):
+    title = 'Caregiver Death Report'
+    return dict(
+        title=title,
+        href=model_wrapper.caregiver_death_report.href,
+        subject_identifier=model_wrapper.subject_identifier
+    )
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_death_report_button.html')
+def child_death_report_button(model_wrapper):
+    title = 'Child Death Report'
+    return dict(
+        title=title,
+        href=model_wrapper.child_death_report.href,
+        subject_identifier=model_wrapper.subject_identifier
+
     )
