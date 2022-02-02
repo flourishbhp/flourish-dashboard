@@ -125,14 +125,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def contact_details_wrapper(self):
         subject_identifier = self.kwargs.get('subject_identifier')
         contact_details_cls = django_apps.get_model('flourish_caregiver.caregivercontact')
-
-        try:
-            contact_details_obj = contact_details_cls.objects.filter(
-                subject_identifier=subject_identifier).latest('report_datetime')
-        except contact_details_cls.DoesNotExist:
-            contact_details_obj = contact_details_cls(subject_identifier=subject_identifier)
-        finally:
-            return CaregiverContactModelWrapper(model_obj=contact_details_obj)
+        contact_details_obj = contact_details_cls(subject_identifier=subject_identifier)
+        return CaregiverContactModelWrapper(model_obj=contact_details_obj)
 
 
 
