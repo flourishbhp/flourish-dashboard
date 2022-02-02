@@ -121,14 +121,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         else:
             return SubjectConsentModelWrapper(model_obj=subject_consent)
 
-    @property
-    def contact_details_wrapper(self):
-        subject_identifier = self.kwargs.get('subject_identifier')
-        contact_details_cls = django_apps.get_model('flourish_caregiver.caregivercontact')
-        contact_details_obj = contact_details_cls(subject_identifier=subject_identifier)
-        return CaregiverContactModelWrapper(model_obj=contact_details_obj)
-
-
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
@@ -156,7 +148,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
-            contact_details=self.contact_details_wrapper,
             cohorts=self.get_cohorts,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
