@@ -77,9 +77,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
         maternal_dataset_cls = django_apps.get_model(
             'flourish_caregiver.maternaldataset')
+            
         try:
             maternal_dataset = maternal_dataset_cls.objects.get(
-                screening_identifier=self.consent_wrapped.screening_identifier)
+                subject_identifier=self.kwargs.get('subject_identifier'))
         except maternal_dataset_cls.DoesNotExist:
             return None
         else:
