@@ -1,6 +1,10 @@
 <a id="caregivercontact_add_{{ subject_identifier }}" 
  	title="{{ title }}"
-     class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+     {% if exists %}
+        class="btn btn-primary btn-sm" data-toggle="tooltip"  data-placement="right"
+     {% else %}
+        class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+     {% endif %}
      href="{{ add_caregiver_contact_href }}">
-  		Caregiver Contact
+  		{{ title }}
  </a>
