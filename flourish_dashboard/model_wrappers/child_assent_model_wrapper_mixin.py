@@ -24,35 +24,6 @@ class ChildAssentModelWrapperMixin:
         return django_apps.get_model('flourish_caregiver.subjectconsent')
 
     @property
-    def latest_consent_version(self):
-        subject_identifier = self.subject_identifier or self.object.subject_identifier
-        subject_identifier = subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
-
-        version = None
-        try:
-            consents = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier)
-        except self.subject_consent_cls.ObjectDoesNotExist:
-            return None
-        else:
-            if consents:
-                latest_consent = consents.latest('consent_datetime')
-                try:
-                    consent_version_obj = self.consent_version_cls.objects.get(
-                        screening_identifier=latest_consent.screening_identifier)
-                except self.consent_version_cls.DoesNotExist:
-                    version = '1'
-                else:
-                    version = consent_version_obj.version
-            return version
-
-    @property
-    def assent_version(self):
-        return self.latest_consent_version
-
-    @property
     def assent_model_obj(self):
         """Returns a child assent model instance or None.
         """
@@ -77,8 +48,7 @@ class ChildAssentModelWrapperMixin:
         """
 
         options = dict(
-            screening_identifier=self.screening_identifier,
-            version=self.assent_version)
+            screening_identifier=self.screening_identifier,)
         return options
 
     @property
@@ -88,8 +58,7 @@ class ChildAssentModelWrapperMixin:
         """
         options = dict(
             screening_identifier=self.screening_identifier,
-            identity=self.identity,
-            version=self.assent_version)
+            identity=self.identity,)
         return options
 
     def child_assent_obj(self, **kwargs):
@@ -139,7 +108,6 @@ class ChildAssentModelWrapperMixin:
         options = dict(
             screening_identifier=self.screening_identifier,
             subject_identifier=caregiverchildconsent.subject_identifier,
-            version=self.assent_version,
             first_name=first_name,
             last_name=last_name,
             initials=initials,
@@ -155,7 +123,6 @@ class ChildAssentModelWrapperMixin:
         last_name = caregiverchildconsent.last_name
         options = dict(
             screening_identifier=self.screening_identifier,
-            version=self.assent_version,
             first_name=first_name,
             last_name=last_name,
             identity=caregiverchildconsent.identity)
@@ -163,8 +130,7 @@ class ChildAssentModelWrapperMixin:
 
     def child_assent_model_obj(self, caregiverchildconsent):
         try:
-            return self.assent_model_cls.objects.get(
-                **self.child_assent_options(caregiverchildconsent))
+            return self.assent_model_cls.objects.get(subject_identifier=caregiverchildconsent.subject_identifier)
         except self.assent_model_cls.DoesNotExist:
             return None
 
