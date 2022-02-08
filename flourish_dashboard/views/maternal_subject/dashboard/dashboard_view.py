@@ -109,15 +109,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         try:
 
-            subject_consent = subject_consent_cls.objects.get(
-                subject_identifier=self.kwargs.get('subject_identifier'))
+            subject_consent = subject_consent_cls.objects.filter(
+                subject_identifier=self.kwargs.get('subject_identifier')).latest()
             
         except subject_consent_cls.DoesNotExist:
             return None
-
-        except subject_consent_cls.MultipleObjectsReturned:
-            subject_consent = subject_consent_cls.objects.filter(
-                subject_identifier=self.kwargs.get('subject_identifier')).latest('report_datetime')
         else:
             return SubjectConsentModelWrapper(model_obj=subject_consent)
 
