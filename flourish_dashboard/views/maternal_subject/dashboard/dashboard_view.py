@@ -1,5 +1,4 @@
 import imp
-from turtle import pd
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
