@@ -26,7 +26,6 @@ from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
 class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
-                                 ChildAssentModelWrapperMixin,
                                  CaregiverEnrolmentInfoModelWrapperMixin,
                                  CaregiverLocatorModelWrapperMixin,
                                  ConsentModelWrapperMixin,
@@ -36,6 +35,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  MaternalDeliveryModelWrapperMixin,
                                  CaregiverOffstudyModelWrapperMixin,
                                  CaregiverDeathReportModelWrapperMixin,
+                                 ChildAssentModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
