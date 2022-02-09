@@ -1,4 +1,5 @@
 import imp
+from turtle import pd
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -108,10 +109,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_caregiver.subjectconsent')
 
         try:
-
+            import pdb; pdb.set_trace()
             subject_consent = subject_consent_cls.objects.filter(
                 subject_identifier=self.kwargs.get('subject_identifier')).latest()
-            
+
         except subject_consent_cls.DoesNotExist:
             return None
         else:
