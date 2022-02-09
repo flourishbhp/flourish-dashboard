@@ -109,7 +109,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_caregiver.subjectconsent')
 
         try:
-            import pdb; pdb.set_trace()
+
             subject_consent = subject_consent_cls.objects.filter(
                 subject_identifier=self.kwargs.get('subject_identifier')).latest()
 
