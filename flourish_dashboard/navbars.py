@@ -18,9 +18,9 @@ flourish_dashboard.append_item(
 
 flourish_dashboard.append_item(
     NavbarItem(
-        name='maternal_screening',
-        title='Maternal Screening',
-        label='maternal screening',
+        name='anc_screening',
+        title='ANC Screening',
+        label='anc screening',
         fa_icon='far fa-user-circle',
         url_name=settings.DASHBOARD_URL_NAMES[
             'maternal_screening_listboard_url'],
@@ -46,14 +46,5 @@ flourish_dashboard.append_item(
             'child_listboard_url'],
         no_url_namespace=no_url_namespace))
 
-flourish_dashboard.append_item(
-    NavbarItem(
-        name='child_screening',
-        title='Child Screening',
-        label='child screening',
-        fa_icon='far fa-user-circle',
-        url_name=settings.DASHBOARD_URL_NAMES[
-            'child_screening_listboard_url'],
-        no_url_namespace=no_url_namespace))
 
 site_navbars.register(flourish_dashboard)

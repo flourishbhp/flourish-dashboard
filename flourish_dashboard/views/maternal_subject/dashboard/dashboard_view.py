@@ -1,28 +1,29 @@
 import imp
+
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
+
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
-from flourish_caregiver.helper_classes import MaternalStatusHelper
-
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
+from ....model_wrappers import CaregiverContactModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, \
     MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
-from ....model_wrappers import CaregiverContactModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -106,21 +107,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         subject_consent_cls = django_apps.get_model(
             'flourish_caregiver.subjectconsent')
-
         try:
+            subject_consent = subject_consent_cls.objects.filter(
+                subject_identifier=self.kwargs.get('subject_identifier')).latest()
 
-            subject_consent = subject_consent_cls.objects.get(
-                subject_identifier=self.kwargs.get('subject_identifier'))
-            
         except subject_consent_cls.DoesNotExist:
             return None
-
-        except subject_consent_cls.MultipleObjectsReturned:
-            subject_consent = subject_consent_cls.objects.filter(
-                subject_identifier=self.kwargs.get('subject_identifier')).latest('report_datetime')
         else:
             return SubjectConsentModelWrapper(model_obj=subject_consent)
-
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
@@ -159,6 +153,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             infant_registered_subjects=self.infant_registered_subjects,
             is_pregnant=self.is_pregnant,
             caregiver_offstudy=offstudy_cls_model,
+            version=self.consent_wrapped.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report
         )
         return context
@@ -259,7 +254,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier, ).order_by(
+            subject_identifier=subject_identifier,).order_by(
             '-report_datetime').first()
 
         if latest_visit:
