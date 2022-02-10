@@ -224,7 +224,6 @@ def caregiver_contact_button(model_wrapper):
         title=' '.join(title), )
 
 
-
 @register.inclusion_tag(
     'flourish_dashboard/buttons/childcontinuedconsent_button.html')
 def childcontinuedconsent_button(model_wrapper):
