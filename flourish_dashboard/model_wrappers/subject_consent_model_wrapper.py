@@ -20,8 +20,7 @@ from .caregiver_offstudy_model_wrapper_mixin import \
     CaregiverOffstudyModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
-from .flourish_consent_version_model_wrapper_mixin import \
-    FlourishConsentVersionModelWrapperMixin
+from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
@@ -69,7 +68,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier, )
+            screening_identifier=self.object.screening_identifier,)
         if self.assent_model_obj:
             options.update(
                 {
