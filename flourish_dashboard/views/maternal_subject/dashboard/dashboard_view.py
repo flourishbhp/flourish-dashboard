@@ -1,9 +1,8 @@
-import imp
-
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_consent.exceptions import NotConsentedError
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 
@@ -15,7 +14,6 @@ from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
-from ....model_wrappers import CaregiverContactModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, \
     MaternalVisitModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, \
@@ -107,14 +105,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         subject_consent_cls = django_apps.get_model(
             'flourish_caregiver.subjectconsent')
-        try:
-            subject_consent = subject_consent_cls.objects.filter(
-                subject_identifier=self.kwargs.get('subject_identifier')).latest()
 
-        except subject_consent_cls.DoesNotExist:
-            return None
+        subject_consents = subject_consent_cls.objects.filter(
+            subject_identifier=self.kwargs.get('subject_identifier'))
+
+        if subject_consents:
+            return SubjectConsentModelWrapper(model_obj=subject_consents.latest('consent_datetime'))
         else:
-            return SubjectConsentModelWrapper(model_obj=subject_consent)
+            raise NotConsentedError('No consent object found for participant with subject '
+                                    f'identifier {self.subject_identifier}')
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
@@ -153,7 +152,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             infant_registered_subjects=self.infant_registered_subjects,
             is_pregnant=self.is_pregnant,
             caregiver_offstudy=offstudy_cls_model,
-            version=self.consent_wrapped.consent_version,
+            version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report
         )
         return context
@@ -201,7 +200,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def get_cohorts(self):
-        subject_consent = self.consent_wrapped.object
+        subject_consent = self.subject_consent_wrapper.object
         child_consent = subject_consent.caregiverchildconsent_set.all()
         cohorts_query = child_consent.values_list('cohort',
                                                   flat=True).distinct()

@@ -54,9 +54,9 @@ class ConsentModelWrapperMixin:
             return self.subject_consent_cls.objects.get(**self.consent_options)
         except ObjectDoesNotExist:
             try:
-                options = dict(screening_identifier=self.screening_identifier,
-                               version='1')
-                return self.subject_consent_cls.objects.get(**options)
+                return self.subject_consent_cls.objects.get(
+                    screening_identifier=self.object.screening_identifier,
+                    version='1')
             except ObjectDoesNotExist:
                 return None
 
