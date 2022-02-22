@@ -3,14 +3,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
-from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
+from flourish_caregiver.helper_classes import MaternalStatusHelper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -20,8 +21,6 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -204,7 +203,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         child_consent = subject_consent.caregiverchildconsent_set.all()
         cohorts_query = child_consent.values_list('cohort',
                                                   flat=True).distinct()
-
         cohorts = ''
         for a in self.onschedule_models:
             if a.schedule_name == 'a_antenatal1_schedule1':
@@ -215,6 +213,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 cohorts += ' ' + cohort.upper()
 
         cohorts = cohorts.strip().replace(' ', '| ')
+
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,
@@ -253,7 +252,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier,).order_by(
+            subject_identifier=subject_identifier, ).order_by(
             '-report_datetime').first()
 
         if latest_visit:
