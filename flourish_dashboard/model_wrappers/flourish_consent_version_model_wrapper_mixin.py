@@ -24,10 +24,7 @@ class FlourishConsentVersionModelWrapperMixin:
         """
 
         model_obj = self.consent_version_model_obj or self.consent_version_cls(
-            **self.consent_version_options, version='2')
-        if not model_obj:
-            model_obj = self.consent_version_model_obj or self.consent_version_cls(
-                **self.consent_version_options, version='1')
+            **self.consent_version_options)
 
         return self.consent_version_model_wrapper_cls(model_obj=model_obj)
 

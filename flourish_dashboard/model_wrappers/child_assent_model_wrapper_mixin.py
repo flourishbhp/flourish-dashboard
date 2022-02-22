@@ -46,7 +46,8 @@ class ChildAssentModelWrapperMixin:
         """
         Get the version of the current passed consent
         """
-        return self.consent_model_obj.version
+        if self.consent_model_obj:
+            return self.consent_model_obj.version
 
     @property
     def create_assent_options(self):
