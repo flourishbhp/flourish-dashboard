@@ -151,8 +151,7 @@ class ChildAssentModelWrapperMixin:
 
     def child_assent_model_obj(self, caregiverchildconsent):
         try:
-            return self.assent_model_cls.objects.get(
-                **self.child_assent_options(caregiverchildconsent))
+            return self.assent_model_cls.objects.get(subject_identifier=caregiverchildconsent.subject_identifier)
         except self.assent_model_cls.DoesNotExist:
             return None
 
