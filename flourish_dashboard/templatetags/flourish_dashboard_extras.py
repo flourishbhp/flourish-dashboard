@@ -1,4 +1,3 @@
-import imp
 from urllib.parse import urlencode, unquote
 
 from django import template
@@ -8,7 +7,6 @@ from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
-from ..model_wrappers.caregiver_contact_model_wrapper import CaregiverContactModelWrapper
 
 register = template.Library()
 

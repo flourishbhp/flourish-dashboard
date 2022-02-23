@@ -32,6 +32,16 @@ class ChildDummyConsentModelWrapperMixin:
         return options
 
     @property
+    def child_consent(self):
+        """
+        Returns a consent objects of the child from the caregiver consent
+        """
+        childconsent = self.get_consent.caregiverchildconsent_set.get(
+            subject_identifier=self.object.subject_identifier)
+
+        return childconsent
+
+    @property
     def caregiver_subject_identifier(self):
         subject_identifier = self.object.subject_identifier.split('-')
         subject_identifier.pop()
@@ -45,8 +55,7 @@ class ChildDummyConsentModelWrapperMixin:
             initials = self.get_assent.initials
             return f'{name} {initials}'
         elif self.get_consent:
-            childconsent = self.get_consent.caregiverchildconsent_set.get(
-                subject_identifier=self.object.subject_identifier)
+            childconsent = self.child_consent
             first_name = childconsent.first_name
             last_name = childconsent.last_name
             if first_name and last_name:
@@ -60,8 +69,7 @@ class ChildDummyConsentModelWrapperMixin:
             years = age(birth_date, get_utcnow()).years
             return years
         elif self.get_consent:
-            childconsent = self.get_consent.caregiverchildconsent_set.get(
-                subject_identifier=self.object.subject_identifier)
+            childconsent = self.child_consent
             birth_date = childconsent.child_dob
             if birth_date:
                 years = age(birth_date, get_utcnow()).years
@@ -77,8 +85,7 @@ class ChildDummyConsentModelWrapperMixin:
         if self.get_assent:
             return self.get_assent.gender
         elif self.get_consent:
-            childconsent = self.get_consent.caregiverchildconsent_set.get(
-                subject_identifier=self.object.subject_identifier)
+            childconsent = self.child_consent
             return childconsent.gender
 
     @property
@@ -87,8 +94,7 @@ class ChildDummyConsentModelWrapperMixin:
             birth_date = self.get_assent.dob
             return birth_date
         elif self.get_consent:
-            childconsent = self.get_consent.caregiverchildconsent_set.get(
-                subject_identifier=self.object.subject_identifier)
+            childconsent = self.child_consent
             birth_date = childconsent.child_dob
             return birth_date
         elif self.get_antenatal:
@@ -96,10 +102,12 @@ class ChildDummyConsentModelWrapperMixin:
             return birth_date
         return 0
 
+
     @property
     def get_cohort(self):
-        if self.object.cohort:
-            cohort = self.object.cohort.upper()
+        childconsent = self.child_consent
+        if childconsent.cohort:
+            cohort = childconsent.cohort.upper()
             return cohort.replace('_', ' ')
 
     @property
@@ -107,9 +115,7 @@ class ChildDummyConsentModelWrapperMixin:
         if self.get_assent:
             return self.get_assent.consent_datetime.date()
         elif self.get_consent:
-            childconsent = self.get_consent.caregiverchildconsent_set.get(
-                subject_identifier=self.object.subject_identifier)
-
+            childconsent = self.child_consent
             consent_date = childconsent.consent_datetime.date()
             return consent_date
         return 'N/A'
