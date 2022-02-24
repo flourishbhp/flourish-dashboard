@@ -1,3 +1,5 @@
+from flourish_caregiver.helper_classes import MaternalStatusHelper
+
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -9,9 +11,6 @@ from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
-from flourish_caregiver.helper_classes import MaternalStatusHelper
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -21,6 +20,8 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -126,6 +127,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             visit_cls=caregiver_visit_cls,
             offstudy_cls=caregiver_offstudy_cls,
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
+
+        self.get_consent_version_object_or_message(
+            self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
 
@@ -252,7 +256,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier, ).order_by(
+            subject_identifier=subject_identifier,).order_by(
             '-report_datetime').first()
 
         if latest_visit:
