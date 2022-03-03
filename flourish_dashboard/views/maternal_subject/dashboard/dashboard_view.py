@@ -1,5 +1,3 @@
-from flourish_caregiver.helper_classes import MaternalStatusHelper
-
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -9,6 +7,7 @@ from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
 from ....model_wrappers import AppointmentModelWrapper, \
@@ -106,11 +105,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         subject_consent_cls = django_apps.get_model(
             'flourish_caregiver.subjectconsent')
 
+        subject_identifier = self.kwargs.get('subject_identifier')
+        if len(subject_identifier.split('-')) == 4:
+            subject_identifier = subject_identifier[:-3]
+
         subject_consents = subject_consent_cls.objects.filter(
-            subject_identifier=self.kwargs.get('subject_identifier'))
+            subject_identifier=subject_identifier)
 
         if subject_consents:
-            return SubjectConsentModelWrapper(model_obj=subject_consents.latest('consent_datetime'))
+            return SubjectConsentModelWrapper(
+                model_obj=subject_consents.latest('consent_datetime'))
         else:
             raise NotConsentedError('No consent object found for participant with subject '
                                     f'identifier {self.subject_identifier}')
