@@ -9,14 +9,14 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
+
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
-from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
@@ -24,6 +24,7 @@ from ....model_wrappers import (
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
 from ....model_wrappers.child_birth_model_wrapper import ChildBirthModelWrapper
+from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
@@ -59,7 +60,7 @@ class ChildBirthValues(object):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier, )
+                subject_identifier=caregiver_subject_identifier,)
         except ObjectDoesNotExist:
             return None
         else:
@@ -168,7 +169,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values, )
+            infant_birth_values=infant_birth_values,)
         return context
 
 
@@ -308,7 +309,6 @@ class DashboardView(
         else:
             return ChildDatasetModelWrapper(child_dataset)
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -338,6 +338,7 @@ class DashboardView(
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
             child_offstudy=self.consent_wrapped.child_offstudy,
+            cohort=self.consent_wrapped.get_cohort
 
         )
         context = self.add_url_to_context(
