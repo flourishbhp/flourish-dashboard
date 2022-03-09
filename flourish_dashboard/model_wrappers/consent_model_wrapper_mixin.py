@@ -53,12 +53,15 @@ class ConsentModelWrapperMixin:
         try:
             return self.subject_consent_cls.objects.get(**self.consent_options)
         except ObjectDoesNotExist:
-            try:
-                return self.subject_consent_cls.objects.get(
-                    screening_identifier=self.object.screening_identifier,
-                    version='1')
-            except ObjectDoesNotExist:
-                return None
+            consents = self.subject_consent_cls.objects.filter(
+                    screening_identifier=self.object.screening_identifier)
+            if consents:
+                try:
+                    return self.subject_consent_cls.objects.get(
+                        screening_identifier=self.object.screening_identifier,
+                        version=consents.latest('consent_datetime').version)
+                except ObjectDoesNotExist:
+                    return None
 
     @property
     def consent(self):
