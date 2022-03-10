@@ -38,7 +38,7 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
-    next_url_attrs = ['subject_identifier', ]
+    next_url_attrs = ['subject_identifier', 'study_maternal_identifier']
 
     @property
     def querystring_attrs(self):
