@@ -201,10 +201,10 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
         return context
 
 
-class DashboardView(
-    DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
-    NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
-    CaregiverRegisteredSubjectCls):
+class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
+                    NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
+                    CaregiverRegisteredSubjectCls):
+
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
     appointment_model = 'flourish_child.appointment'
@@ -320,6 +320,9 @@ class DashboardView(
         # self.update_messages(offstudy_cls=child_offstudy_cls)
         # self.get_death_or_message(visit_cls=child_visit_cls,
         #                           death_cls=child_death_cls)
+        self.get_consent_version_object_or_message(
+            screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
+
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
