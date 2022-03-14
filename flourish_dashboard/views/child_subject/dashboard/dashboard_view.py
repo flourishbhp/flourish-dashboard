@@ -22,7 +22,8 @@ from ....model_wrappers import (
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
-    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
+    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper,
+    ChildRequisitionModelWrapper)
 from ....model_wrappers.child_birth_model_wrapper import ChildBirthModelWrapper
 from ...view_mixin import DashboardViewMixin
 
@@ -201,16 +202,16 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
         return context
 
 
-class DashboardView(
-    DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
-    NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
-    CaregiverRegisteredSubjectCls):
+class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
+                    NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
+                    CaregiverRegisteredSubjectCls):
+
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
     appointment_model = 'flourish_child.appointment'
     appointment_model_wrapper_cls = ChildAppointmentModelWrapper
     crf_model_wrapper_cls = ChildCrfModelWrapper
-    # requisition_model_wrapper_cls = None
+    requisition_model_wrapper_cls = ChildRequisitionModelWrapper
     consent_model = 'flourish_child.childdummysubjectconsent'
     consent_model_wrapper_cls = ChildDummyConsentModelWrapper
     action_item_model_wrapper_cls = ActionItemModelWrapper
@@ -320,6 +321,9 @@ class DashboardView(
         # self.update_messages(offstudy_cls=child_offstudy_cls)
         # self.get_death_or_message(visit_cls=child_visit_cls,
         #                           death_cls=child_death_cls)
+        self.get_consent_version_object_or_message(
+            screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
+
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)

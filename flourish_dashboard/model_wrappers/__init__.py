@@ -1,3 +1,4 @@
+import imp
 from .action_item_model_wrapper import ActionItemModelWrapper
 from .appointment_model_wrapper import AppointmentModelWrapper
 from .caregiver_child_consent_model_wrapper import \
@@ -37,4 +38,4 @@ from .maternal_registered_subject_model_wrapper import \
 from .maternal_screening_model_wrapper import MaternalScreeningModelWrapper
 from .maternal_visit_model_wrapper import MaternalVisitModelWrapper
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
-
+from .child_requisition_model_wrapper import ChildRequisitionModelWrapper
