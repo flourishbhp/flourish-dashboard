@@ -22,7 +22,8 @@ from ....model_wrappers import (
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
-    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper)
+    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper,
+    ChildRequisitionModelWrapper)
 from ....model_wrappers.child_birth_model_wrapper import ChildBirthModelWrapper
 from ...view_mixin import DashboardViewMixin
 
@@ -210,7 +211,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     appointment_model = 'flourish_child.appointment'
     appointment_model_wrapper_cls = ChildAppointmentModelWrapper
     crf_model_wrapper_cls = ChildCrfModelWrapper
-    # requisition_model_wrapper_cls = None
+    requisition_model_wrapper_cls = ChildRequisitionModelWrapper
     consent_model = 'flourish_child.childdummysubjectconsent'
     consent_model_wrapper_cls = ChildDummyConsentModelWrapper
     action_item_model_wrapper_cls = ActionItemModelWrapper
