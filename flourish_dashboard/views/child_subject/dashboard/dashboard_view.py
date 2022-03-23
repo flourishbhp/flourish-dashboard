@@ -1,20 +1,22 @@
 # from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper
 # import InfantDeathReportModelWrapper # from flourish_prn.action_items
 # import CHILD_DEATH_REPORT_ACTION
-
 from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
+from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_constants.constants import YES, POS
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
 from ....model_wrappers import (
@@ -351,6 +353,67 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             context=context
         )
         return context
+
+    @property
+    def maternal_hiv_status(self):
+        """Returns mother's current hiv status.
+        """
+        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        latest_visit = maternal_visit_cls.objects.filter(
+            subject_identifier=subject_identifier[:-3],).order_by(
+            '-report_datetime').first()
+
+        if latest_visit:
+            maternal_status_helper = MaternalStatusHelper(
+                maternal_visit=latest_visit)
+        else:
+            maternal_status_helper = MaternalStatusHelper(
+                subject_identifier=self.kwargs.get('subject_identifier')[:-3])
+        return maternal_status_helper.hiv_status
+
+    def hiv_disclosed_or_offstudy(self):
+
+        child_age = ChildBirthValues(
+            subject_identifier=self.subject_identifier).child_age
+
+        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_visit_cls = django_apps.get_model('flourish_child.childvisit')
+
+        try:
+            child_registered_subject = RegisteredSubject.objects.get(
+                subject_identifier=self.subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            raise ValidationError(
+                "Registered subject for the mother is expected to exist.")
+        else:
+            reg_age = age(child_registered_subject.dob,
+                          child_registered_subject.consent_datetime)
+
+            child_age = float(f'{reg_age.years}.{reg_age.months}')
+
+        if self.maternal_hiv_status == POS and child_age and child_age >= 16:
+            for disclosure_cls in ['hivdisclosurestatusa',
+                                   'hivdisclosurestatusb',
+                                   'hivdisclosurestatusc']:
+
+                hiv_disclosure_cls = django_apps.get_model(
+                    f'flourish_caregiver.{disclosure_cls}')
+                try:
+                    hiv_disclosure_cls.objects.get(
+                        associated_child_identifier=self.subject_identifier,
+                        disclosed_status=YES)
+                except hiv_disclosure_cls.DoesNotExist:
+                    trigger = True
+                else:
+                    trigger = False
+                    break
+
+            self.get_offstudy_or_message(
+                visit_cls=child_visit_cls,
+                offstudy_cls=child_offstudy_cls,
+                offstudy_action=CHILDOFF_STUDY_ACTION,
+                trigger=trigger)
 
     def set_current_schedule(self, onschedule_model_obj=None,
                              schedule=None, visit_schedule=None,

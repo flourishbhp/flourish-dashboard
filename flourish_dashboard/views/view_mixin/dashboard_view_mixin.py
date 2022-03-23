@@ -1,10 +1,10 @@
-from edc_action_item.site_action_items import site_action_items
-
 from django.apps import apps as django_apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
+from edc_action_item.site_action_items import site_action_items
 from edc_constants.constants import OFF_STUDY, NEW
+
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, CHILDASSENT_ACTION
 
 
@@ -17,12 +17,15 @@ class DashboardViewMixin:
         obj = visit_cls.objects.filter(
             appointment__subject_identifier=subject_identifier,
             study_status=OFF_STUDY).order_by('report_datetime').last()
+
         if obj:
-            self.action_cls_item_creator(
-                subject_identifier=subject_identifier,
-                action_cls=offstudy_cls,
-                action_type=offstudy_action)
-        return obj
+            trigger = True
+
+        self.action_cls_item_creator(
+            subject_identifier=subject_identifier,
+            action_cls=offstudy_cls,
+            action_type=offstudy_action,
+            trigger=trigger)
 
     def get_offstudy_message(self, offstudy_cls=None):
         action_item_obj = self.get_action_item_obj(offstudy_cls)
