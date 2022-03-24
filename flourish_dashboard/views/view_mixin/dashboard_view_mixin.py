@@ -11,7 +11,7 @@ from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, CHIL
 class DashboardViewMixin:
 
     def get_offstudy_or_message(self, visit_cls=None, offstudy_cls=None,
-                                offstudy_action=None):
+                                offstudy_action=None, trigger=False):
 
         subject_identifier = self.kwargs.get('subject_identifier')
         obj = visit_cls.objects.filter(
@@ -34,18 +34,23 @@ class DashboardViewMixin:
                 f'Please complete the off-study form to take subject off-study.')
             messages.add_message(self.request, messages.ERROR, msg)
 
-    def action_cls_item_creator(
-            self, subject_identifier=None, action_cls=None, action_type=None):
-        action_cls = site_action_items.get(
+    def action_cls_item_creator(self, subject_identifier=None, action_cls=None,
+                                action_type=None, trigger=None):
+
+        action_item_cls = site_action_items.get(
             action_cls.action_name)
-        action_item_model_cls = action_cls.action_item_model_cls()
-        try:
-            action_item_model_cls.objects.get(
-                subject_identifier=subject_identifier,
-                action_type__name=action_type)
-        except ObjectDoesNotExist:
-            action_cls(
-                subject_identifier=subject_identifier)
+        action_item_model_cls = action_item_cls.action_item_model_cls()
+
+        if trigger:
+            try:
+                action_item_model_cls.objects.get(
+                    subject_identifier=subject_identifier,
+                    action_type__name=action_type)
+            except ObjectDoesNotExist:
+                action_item_cls(
+                    subject_identifier=subject_identifier)
+        else:
+            self.delete_action_item_if_new(action_cls)
 
     def delete_action_item_if_new(self, action_model_cls):
         action_item_obj = self.get_action_item_obj(action_model_cls)
