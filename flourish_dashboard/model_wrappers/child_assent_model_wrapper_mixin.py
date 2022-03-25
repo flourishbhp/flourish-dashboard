@@ -65,7 +65,7 @@ class ChildAssentModelWrapperMixin:
          child assent model instance.
         """
         options = dict(
-            screening_identifier=self.screening_identifier,
+            subject_identifier=self.subject_identifier,
             identity=self.identity,)
         return options
 
