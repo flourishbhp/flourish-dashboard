@@ -4,7 +4,7 @@
 <div class="list-group" >
 <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
 {% if dob %}
-{{ dob|date:"d/m/Y" }}
+{{ dob|date:"Y-m-d" }}
 {% get_age dob %} 
 {% endif %}
 
