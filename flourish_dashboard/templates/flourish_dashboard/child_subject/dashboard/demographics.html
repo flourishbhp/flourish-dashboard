@@ -3,7 +3,7 @@
 
 <div class="list-group">
     <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
-        {{ consent.child_dob|date:"d/m/Y" }}
+        {{ consent.child_dob| date:"Y-m-d" }}
         {% get_age consent.child_dob %}
 
     </a>
