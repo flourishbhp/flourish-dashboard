@@ -3,13 +3,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
+from edc_constants.constants import YES
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
-
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -19,8 +22,6 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -47,6 +48,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     data_action_item_template = 'flourish_dashboard/maternal_subject/dashboard/data_manager.html'
     infant_dashboard_include_value = 'flourish_dashboard/maternal_subject/dashboard/infant_dashboard_links.html'
     infant_subject_dashboard_url = 'child_dashboard_url'
+    antenatal_enrolment_model = 'flourish_caregiver.antenatalenrollment'
+
+    @property
+    def antenatal_enrolment_cls(self):
+        return django_apps.get_model(self.antenatal_enrolment_model)
 
     @property
     def appointments(self):
@@ -116,8 +122,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             return SubjectConsentModelWrapper(
                 model_obj=subject_consents.latest('consent_datetime'))
         else:
-            raise NotConsentedError('No consent object found for participant with subject '
-                                    f'identifier {self.subject_identifier}')
+            raise NotConsentedError(
+                'No consent object found for participant with subject '
+                f'identifier {self.subject_identifier}')
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
@@ -144,6 +151,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
+        tb_eligibility = self.tb_eligibility
+
         context.update(
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
@@ -160,8 +169,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             is_pregnant=self.is_pregnant,
             caregiver_offstudy=offstudy_cls_model,
             version=self.subject_consent_wrapper.consent_version,
-            caregiver_death_report=self.consent_wrapped.caregiver_death_report
-        )
+            caregiver_death_report=self.consent_wrapped.caregiver_death_report,
+            tb_eligibility=tb_eligibility
+            )
         return context
 
     @property
@@ -225,8 +235,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,
-                             schedule=None, visit_schedule=None,
-                             is_onschedule=True):
+            schedule=None, visit_schedule=None,
+            is_onschedule=True
+            ):
         if onschedule_model_obj:
             if is_onschedule:
                 self.current_schedule = schedule
@@ -260,7 +271,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier,).order_by(
+            subject_identifier=subject_identifier, ).order_by(
             '-report_datetime').first()
 
         if latest_visit:
@@ -327,3 +338,32 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 subject_identifier=subject_identifier, child_age=child_age)
             self.get_assent_object_or_message(
                 subject_identifier=subject_identifier, child_age=child_age)
+
+    @property
+    def tb_eligibility(self):
+        maternal_visit_cls = django_apps.get_model(
+            MaternalVisitModelWrapper.model)
+        subject_identifier = self.kwargs.get('subject_identifier')
+        last_visits = maternal_visit_cls.objects.filter(
+            subject_identifier=subject_identifier, tb_participation=YES).count()
+        child_consents = self.caregiver_child_consents
+        if last_visits:
+            for consent in child_consents:
+                subject_identifier = consent.subject_identifier
+                child_age = ChildBirthValues(
+                    subject_identifier=subject_identifier).child_age
+                try:
+                    antenatal_enrolment_obj = self.antenatal_enrolment_cls.objects.get(
+                        subject_identifier=self.subject_identifier
+                        )
+                except self.antenatal_enrolment_cls.DoesNotExist:
+                    return False
+                else:
+                    if ((child_age and child_age <= 2) or
+                            (antenatal_enrolment_obj.ga_lmp_anc_wks and int(
+                                antenatal_enrolment_obj.ga_lmp_anc_wks) >= 22)):
+                        return True
+                    else:
+                        return False
+        else:
+            return False

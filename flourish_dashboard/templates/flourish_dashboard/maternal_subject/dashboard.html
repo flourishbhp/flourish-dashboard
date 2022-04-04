@@ -17,17 +17,16 @@
 
 
 {% block visit_schedules_panel %}
-
     {% if  visit_schedules|length > 1 and child_names %}
         <ul class="nav nav-tabs">
-        	{% for visit_schedule in visit_schedules.values %}
-               <li  {% if forloop.counter == 1 %} class="active" {% endif %}><a data-toggle="tab"
-                                                                                 href="#id_{{ visit_schedule }}">{{ child_names|get_item:visit_schedule.name }}</a>
+            {% for visit_schedule in visit_schedules.values %}
+                <li  {% if forloop.counter == 1 %} class="active" {% endif %}>
+                    <a data-toggle="tab" href="#id_{{ visit_schedule }}">
+                        {{ child_names|get_item:visit_schedule.verbose_name }}</a>
                 </li>
             {% endfor %}
         </ul>
     {% endif %}
-
     <div class="tab-content">
         {% for visit_schedule in visit_schedules.values %}
             <div id="id_{{ visit_schedule }}"
