@@ -20,11 +20,14 @@ from .caregiver_offstudy_model_wrapper_mixin import \
     CaregiverOffstudyModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
-from .flourish_consent_version_model_wrapper_mixin import FlourishConsentVersionModelWrapperMixin
+from .flourish_consent_version_model_wrapper_mixin import \
+    FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 
 
-class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
+class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
+                                 CaregiverContactModelWrapperMixin,
                                  CaregiverEnrolmentInfoModelWrapperMixin,
                                  CaregiverLocatorModelWrapperMixin,
                                  ConsentModelWrapperMixin,
@@ -68,17 +71,19 @@ class SubjectConsentModelWrapper(CaregiverContactModelWrapperMixin,
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,)
+            screening_identifier=self.object.screening_identifier, )
         if self.assent_model_obj:
             options.update(
                 {
-                    'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier})
+                    'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier
+                    })
         else:
             options.update(
                 {'subject_identifier': self.subject_identifier})
         if getattr(self, 'first_name'):
             options.update({'first_name': self.first_name,
-                            'last_name': self.last_name})
+                            'last_name': self.last_name
+                            })
         return options
 
     @property
