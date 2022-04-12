@@ -1,7 +1,9 @@
-{% if tb_eligibility and not tb_consent %}
+{% include "edc_base/alert_messages.html" %}
+
+{% if tb_eligibility and not subject_consent.tb_consent_model_obj %}
     <!-- begin alert messages -->
     <div class="col-md-12">
-        <div class="alert alert-danger alert-dismissable fade in">
+        <div class="alert alert-warning alert-dismissable fade in">
             <a href="#" class="close" data-dismiss="alert"
                aria-label="close">&times;</a>
             <i class="far fa-hand-paper fa-lg"></i>
