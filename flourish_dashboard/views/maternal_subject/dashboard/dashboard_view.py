@@ -4,15 +4,14 @@ from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
 from edc_constants.constants import YES
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
+from edc_dashboard.views import DashboardView as BaseDashboardView
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
+
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -22,6 +21,8 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -152,6 +153,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
         tb_eligibility = self.tb_eligibility
+        
 
         context.update(
             locator_obj=locator_obj,
@@ -181,17 +183,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
-        child_consents = child_consent_cls.objects.filter(
+        all_child_consents = child_consent_cls.objects.filter(
             subject_identifier__icontains=self.subject_identifier).exclude(
             Q(subject_identifier__icontains='-35') | Q(
                 subject_identifier__icontains='-46') | Q(
                 subject_identifier__icontains='-56')).order_by('created')
 
-        if child_consents.count() > 1:
+        if all_child_consents.count() > 1:
 
             appt_cls = django_apps.get_model('edc_appointment.appointment')
             cohorts = []
-            for child in child_consents:
+            for child in all_child_consents:
                 cohorts.append(child.cohort)
 
             appointments = appt_cls.objects.filter(
@@ -201,17 +203,26 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             schedule_child_dict = {}
 
             for onschedule_model in self.onschedule_models:
-                if ('enrol' in onschedule_model.schedule_name
-                        or ('sec' in onschedule_model.schedule_name
-                            and 'quart' not in onschedule_model.schedule_name)):
-                    child = child_consents.get(
+
+                if (('sec' in onschedule_model.schedule_name
+                        and 'quart' not in onschedule_model.schedule_name)
+                        or 'enrol' in onschedule_model.schedule_name
+                        or 'antenatal' in onschedule_model.schedule_name):
+                    child_consents = all_child_consents.filter(
                         subject_identifier=onschedule_model.child_subject_identifier)
 
-                    appt = appointments.get(
-                        schedule_name=onschedule_model.schedule_name)
+                    if child_consents:
+                        child = child_consents.latest('consent_datetime')
 
-                    schedule_child_dict[appt.visit_schedule_name] = (
-                            child.first_name + ' ' + child.last_name)
+                        appt = appointments.get(
+                            schedule_name=onschedule_model.schedule_name)
+
+                        full_names = None
+
+                        if child.first_name:
+                            full_names = child.first_name + ' ' + child.last_name
+
+                        schedule_child_dict[appt.visit_schedule_name] = full_names
 
             return schedule_child_dict
 
@@ -235,9 +246,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None,
-            schedule=None, visit_schedule=None,
-            is_onschedule=True
-            ):
+                             schedule=None, visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:
                 self.current_schedule = schedule
