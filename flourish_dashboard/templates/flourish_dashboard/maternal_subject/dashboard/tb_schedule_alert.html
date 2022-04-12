@@ -1,0 +1,11 @@
+{% if tb_eligibility and not tb_consent %}
+    <!-- begin alert messages -->
+    <div class="col-md-12">
+        <div class="alert alert-danger alert-dismissable fade in">
+            <a href="#" class="close" data-dismiss="alert"
+               aria-label="close">&times;</a>
+            <i class="far fa-hand-paper fa-lg"></i>
+            Please complete the TB consent form under special form
+        </div>
+    </div><!-- end alert messages -->
+{% endif %}
