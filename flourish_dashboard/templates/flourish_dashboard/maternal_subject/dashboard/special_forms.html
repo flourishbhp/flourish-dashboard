@@ -43,6 +43,13 @@
             </td>
         </tr>
     {% endif %}
+    {% if tb_eligibility %}
+        <tr>
+            <td>
+                {% tb_consent_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
 
     {% if subject_consent.caregiver_offstudy %}
         <tr>
@@ -58,6 +65,6 @@
             </td>
         </tr>
     {% endif %}
-    
+
     </tbody>
 </table>

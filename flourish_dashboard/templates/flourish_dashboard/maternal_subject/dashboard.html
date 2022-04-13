@@ -4,6 +4,9 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
+{% block alert %}
+    {% include "flourish_dashboard/maternal_subject/dashboard/tb_schedule_alert.html" %}
+{% endblock alert %}
 
 {% block other_special_buttons %}
     {% assents_button subject_consent %}
@@ -20,14 +23,14 @@
 
     {% if  visit_schedules|length > 1 and child_names %}
         <ul class="nav nav-tabs">
-        	{% for visit_schedule in visit_schedules.values %}
-               <li  {% if forloop.counter == 1 %} class="active" {% endif %}><a data-toggle="tab"
-                                                                                 href="#id_{{ visit_schedule }}">{{ child_names|get_item:visit_schedule.name }}</a>
+            {% for visit_schedule in visit_schedules.values %}
+                <li  {% if forloop.counter == 1 %} class="active" {% endif %}>
+                    <a data-toggle="tab" href="#id_{{ visit_schedule }}">
+                        {{ child_names|get_item:visit_schedule.name }}</a>
                 </li>
             {% endfor %}
         </ul>
     {% endif %}
-
     <div class="tab-content">
         {% for visit_schedule in visit_schedules.values %}
             <div id="id_{{ visit_schedule }}"
