@@ -10,15 +10,15 @@ from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_constants.constants import YES, POS
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
-
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
@@ -26,8 +26,6 @@ from ....model_wrappers import (
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper,
     ChildRequisitionModelWrapper)
-from ....model_wrappers.child_birth_model_wrapper import ChildBirthModelWrapper
-from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
@@ -63,7 +61,7 @@ class ChildBirthValues(object):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier,)
+                subject_identifier=caregiver_subject_identifier, )
         except ObjectDoesNotExist:
             return None
         else:
@@ -172,7 +170,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values,)
+            infant_birth_values=infant_birth_values, )
         return context
 
 
@@ -207,7 +205,6 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMixin,
                     NavbarViewMixin, BaseDashboardView, ChildBirthButtonCls,
                     CaregiverRegisteredSubjectCls):
-
     dashboard_url = 'child_dashboard_url'
     dashboard_template = 'child_subject_dashboard_template'
     appointment_model = 'flourish_child.appointment'
@@ -229,6 +226,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     special_forms_include_value = 'flourish_dashboard/child_subject/dashboard/special_forms.html'
     maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
     data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
+    odk_archive_forms_include_value = 'flourish_dashboard/child_subject/dashboard/odk_archives.html'
 
     subject_consent_cls = django_apps.get_model(
         'flourish_caregiver.subjectconsent')
@@ -346,12 +344,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             child_offstudy=self.consent_wrapped.child_offstudy,
             cohort=self.consent_wrapped.get_cohort
 
-        )
+            )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
             context=context
-        )
+            )
         return context
 
     @property
@@ -361,7 +359,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier[:-3],).order_by(
+            subject_identifier=subject_identifier[:-3], ).order_by(
             '-report_datetime').first()
 
         if latest_visit:
@@ -416,8 +414,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 trigger=trigger)
 
     def set_current_schedule(self, onschedule_model_obj=None,
-                             schedule=None, visit_schedule=None,
-                             is_onschedule=True):
+            schedule=None, visit_schedule=None,
+            is_onschedule=True):
 
         if onschedule_model_obj:
             if is_onschedule:
