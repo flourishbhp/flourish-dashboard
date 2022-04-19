@@ -53,6 +53,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     infant_dashboard_include_value = 'flourish_dashboard/maternal_subject/dashboard/infant_dashboard_links.html'
     infant_subject_dashboard_url = 'child_dashboard_url'
     antenatal_enrolment_model = 'flourish_caregiver.antenatalenrollment'
+    odk_archive_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/odk_archives.html'
+
 
     @property
     def antenatal_enrolment_cls(self):
