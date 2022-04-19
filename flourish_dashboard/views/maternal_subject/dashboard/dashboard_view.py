@@ -1,3 +1,4 @@
+from tkinter.messagebox import NO
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -11,6 +12,8 @@ from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
+
+from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import AntenatalEnrollmentModelWrapper
 
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
@@ -54,6 +57,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     @property
     def antenatal_enrolment_cls(self):
         return django_apps.get_model(self.antenatal_enrolment_model)
+
+    @property
+    def antenatal_enrolment(self):
+        try:
+            antenatal_enrolment_obj = self.antenatal_enrolment_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except self.antenatal_enrolment_cls.DoesNotExist:
+            return None
+        else:
+            return AntenatalEnrollmentModelWrapper(model_obj=antenatal_enrolment_obj)
 
     @property
     def appointments(self):
@@ -153,7 +166,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
         tb_eligibility = self.tb_eligibility
-        
 
         context.update(
             locator_obj=locator_obj,
@@ -172,8 +184,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             caregiver_offstudy=offstudy_cls_model,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
-            tb_eligibility=tb_eligibility
-            )
+            tb_eligibility=tb_eligibility,
+            antenatal_enrolment=self.antenatal_enrolment)
         return context
 
     @property
@@ -364,7 +376,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 try:
                     antenatal_enrolment_obj = self.antenatal_enrolment_cls.objects.get(
                         subject_identifier=self.subject_identifier
-                        )
+                    )
                 except self.antenatal_enrolment_cls.DoesNotExist:
                     return False
                 else:
