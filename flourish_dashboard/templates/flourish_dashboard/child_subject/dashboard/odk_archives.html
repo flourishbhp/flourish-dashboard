@@ -1,0 +1,12 @@
+{% load odk_dashboard_extras %}
+<table class="table table-condensed">
+	<tr>
+		<td>{% note_to_file_button caregiver_child_consent.child_birth %}</td>
+	</tr>
+	<tr>
+		<td>{% clinician_notes_archives_button caregiver_child_consent.child_birth %}</td>
+	</tr>
+	<tr>
+		<td>{% labresults_button caregiver_child_consent.child_birth %}</td>
+	</tr>
+</table>
