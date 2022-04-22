@@ -30,4 +30,12 @@
 <span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default">Consent Version {{version}}</span>
 </a>
 
+    {% if antenatal_enrolment and antenatal_enrolment.object.ga_lmp_anc_wks %}
+
+		<a class="list-group-item"><i class="fa fa-calendar"></i>
+		<span data-toggle="tooltip" data-placement="right" title="GA" class="text text-default"> GA by LMP: {{ antenatal_enrolment.object.ga_lmp_anc_wks }} weeks</span>
+		</a>
+
+    {% endif %}    
+
 </div>
