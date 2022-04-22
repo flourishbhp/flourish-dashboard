@@ -133,7 +133,7 @@ dmypy.json
 .pyre/
 
 #intellij configs
-./.idea/*
+**/.idea/*
 
 #vscode configs
 .vscode/* 
