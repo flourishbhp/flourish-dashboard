@@ -10,10 +10,6 @@
 
 {% block other_special_buttons %}
     {% assents_button subject_consent %}
-    {% if antenatal_enrolment and antenatal_enrolment.object.ga_lmp_anc_wks %}
-    
-        <h7> GA by LMP at enrollment : {{ antenatal_enrolment.object.ga_lmp_anc_wks }}</h7>
-    {% endif %}    
 {% endblock other_special_buttons %}
 
 {% block locator_information %}{% endblock locator_information %}
