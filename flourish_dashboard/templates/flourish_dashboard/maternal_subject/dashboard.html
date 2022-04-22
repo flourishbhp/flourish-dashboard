@@ -4,7 +4,6 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
-
 {% block other_special_buttons %}
     {% assents_button subject_consent %}
 {% endblock other_special_buttons %}
@@ -17,12 +16,14 @@
 
 
 {% block visit_schedules_panel %}
+    <br>
+
     {% if  visit_schedules|length > 1 and child_names %}
         <ul class="nav nav-tabs">
             {% for visit_schedule in visit_schedules.values %}
                 <li  {% if forloop.counter == 1 %} class="active" {% endif %}>
                     <a data-toggle="tab" href="#id_{{ visit_schedule }}">
-                        {{ child_names|get_item:visit_schedule.verbose_name }}</a>
+                        {{ child_names|get_item:visit_schedule.name }}</a>
                 </li>
             {% endfor %}
         </ul>

@@ -2,14 +2,16 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from edc_model_wrapper import ModelWrapper
 
-from .caregiver_child_consent_model_wrapper_mixin import CaregiverChildConsentModelWrapperMixin
+from .caregiver_child_consent_model_wrapper_mixin import \
+    CaregiverChildConsentModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .child_birth_model_wrapper_mixin import ChildBirthModelWrapperMixin
-from .child_continued_consent_model_wrapper_mixin import ChildContinuedConsentModelWrapperMixin
-from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
-from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .child_continued_consent_model_wrapper_mixin import \
+    ChildContinuedConsentModelWrapperMixin
 from .child_death_report_model_wrapper_mixin import ChildDeathReportModelWrapperMixin
 from .child_offstudy_model_wrapper_mixin import ChildOffstudyModelWrapperMixin
+from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
+from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 
 
 class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
@@ -21,7 +23,6 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
                                         ChildDeathReportModelWrapperMixin,
                                         ChildOffstudyModelWrapperMixin,
                                         ModelWrapper):
-
     model = 'flourish_caregiver.caregiverchildconsent'
     querystring_attrs = ['subject_consent', 'subject_identifier']
     next_url_attrs = ['subject_consent', 'subject_identifier']

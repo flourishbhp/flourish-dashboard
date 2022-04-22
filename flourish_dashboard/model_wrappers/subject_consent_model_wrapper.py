@@ -3,6 +3,11 @@ from itertools import chain
 from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
+from edc_odk.model_wrappers import \
+    SpecimenConsentModelWrapperMixin as ODKSpecimenConsentModelWrapperMixin, \
+    ClinicianNotesModelWrapperMixin, LabResultsModelWrapperMixin, \
+    OmangCopiesModelWrapperMixin, ConsentCopiesModelWrapperMixin, \
+    NoteToFileModelWrapperMixin
 
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
@@ -31,6 +36,12 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  CaregiverEnrolmentInfoModelWrapperMixin,
                                  CaregiverLocatorModelWrapperMixin,
                                  ConsentModelWrapperMixin,
+                                 ClinicianNotesModelWrapperMixin,
+                                 LabResultsModelWrapperMixin,
+                                 ODKSpecimenConsentModelWrapperMixin,
+                                 OmangCopiesModelWrapperMixin,
+                                 ConsentCopiesModelWrapperMixin,
+                                 NoteToFileModelWrapperMixin,
                                  BHPPriorScreeningModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
                                  FlourishConsentVersionModelWrapperMixin,
