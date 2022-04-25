@@ -1,10 +1,19 @@
 {% load odk_dashboard_extras %}
 <table class="table table-condensed">
 	<tr>
-		<td>{% note_to_file_button caregiver_child_consent.child_birth %}</td>
+		<td>{% assents_button caregiver_child_consent.child_birth %}</td>
 	</tr>
 	<tr>
-		<td>{% clinician_notes_archives_button caregiver_child_consent.child_birth %}</td>
+		<td>{% continued_participation_button caregiver_child_consent.child_birth %}</td>
+	</tr>
+	<tr>
+		<td>{% omang_copies_button caregiver_child_consent.child_birth %}</td>
+	</tr>
+	<tr>
+		<td>{% birth_certificate_button caregiver_child_consent.child_birth %}</td>
+	</tr>
+	<tr>
+		<td>{% note_to_file_button caregiver_child_consent.child_birth %}</td>
 	</tr>
 	<tr>
 		<td>{% labresults_button caregiver_child_consent.child_birth %}</td>

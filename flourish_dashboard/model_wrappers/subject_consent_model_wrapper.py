@@ -3,11 +3,9 @@ from itertools import chain
 from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
-from edc_odk.model_wrappers import \
-    SpecimenConsentModelWrapperMixin as ODKSpecimenConsentModelWrapperMixin, \
-    ClinicianNotesModelWrapperMixin, LabResultsModelWrapperMixin, \
-    OmangCopiesModelWrapperMixin, ConsentCopiesModelWrapperMixin, \
-    NoteToFileModelWrapperMixin
+from edc_odk.model_wrappers import LabResultsModelWrapperMixin, \
+    OmangCopiesModelWrapperMixin, NoteToFileModelWrapperMixin, \
+    AdultMainConsentModelWrapperMixin, ParentalConsentModelWrapperMixin
 
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
@@ -36,12 +34,11 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  CaregiverEnrolmentInfoModelWrapperMixin,
                                  CaregiverLocatorModelWrapperMixin,
                                  ConsentModelWrapperMixin,
-                                 ClinicianNotesModelWrapperMixin,
                                  LabResultsModelWrapperMixin,
-                                 ODKSpecimenConsentModelWrapperMixin,
                                  OmangCopiesModelWrapperMixin,
-                                 ConsentCopiesModelWrapperMixin,
                                  NoteToFileModelWrapperMixin,
+                                 AdultMainConsentModelWrapperMixin,
+                                 ParentalConsentModelWrapperMixin,
                                  BHPPriorScreeningModelWrapperMixin,
                                  AntenatalEnrollmentModelWrapperMixin,
                                  FlourishConsentVersionModelWrapperMixin,
@@ -87,7 +84,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
             options.update(
                 {
                     'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier
-                    })
+                })
         else:
             options.update(
                 {'subject_identifier': self.subject_identifier})
