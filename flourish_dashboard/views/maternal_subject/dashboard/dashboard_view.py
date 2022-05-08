@@ -239,6 +239,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
                         if child.first_name:
                             full_names = child.first_name + ' ' + child.last_name
+                        else:
+                            full_names = 'ANC SCHEDULE'
 
                         schedule_child_dict[appt.visit_schedule_name] = full_names
 
