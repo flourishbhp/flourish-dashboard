@@ -375,12 +375,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         subject_identifier = self.kwargs.get('subject_identifier')
         last_visits = maternal_visit_cls.objects.filter(
             subject_identifier=subject_identifier, tb_participation=YES).count()
-
         if last_visits > 0:
             try:
                 self.tb_consent_model_cls.objects.get(
                     subject_identifier=subject_identifier)
             except self.tb_consent_model_cls.DoesNotExist:
-                messages.success(self.request,
+                messages.warning(self.request,
                                  'Complete the TB informed consent under special form')
             return True
