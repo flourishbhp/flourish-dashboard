@@ -1,4 +1,3 @@
-from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from edc_base.utils import age, get_utcnow
 
@@ -12,32 +11,15 @@ class ChildDummyConsentModelWrapperMixin:
         return subject_consent[0].screening_identifier
 
     @property
-    def assent_options(self):
-        """Returns a dictionary of options to get an existing
-         child assent model instance.
-        """
-        options = dict(
-            subject_identifier=self.object.subject_identifier,
-            version=self.version)
-        return options
-
-    @property
-    def consent_options(self):
-        """Returns a dictionary of options to get an existing
-        consent model instance.
-        """
-        options = dict(
-            subject_identifier=self.caregiver_subject_identifier,
-            version=self.consent_version)
-        return options
-
-    @property
     def child_consent(self):
         """
         Returns a consent objects of the child from the caregiver consent
         """
-        childconsent = self.get_consent.caregiverchildconsent_set.get(
-            subject_identifier=self.object.subject_identifier)
+        child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+
+        childconsent = child_consent_cls.objects.filter(
+            subject_identifier=self.object.subject_identifier).latest('consent_datetime')
 
         return childconsent
 
@@ -54,7 +36,7 @@ class ChildDummyConsentModelWrapperMixin:
             name = self.get_assent.first_name
             initials = self.get_assent.initials
             return f'{name} {initials}'
-        elif self.get_consent:
+        else:
             childconsent = self.child_consent
             first_name = childconsent.first_name
             last_name = childconsent.last_name
@@ -68,23 +50,18 @@ class ChildDummyConsentModelWrapperMixin:
             birth_date = self.get_assent.dob
             years = age(birth_date, get_utcnow()).years
             return years
-        elif self.get_consent:
+        else:
             childconsent = self.child_consent
             birth_date = childconsent.child_dob
             if birth_date:
                 years = age(birth_date, get_utcnow()).years
                 return years
-        elif self.get_antenatal:
-            birth_date = self.get_antenatal.delivery_datetime.date()
-            years = age(birth_date, get_utcnow()).months
-            return years
-        return 0
 
     @property
     def gender(self):
         if self.get_assent:
             return self.get_assent.gender
-        elif self.get_consent:
+        else:
             childconsent = self.child_consent
             return childconsent.gender
 
@@ -93,15 +70,10 @@ class ChildDummyConsentModelWrapperMixin:
         if self.get_assent:
             birth_date = self.get_assent.dob
             return birth_date
-        elif self.get_consent:
+        else:
             childconsent = self.child_consent
             birth_date = childconsent.child_dob
             return birth_date
-        elif self.get_antenatal:
-            birth_date = self.get_antenatal.delivery_datetime.date()
-            return birth_date
-        return 0
-
 
     @property
     def get_cohort(self):
@@ -114,11 +86,10 @@ class ChildDummyConsentModelWrapperMixin:
     def assent_date(self):
         if self.get_assent:
             return self.get_assent.consent_datetime.date()
-        elif self.get_consent:
+        else:
             childconsent = self.child_consent
             consent_date = childconsent.consent_datetime.date()
             return consent_date
-        return 'N/A'
 
     @property
     def maternal_delivery_obj(self):
@@ -135,10 +106,6 @@ class ChildDummyConsentModelWrapperMixin:
     @property
     def get_assent(self):
         return getattr(self, 'assent_model_obj')
-
-    @property
-    def get_consent(self):
-        return getattr(self, 'consent_model_obj')
 
     @property
     def get_antenatal(self):
