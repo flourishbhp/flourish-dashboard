@@ -10,15 +10,15 @@ from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_constants.constants import YES, POS
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
+from edc_dashboard.views import DashboardView as BaseDashboardView
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
-from ...view_mixin import DashboardViewMixin
+
 from ....model_wrappers import (
     ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
     ChildCrfModelWrapper, ChildOffstudyModelWrapper,
@@ -26,6 +26,7 @@ from ....model_wrappers import (
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper,
     ChildRequisitionModelWrapper)
+from ...view_mixin import DashboardViewMixin
 
 
 class ChildBirthValues(object):
@@ -275,13 +276,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def caregiver_child_consent(self):
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
-        try:
-            child_consent = child_consent_cls.objects.get(
-                subject_identifier=self.subject_identifier,
-                version=self.latest_consent_version)
-        except child_consent_cls.DoesNotExist:
-            return None
-        else:
+
+        child_consent = child_consent_cls.objects.filter(
+            subject_identifier=self.subject_identifier).latest('consent_datetime')
+
+        if child_consent:
             return CaregiverChildConsentModelWrapper(child_consent)
 
     @property
