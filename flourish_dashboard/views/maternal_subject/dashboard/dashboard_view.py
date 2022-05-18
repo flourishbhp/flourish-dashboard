@@ -148,7 +148,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
-        self.request.GET
+
 
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
