@@ -388,3 +388,5 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     messages.warning(self.request,
                                      'Complete the TB informed consent under special form')
                 return True
+        return False
+        
