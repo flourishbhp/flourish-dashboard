@@ -42,7 +42,7 @@ class ChildAssentModelWrapperMixin:
         return ChildAssentModelWrapper(model_obj=model_obj)
 
     @property
-    def version(self):
+    def current_version(self):
         """
         Get the version of the current passed consent
         """
@@ -120,7 +120,7 @@ class ChildAssentModelWrapperMixin:
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
         initials = self.set_initials(first_name, last_name)
-        version = self.version
+        version = self.current_version
 
         options = dict(
             screening_identifier=self.screening_identifier,
@@ -139,7 +139,7 @@ class ChildAssentModelWrapperMixin:
     def child_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
-        version = self.version
+        version = self.current_version
 
         options = dict(
             screening_identifier=self.screening_identifier,
