@@ -149,7 +149,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
 
-
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
@@ -161,6 +160,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         self.get_consent_version_object_or_message(
             self.subject_consent_wrapper.screening_identifier)
+
+        self.get_consent_from_version_form_or_message(
+            self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
 
@@ -265,7 +267,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         return cohorts.replace('_', ' ')
 
-    def set_current_schedule(self, onschedule_model_obj=None, schedule=None, 
+    def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
                              visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:

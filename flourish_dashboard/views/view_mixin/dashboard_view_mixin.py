@@ -117,3 +117,29 @@ class DashboardViewMixin:
                     f'Please complete the continued consent for child {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
+
+    def get_consent_from_version_form_or_message(self, subject_identifier,
+                                                 screening_identifier):
+
+        caregiver_child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+
+        consent_version_cls = django_apps.get_model(
+            'flourish_caregiver.flourishconsentversion')
+
+        try:
+            consent_version_obj = consent_version_cls.objects.get(
+                screening_identifier=screening_identifier)
+        except consent_version_cls.DoesNotExist:
+            pass
+        else:
+            if consent_version_obj.child_version:
+                caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
+                    subject_identifier__startswith=subject_identifier,
+                    version=consent_version_obj.child_version)
+
+                if not caregiver_child_consent_objs:
+                    msg = mark_safe(
+                        'Please complete the v2.1 consent on behalf of child'
+                        f' {subject_identifier}.')
+                    messages.add_message(self.request, messages.WARNING, msg)
