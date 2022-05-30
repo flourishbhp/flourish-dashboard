@@ -47,6 +47,18 @@ class ConsentModelWrapperMixin:
         return version
 
     @property
+    def child_consent_version(self):
+        version = None
+        try:
+            consent_version_obj = self.consent_version_cls.objects.get(
+                screening_identifier=self.screening_identifier)
+        except self.consent_version_cls.DoesNotExist:
+            return self.consent_version
+        else:
+            version = consent_version_obj.child_version
+        return version
+
+    @property
     def consent_model_obj(self):
         """Returns a consent model instance or None.
         """
