@@ -80,8 +80,7 @@ class ChildAssentModelWrapperMixin:
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
             """
-            consent_model_obj is version 1 or 2 
-            
+            consent_model_obj is version 1 or 2
             """
 
             # set was used, to get care giver child consent in v1 or v2
