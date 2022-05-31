@@ -74,16 +74,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             return AntenatalEnrollmentModelWrapper(model_obj=antenatal_enrolment_obj)
 
     @property
-    def appointments(self):
-        """Returns a Queryset of all appointments for this subject.
-        """
-        if not self._appointments:
-            self._appointments = self.appointment_model_cls.objects.filter(
-                subject_identifier=self.subject_identifier).order_by(
-                'visit_code')
-        return self._appointments
-
-    @property
     def screening_pregnant_women(self):
         """Return a wrapped screening for preg women obj.
         """
