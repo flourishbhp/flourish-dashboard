@@ -149,7 +149,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
 
-
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
@@ -265,8 +264,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         return cohorts.replace('_', ' ')
 
-    def set_current_schedule(self, onschedule_model_obj=None, schedule=None, 
-                             visit_schedule=None, is_onschedule=True):
+    def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
+            visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:
                 self.current_schedule = schedule
@@ -370,14 +369,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def tb_eligibility(self):
-        tb_study_screening_cls = django_apps.get_model(
-            'flourish_caregiver.tbstudyscreening')
+        tb_study_eligibility_cls = django_apps.get_model(
+            'flourish_caregiver.tbstudyeligibility')
         subject_identifier = self.kwargs.get('subject_identifier')
         try:
-            tb_study_screening_obj = tb_study_screening_cls.objects.get(
+            tb_study_screening_obj = tb_study_eligibility_cls.objects.get(
                 maternal_visit__subject_identifier=subject_identifier
             )
-        except tb_study_screening_cls.DoesNotExist:
+        except tb_study_eligibility_cls.DoesNotExist:
             pass
         else:
             if tb_study_screening_obj.tb_participation == YES:
@@ -389,4 +388,3 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                                      'Complete the TB informed consent under special form')
                 return True
         return False
-        
