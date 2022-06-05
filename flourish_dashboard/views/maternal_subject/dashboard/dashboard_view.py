@@ -74,16 +74,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             return AntenatalEnrollmentModelWrapper(model_obj=antenatal_enrolment_obj)
 
     @property
-    def appointments(self):
-        """Returns a Queryset of all appointments for this subject.
-        """
-        if not self._appointments:
-            self._appointments = self.appointment_model_cls.objects.filter(
-                subject_identifier=self.subject_identifier).order_by(
-                'visit_code')
-        return self._appointments
-
-    @property
     def screening_pregnant_women(self):
         """Return a wrapped screening for preg women obj.
         """
@@ -149,7 +139,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
 
-
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
@@ -161,6 +150,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         self.get_consent_version_object_or_message(
             self.subject_consent_wrapper.screening_identifier)
+
+        self.get_consent_from_version_form_or_message(
+            self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
 
@@ -265,7 +257,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         return cohorts.replace('_', ' ')
 
-    def set_current_schedule(self, onschedule_model_obj=None, schedule=None, 
+    def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
                              visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:
