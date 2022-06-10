@@ -7,6 +7,7 @@ from edc_odk.model_wrappers import LabResultsModelWrapperMixin, \
     OmangCopiesModelWrapperMixin, NoteToFileModelWrapperMixin, \
     AdultMainConsentModelWrapperMixin, ParentalConsentModelWrapperMixin
 
+from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
 from .bhp_prior_screening_model_wrapper_mixin import \
@@ -46,6 +47,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  CaregiverOffstudyModelWrapperMixin,
                                  CaregiverDeathReportModelWrapperMixin,
                                  ChildAssentModelWrapperMixin,
+                                 TbOffstudyModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')

@@ -190,6 +190,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
             tb_eligibility=tb_eligibility,
+            tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
 
@@ -384,7 +385,35 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     self.tb_consent_model_cls.objects.get(
                         subject_identifier=subject_identifier)
                 except self.tb_consent_model_cls.DoesNotExist:
-                    messages.warning(self.request,
-                                     'Complete the TB informed consent under special form')
+                    messages.warning(
+                        self.request,
+                        'Complete the TB informed consent under special forms')
+                return True
+        return False
+
+    @property
+    def tb_take_off_study(self):
+        visit_screening_cls = django_apps.get_model(
+            'flourish_caregiver.tbvisitscreeningwomen')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            visit_screening = visit_screening_cls.objects.get(
+                maternal_visit__subject_identifier=subject_identifier
+            )
+        except visit_screening_cls.DoesNotExist:
+            return False
+        else:
+            tb_take_off_study = (
+                    visit_screening.have_cough == YES or
+                    visit_screening.cough_duration == '=>2 week' or
+                    visit_screening.fever == YES or
+                    visit_screening.night_sweats == YES or
+                    visit_screening.weight_loss == YES or
+                    visit_screening.cough_blood == YES or
+                    visit_screening.enlarged_lymph_nodes == YES
+            )
+            if not tb_take_off_study:
+                messages.warning(self.request,
+                                 'Complete the TB Off study form under special forms')
                 return True
         return False
