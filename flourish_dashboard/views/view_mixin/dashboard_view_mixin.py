@@ -119,20 +119,28 @@ class DashboardViewMixin:
                     f'Please complete the continued consent for child {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
-        
+
     def is_delivery_window(self, subject_identifier):
-        
+
         maternal_delivery_cls = django_apps.get_model(
             'flourish_caregiver.maternaldelivery')
-        
+
+        preg_screen_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomen')
+
         try:
-            maternal_delivery_obj = maternal_delivery_cls.objects.get(
-                subject_identifier=subject_identifier)
-        except maternal_delivery_cls.DoesNotExist:
-            return True
+            preg_screen_cls.objects.get(subject_identifier=subject_identifier)
+        except preg_screen_cls.DoesNotExist:
+            return False
         else:
-            return ((get_utcnow().date() - maternal_delivery_obj.delivery_datetime.date()).days
-                    <= 3)
+            try:
+                maternal_delivery_obj = maternal_delivery_cls.objects.get(
+                    subject_identifier=subject_identifier)
+            except maternal_delivery_cls.DoesNotExist:
+                return True
+            else:
+                return ((get_utcnow().date() -
+                         maternal_delivery_obj.delivery_datetime.date()).days <= 3)
 
     def get_consent_from_version_form_or_message(self, subject_identifier,
                                                  screening_identifier):
@@ -159,7 +167,7 @@ class DashboardViewMixin:
                         'Please complete the v2.1 consent on behalf of child'
                         f' {subject_identifier}.')
                     messages.add_message(self.request, messages.WARNING, msg)
-            if (self.is_delivery_window(subject_identifier) 
+            if (self.is_delivery_window(subject_identifier)
                     and not consent_version_obj.child_version):
                 msg = mark_safe(
                         'Please complete the consent version for consent on behalf of child'
