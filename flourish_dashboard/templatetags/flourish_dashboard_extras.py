@@ -169,6 +169,7 @@ def locator_button(model_wrapper):
 @register.inclusion_tag(
     'flourish_dashboard/buttons/caregiver_enrolment_info_button.html')
 def caregiver_enrolment_info_button(model_wrapper):
+
     bhp_prior_screening = getattr(model_wrapper,
                                   'bhp_prior_screening_model_obj', None)
     return dict(
