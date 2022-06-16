@@ -395,6 +395,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def tb_take_off_study(self):
         visit_screening_cls = django_apps.get_model(
             'flourish_caregiver.tbvisitscreeningwomen')
+        tb_take_off_study_cls = django_apps.get_model(
+            'flourish_caregiver.tboffstudy')
         subject_identifier = self.kwargs.get('subject_identifier')
         try:
             visit_screening = visit_screening_cls.objects.get(
@@ -413,7 +415,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     visit_screening.enlarged_lymph_nodes == YES
             )
             if not tb_take_off_study:
-                messages.warning(self.request,
-                                 'Complete the TB Off study form under special forms')
-                return True
+                try:
+                    tb_take_off_study_cls.objects.get(
+                        subject_identifier=subject_identifier)
+                except tb_take_off_study_cls.DoesNotExist:
+                    messages.warning(self.request,
+                                     'Complete the TB Off study form under special forms')
+                    return True
         return False
