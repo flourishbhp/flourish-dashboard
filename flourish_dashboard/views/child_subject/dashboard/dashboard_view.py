@@ -341,8 +341,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
             child_offstudy=self.consent_wrapped.child_offstudy,
-            cohort=self.consent_wrapped.get_cohort
-
+            cohort=self.consent_wrapped.get_cohort,
+            child_version=self.consent_wrapped.child_consent_version
             )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',

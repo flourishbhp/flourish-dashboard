@@ -81,7 +81,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier, )
+            screening_identifier=self.object.screening_identifier,)
         if self.assent_model_obj:
             options.update(
                 {
