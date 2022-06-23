@@ -40,3 +40,5 @@ from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 from .child_requisition_model_wrapper import ChildRequisitionModelWrapper
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 from .tb_informed_consent_model_wrapper import TbInformedConsentModelWrapper
+from .tb_offstudy_model_wrapper import TbOffstudyModelWrapper
+from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
