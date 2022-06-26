@@ -4,16 +4,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
-from edc_constants.constants import YES
+from edc_constants.constants import NO, YES
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
-from flourish_caregiver.helper_classes import MaternalStatusHelper
-from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import AntenatalEnrollmentModelWrapper
-from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 
+from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
+    AntenatalEnrollmentModelWrapper
+from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -23,8 +25,6 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -183,6 +183,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
             tb_eligibility=tb_eligibility,
+            tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
 
@@ -362,16 +363,56 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def tb_eligibility(self):
-        maternal_visit_cls = django_apps.get_model(
-            MaternalVisitModelWrapper.model)
+        tb_study_eligibility_cls = django_apps.get_model(
+            'flourish_caregiver.tbstudyeligibility')
         subject_identifier = self.kwargs.get('subject_identifier')
-        last_visits = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier, tb_participation=YES).count()
-        if last_visits > 0:
-            try:
-                self.tb_consent_model_cls.objects.get(
-                    subject_identifier=subject_identifier)
-            except self.tb_consent_model_cls.DoesNotExist:
-                messages.warning(self.request,
-                                 'Complete the TB informed consent under special form')
-            return True
+        try:
+            tb_study_screening_obj = tb_study_eligibility_cls.objects.get(
+                maternal_visit__subject_identifier=subject_identifier
+            )
+        except tb_study_eligibility_cls.DoesNotExist:
+            pass
+        else:
+            if tb_study_screening_obj.tb_participation == YES:
+                try:
+                    self.tb_consent_model_cls.objects.get(
+                        subject_identifier=subject_identifier)
+                except self.tb_consent_model_cls.DoesNotExist:
+                    messages.warning(
+                        self.request,
+                        'Complete the TB informed consent under special forms')
+                return True
+        return False
+
+    @property
+    def tb_take_off_study(self):
+        visit_screening_cls = django_apps.get_model(
+            'flourish_caregiver.tbvisitscreeningwomen')
+        tb_take_off_study_cls = django_apps.get_model(
+            'flourish_caregiver.tboffstudy')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            visit_screening = visit_screening_cls.objects.get(
+                maternal_visit__subject_identifier=subject_identifier
+            )
+        except visit_screening_cls.DoesNotExist:
+            return False
+        else:
+            tb_take_off_study = (
+                    visit_screening.have_cough == YES or
+                    visit_screening.cough_duration == '=>2 week' or
+                    visit_screening.fever == YES or
+                    visit_screening.night_sweats == YES or
+                    visit_screening.weight_loss == YES or
+                    visit_screening.cough_blood == YES or
+                    visit_screening.enlarged_lymph_nodes == YES
+            )
+            if not tb_take_off_study:
+                try:
+                    tb_take_off_study_cls.objects.get(
+                        subject_identifier=subject_identifier)
+                except tb_take_off_study_cls.DoesNotExist:
+                    messages.warning(self.request,
+                                     'Complete the TB Off study form under special forms')
+                    return True
+        return False
