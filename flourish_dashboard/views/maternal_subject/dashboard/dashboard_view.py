@@ -5,17 +5,16 @@ from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
 from edc_constants.constants import NO, YES
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
+from edc_dashboard.views import DashboardView as BaseDashboardView
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
     AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
+
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -25,6 +24,8 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -96,11 +97,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         try:
             maternal_dataset = maternal_dataset_cls.objects.get(
-                subject_identifier=self.kwargs.get('subject_identifier'))
+                screening_identifier=self.subject_consent_wrapper.screening_identifier)
         except maternal_dataset_cls.DoesNotExist:
-            return None
-        else:
-            return MaternalDatasetModelWrapper(maternal_dataset)
+            try:
+                maternal_dataset = maternal_dataset_cls.objects.get(
+                    subject_identifier=self.kwargs.get('subject_identifier'))
+            except maternal_dataset_cls.DoesNotExist:
+                return None
+
+        return MaternalDatasetModelWrapper(maternal_dataset)
 
     @property
     def caregiver_child_consents(self):
