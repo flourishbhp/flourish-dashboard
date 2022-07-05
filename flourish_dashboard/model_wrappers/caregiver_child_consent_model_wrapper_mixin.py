@@ -35,9 +35,14 @@ class CaregiverChildConsentModelWrapperMixin:
         """Returns a caregiver child consent model instance or None.
         """
         try:
+            # was returning non with caregiverchildconsent_options, so subject identifier
+            # and version was used instead 
+            
             return self.caregiver_childconsent_cls.objects.get(
-                **self.caregiverchildconsent_options)
-        except ObjectDoesNotExist:
+                subject_identifier = self.subject_identifier,
+                version = self.child_consent_version
+            )
+        except self.caregiver_childconsent_cls.DoesNotExist:
             return None
 
     @property
