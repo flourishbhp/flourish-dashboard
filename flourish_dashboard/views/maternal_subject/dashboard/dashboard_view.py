@@ -231,7 +231,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                         child = child_consents.latest('consent_datetime')
 
                         appt = appointments.get(
-                            schedule_name=onschedule_model.schedule_name)
+                            schedule_name=onschedule_model.schedule_name,
+                            visit_code_sequence='0')
 
                         full_names = None
 
