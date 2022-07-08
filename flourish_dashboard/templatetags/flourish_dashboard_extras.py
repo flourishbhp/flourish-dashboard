@@ -128,7 +128,6 @@ def bhp_prior_screening_button(model_wrapper):
     'flourish_dashboard/buttons/antenatal_enrollment_button.html')
 def antenatal_enrollment_button(model_wrapper):
     title = ['subject antenatal enrollment.']
-
     preg_screening_cls = django_apps.get_model(
         'flourish_caregiver.screeningpregwomen')
     try:

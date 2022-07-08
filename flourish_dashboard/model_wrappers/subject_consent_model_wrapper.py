@@ -95,6 +95,18 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                             'last_name': self.last_name
                             })
         return options
+    
+    @property
+    def consent(self):
+        """Returns a wrapped saved or unsaved consent.
+        
+        Overriden from consent_mixin because it was used in numerous mixins but in this instance
+        SubjectConsentModelWrapper is what is needed
+        """
+        model_obj = self.consent_model_obj or self.subject_consent_cls(
+            **self.create_consent_options)
+        return SubjectConsentModelWrapper(model_obj=model_obj)
+
 
     @property
     def overall_ineligible(self):
