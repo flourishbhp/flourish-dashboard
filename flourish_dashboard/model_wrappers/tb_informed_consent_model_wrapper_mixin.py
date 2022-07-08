@@ -10,7 +10,7 @@ from .tb_informed_consent_model_wrapper import TbInformedConsentModelWrapper
 
 
 class TbInformedConsentModelWrapperMixin:
-    consent_model_wrapper_cls = TbInformedConsentModelWrapper
+    tb_consent_model_wrapper_cls = TbInformedConsentModelWrapper
 
     @property
     def tb_consent_model_obj(self):
@@ -74,6 +74,6 @@ class TbInformedConsentModelWrapperMixin:
         tz = pytz.timezone('Africa/Gaborone')
         consent_datetime = make_aware(current_datetime, tz, True)
         consent = site_consents.get_consent_for_period(
-            self.consent_model_wrapper_cls.model,
+            self.tb_consent_model_wrapper_cls.model,
             report_datetime=consent_datetime)
         return consent.version
