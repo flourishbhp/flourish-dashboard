@@ -80,9 +80,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
         screening_cls = django_apps.get_model(
             'flourish_caregiver.screeningpregwomen')
+        
         try:
+            
             subject_screening = screening_cls.objects.get(
-                subject_identifier=self.kwargs.get('subject_identifier'))
+                screening_identifier=self.consent.screening_identifier)
         except screening_cls.DoesNotExist:
             return None
         else:
@@ -143,7 +145,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
-
+                
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
