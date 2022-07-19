@@ -82,9 +82,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_caregiver.screeningpregwomen')
         
         try:
-            
+            # subject_consent_wrapper is never null, 
+            # reused a wrapper because it already carry the object required
+            # hence reducing errors
             subject_screening = screening_cls.objects.get(
-                screening_identifier=self.consent.screening_identifier)
+                screening_identifier=self.subject_consent_wrapper.object.screening_identifier)
         except screening_cls.DoesNotExist:
             return None
         else:
