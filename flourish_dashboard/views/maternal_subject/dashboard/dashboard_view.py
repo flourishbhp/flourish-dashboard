@@ -4,13 +4,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
-from edc_constants.constants import NO, YES
+from edc_constants.constants import YES
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_caregiver.helper_classes.fu_onschedule_helper import FollowUpEnrolmentHelper
+from flourish_child.helper_classes.child_fu_onschedule_helper import ChildFollowUpEnrolmentHelper
 from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
     AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
@@ -80,9 +82,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
         screening_cls = django_apps.get_model(
             'flourish_caregiver.screeningpregwomen')
-        
+
         try:
-            # subject_consent_wrapper is never null, 
+            # subject_consent_wrapper is never null,
             # reused a wrapper because it already carry the object required
             # hence reducing errors
             subject_screening = screening_cls.objects.get(
@@ -147,7 +149,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
-                
+
+        if 'fu_enrollment' in self.request.path:
+            self.enrol_subject()
+
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
@@ -195,6 +200,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
+
+    def enrol_subject(self):
+        schedule_enrol_helper = FollowUpEnrolmentHelper(
+            subject_identifier=self.subject_identifier,
+            update_child=True)
+        schedule_enrol_helper.activate_fu_schedule()
 
     @property
     def child_names_schedule_dict(self):
