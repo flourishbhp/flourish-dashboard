@@ -66,15 +66,15 @@ class ConsentModelWrapperMixin:
         try:
             return self.subject_consent_cls.objects.get(**self.consent_options)
         except ObjectDoesNotExist:
-            consents = self.subject_consent_cls.objects.filter(
-                    screening_identifier=self.object.screening_identifier)
-            if consents:
-                try:
-                    return self.subject_consent_cls.objects.get(
-                        screening_identifier=self.object.screening_identifier,
-                        version=consents.latest('consent_datetime').version)
-                except ObjectDoesNotExist:
-                    return None
+            # consents = self.subject_consent_cls.objects.filter(
+            #         screening_identifier=self.object.screening_identifier)
+            # if consents:
+            #     try:
+            #         return self.subject_consent_cls.objects.get(
+            #             screening_identifier=self.object.screening_identifier,
+            #             version=consents.latest('consent_datetime').version)
+            #     except ObjectDoesNotExist:
+            return None
 
     @property
     def consent(self):
@@ -94,19 +94,19 @@ class ConsentModelWrapperMixin:
             consent_identifier=get_uuid(),
             version=self.consent_version
         )
-        if self.consent_version_1_model_obj:
-            consent_version_1 = self.consent_version_1_model_obj.__dict__
+        if self.consent_older_version_model_obj:
+            consent_version_older = self.consent_older_version_model_obj.__dict__
             exclude_options = ['_state', 'consent_datetime', 'report_datetime',
                                'consent_identifier', 'version', 'id',
                                'subject_identifier_as_pk', 'created', 'modified',
                                'site_id', 'device_created', 'device_modified',
                                'hostname_modified', 'hostname_created', 'user_created',
-                               'subject_identifier', 'screening_identifier'
+                               'screening_identifier'
                                ]
             for option in exclude_options:
-                del consent_version_1[option]
+                del consent_version_older[option]
 
-            options.update(**consent_version_1)
+            options.update(**consent_version_older)
 
         if getattr(self, 'bhp_prior_screening_model_obj'):
             bhp_prior_screening = self.bhp_prior_screening_model_obj
@@ -188,13 +188,11 @@ class ConsentModelWrapperMixin:
         return []
 
     @property
-    def consent_version_1_model_obj(self):
+    def consent_older_version_model_obj(self):
         """Returns a consent version 1 model instance or None.
         """
-        options = dict(
-            screening_identifier=self.object.screening_identifier,
-            version='1')
-        try:
-            return self.subject_consent_cls.objects.get(**options)
-        except ObjectDoesNotExist:
-            return None
+        consents = self.subject_consent_cls.objects.filter(
+                screening_identifier=self.object.screening_identifier)
+        if consents:
+            return consents.latest('consent_datetime')
+
