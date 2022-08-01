@@ -3,11 +3,11 @@ from itertools import chain
 from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
+
 from edc_odk.model_wrappers import LabResultsModelWrapperMixin, \
     OmangCopiesModelWrapperMixin, NoteToFileModelWrapperMixin, \
     AdultMainConsentModelWrapperMixin, ParentalConsentModelWrapperMixin
 
-from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
 from .bhp_prior_screening_model_wrapper_mixin import \
@@ -28,6 +28,7 @@ from .flourish_consent_version_model_wrapper_mixin import \
     FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
+from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
 
 
 class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
@@ -71,8 +72,8 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
     @property
     def subject_identifier(self):
-        if self.consent_model_obj:
-            return self.consent_model_obj.subject_identifier
+        if self.consent_older_version_model_obj:
+            return self.consent_older_version_model_obj.subject_identifier
         return None
 
     @property
@@ -95,7 +96,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                             'last_name': self.last_name
                             })
         return options
-    
+
     @property
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
@@ -106,7 +107,6 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
         model_obj = self.consent_model_obj or self.subject_consent_cls(
             **self.create_consent_options)
         return SubjectConsentModelWrapper(model_obj=model_obj)
-
 
     @property
     def overall_ineligible(self):
