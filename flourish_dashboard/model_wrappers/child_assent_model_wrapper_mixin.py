@@ -93,7 +93,6 @@ class ChildAssentModelWrapperMixin:
                 .only('child_age_at_enrollment', 'is_eligible') \
                 .filter(is_eligible=True, child_age_at_enrollment__gte=7)
                 
-            breakpoint()
 
             for caregiverchildconsent in caregiverchildconsents:
                 model_obj = self.child_assent_model_obj(caregiverchildconsent) or \
@@ -114,7 +113,6 @@ class ChildAssentModelWrapperMixin:
                 .filter(is_eligible=True,
                         child_age_at_enrollment__gte=7,
                         child_age_at_enrollment__lt=18)
-            breakpoint()
 
             for caregiver_childconsent in caregiverchildconsents:
                 model_objs = ChildAssent.objects.filter(
