@@ -21,7 +21,7 @@ class DashboardViewMixin:
             appointment__subject_identifier=subject_identifier,
             study_status=OFF_STUDY).order_by('report_datetime').last()
 
-        if obj and obj and obj.visit_code != '2100T':
+        if obj and obj.visit_code != '2100T':
             trigger = True
 
         self.action_cls_item_creator(
