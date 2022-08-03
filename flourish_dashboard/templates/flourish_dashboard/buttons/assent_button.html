@@ -5,7 +5,7 @@
  	{% if consent_obj %}
  	   {% if not child_assent %}
 	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-	        href="{{ add_assent_href }}">
+	        href="{{ child_assent.href }}">
 		{% else %}
 		     class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
 	        href="{{ add_assent_href }}">
