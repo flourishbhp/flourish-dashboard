@@ -7,20 +7,21 @@ from edc_action_item.site_action_items import site_action_items
 from edc_base.utils import get_utcnow
 from edc_constants.constants import OFF_STUDY, NEW
 
-from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, CHILDASSENT_ACTION
+from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, \
+    CHILDASSENT_ACTION
 
 
 class DashboardViewMixin:
 
     def get_offstudy_or_message(self, visit_cls=None, offstudy_cls=None,
-                                offstudy_action=None, trigger=False):
+            offstudy_action=None, trigger=False):
 
         subject_identifier = self.kwargs.get('subject_identifier')
         obj = visit_cls.objects.filter(
             appointment__subject_identifier=subject_identifier,
             study_status=OFF_STUDY).order_by('report_datetime').last()
 
-        if obj:
+        if obj and obj and obj.visit_code != '2100T':
             trigger = True
 
         self.action_cls_item_creator(
@@ -37,7 +38,7 @@ class DashboardViewMixin:
             messages.add_message(self.request, messages.ERROR, msg)
 
     def action_cls_item_creator(self, subject_identifier=None, action_cls=None,
-                                action_type=None, trigger=None):
+            action_type=None, trigger=None):
 
         action_item_cls = site_action_items.get(
             action_cls.action_name)
@@ -102,7 +103,8 @@ class DashboardViewMixin:
                 'Please complete the consent version form before proceeding.')
             messages.add_message(self.request, messages.WARNING, msg)
 
-    def get_continued_consent_object_or_message(self, child_age=None, subject_identifier=None):
+    def get_continued_consent_object_or_message(self, child_age=None,
+            subject_identifier=None):
         obj = None
         child_continued_consent_cls = django_apps.get_model(
             'flourish_child.childcontinuedconsent')
@@ -143,7 +145,7 @@ class DashboardViewMixin:
                          maternal_delivery_obj.delivery_datetime.date()).days <= 3)
 
     def get_consent_from_version_form_or_message(self, subject_identifier,
-                                                 screening_identifier):
+            screening_identifier):
 
         caregiver_child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
@@ -170,6 +172,6 @@ class DashboardViewMixin:
             if (self.is_delivery_window(subject_identifier)
                     and not consent_version_obj.child_version):
                 msg = mark_safe(
-                        'Please complete the consent version for consent on behalf of child'
-                        f' {subject_identifier}.')
+                    'Please complete the consent version for consent on behalf of child'
+                    f' {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
