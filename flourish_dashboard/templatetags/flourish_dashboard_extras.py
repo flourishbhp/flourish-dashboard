@@ -439,3 +439,12 @@ def tb_consent_button(model_wrapper):
         consent_version=consent_version,
         title=' '.join(title))
 
+
+@register.inclusion_tag('flourish_dashboard/buttons/tb_offstudy_button.html')
+def tb_offstudy_button(model_wrapper):
+    title = ['TB Off Study']
+    return dict(
+        tb_offstudy=model_wrapper.tb_offstudy_model_obj,
+        subject_identifier=model_wrapper.tb_offstudy.subject_identifier,
+        add_offstudy_href=model_wrapper.tb_offstudy.href,
+        title=' '.join(title))

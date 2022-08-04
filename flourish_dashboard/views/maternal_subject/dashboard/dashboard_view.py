@@ -79,7 +79,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
         screening_cls = django_apps.get_model(
             'flourish_caregiver.screeningpregwomen')
-        
+
         try:
             # subject_consent_wrapper is never null, 
             # reused a wrapper because it already carry the object required
@@ -146,7 +146,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
-                
+
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
@@ -191,6 +191,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
             tb_eligibility=tb_eligibility,
+            tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
 
@@ -397,3 +398,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                         'Complete the TB informed consent under special forms')
                 return True
         return False
+
+    @property
+    def tb_take_off_study(self):
+        tb_take_off_study_cls = django_apps.get_model(
+            'flourish_caregiver.tboffstudy')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            tb_take_off_study_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except tb_take_off_study_cls.DoesNotExist:
+            return False
+        else:
+            return True

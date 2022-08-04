@@ -1,0 +1,11 @@
+<a id="take_{{ subject_identifier }}_off_study"
+   title="{{ title }}"
+        {% if not tb_offstudy %}
+   class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+   href="{{ add_offstudy_href }}">
+        {% else %}
+            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+            href="{{ add_offstudy_href }}">
+        {% endif %}
+TB 2 Months Visit Off-study
+</a>
