@@ -37,9 +37,14 @@ class ChildAssentModelWrapperMixin:
     def child_assent(self):
         """"Returns a wrapped saved or unsaved child assent
         """
-        model_obj = self.assent_model_obj or self.assent_model_cls(
-            **self.create_child_assent_options(self.caregiverchildconsent_obj))
-        return ChildAssentModelWrapper(model_obj=model_obj)
+        if self.child_age >= 7:
+        
+            model_obj = self.assent_model_obj or self.assent_model_cls(
+                **self.create_child_assent_options(self.caregiverchildconsent_obj))
+            
+            return ChildAssentModelWrapper(model_obj=model_obj)
+        
+        
 
     @property
     def current_version(self):
@@ -87,6 +92,7 @@ class ChildAssentModelWrapperMixin:
             caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
                 .only('child_age_at_enrollment', 'is_eligible') \
                 .filter(is_eligible=True, child_age_at_enrollment__gte=7)
+                
 
             for caregiverchildconsent in caregiverchildconsents:
                 model_obj = self.child_assent_model_obj(caregiverchildconsent) or \
@@ -116,6 +122,8 @@ class ChildAssentModelWrapperMixin:
             return all(exists_conditions)
 
     def create_child_assent_options(self, caregiverchildconsent):
+        
+        # if hasattr(caregiverchildconsent, 'first_name')
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
         initials = self.set_initials(first_name, last_name)

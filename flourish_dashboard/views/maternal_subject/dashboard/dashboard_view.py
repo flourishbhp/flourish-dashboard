@@ -4,17 +4,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
-from edc_constants.constants import NO, YES
+from edc_constants.constants import YES
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
     AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
-
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -24,8 +25,6 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -80,7 +79,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
         screening_cls = django_apps.get_model(
             'flourish_caregiver.screeningpregwomen')
-        
+
         try:
             # subject_consent_wrapper is never null, 
             # reused a wrapper because it already carry the object required
@@ -147,7 +146,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
         context = super().get_context_data(**kwargs)
-                
+
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
@@ -269,7 +268,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
-                             visit_schedule=None, is_onschedule=True):
+            visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:
                 self.current_schedule = schedule
@@ -338,6 +337,21 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return obj
 
     @property
+    def delivery_cls(self):
+        return django_apps.get_model('flourish_caregiver.maternaldelivery')
+
+    @property
+    def delivery_obj(self):
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            delivery_obj = self.delivery_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except self.delivery_cls.DoesNotExist:
+            return None
+        else:
+            return delivery_obj
+
+    @property
     def is_pregnant(self):
         screening_preg_cls = django_apps.get_model(
             'flourish_caregiver.screeningpregwomen')
@@ -349,16 +363,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             except screening_preg_cls.DoesNotExist:
                 return False
             else:
-                delivery_cls = django_apps.get_model(
-                    'flourish_caregiver.maternaldelivery')
-                try:
-                    delivery_cls.objects.get(
-                        subject_identifier=self.consent_wrapped.subject_identifier)
-                except delivery_cls.DoesNotExist:
-                    return True
-                else:
-                    return False
-            return True
+                return False if self.delivery_obj else True
 
     def get_assent_continued_consent_obj_or_msg(self):
         child_consents = self.caregiver_child_consents
@@ -396,33 +401,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def tb_take_off_study(self):
-        visit_screening_cls = django_apps.get_model(
-            'flourish_caregiver.tbvisitscreeningwomen')
         tb_take_off_study_cls = django_apps.get_model(
             'flourish_caregiver.tboffstudy')
         subject_identifier = self.kwargs.get('subject_identifier')
         try:
-            visit_screening = visit_screening_cls.objects.get(
-                maternal_visit__subject_identifier=subject_identifier
-            )
-        except visit_screening_cls.DoesNotExist:
+            tb_take_off_study_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except tb_take_off_study_cls.DoesNotExist:
             return False
         else:
-            tb_take_off_study = (
-                    visit_screening.have_cough == YES or
-                    visit_screening.cough_duration == '=>2 week' or
-                    visit_screening.fever == YES or
-                    visit_screening.night_sweats == YES or
-                    visit_screening.weight_loss == YES or
-                    visit_screening.cough_blood == YES or
-                    visit_screening.enlarged_lymph_nodes == YES
-            )
-            if not tb_take_off_study:
-                try:
-                    tb_take_off_study_cls.objects.get(
-                        subject_identifier=subject_identifier)
-                except tb_take_off_study_cls.DoesNotExist:
-                    messages.warning(self.request,
-                                     'Complete the TB Off study form under special forms')
-                    return True
-        return False
+            return True

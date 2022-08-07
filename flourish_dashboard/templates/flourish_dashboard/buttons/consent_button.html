@@ -2,7 +2,7 @@
  	title="{{ title }}"
  	
  	{% if subject_screening_obj %}
- 		{% if not subject_identifier %}
+ 		{% if not consent_model_obj %}
 	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
 	        href="{{ add_consent_href }}&antenatal={{antenatal}}">
 		{% else %}

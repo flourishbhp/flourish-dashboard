@@ -182,7 +182,7 @@ def caregiver_enrolment_info_button(model_wrapper):
 def consent_button(model_wrapper, antenatal=None):
     title = ['Consent subject to participate.']
     return dict(
-        subject_identifier=model_wrapper.consent.object.subject_identifier,
+        consent_model_obj=model_wrapper.consent_model_obj,
         subject_screening_obj=model_wrapper.object,
         add_consent_href=model_wrapper.consent.href,
         consent_version=model_wrapper.consent_version,
@@ -197,7 +197,6 @@ def assent_button(model_wrapper):
         consent_obj=model_wrapper.object,
         assent_age=model_wrapper.child_age >= 7,
         child_assent=model_wrapper.child_assent,
-        add_assent_href=model_wrapper.child_assent.href,
         title=' '.join(title))
 
 
@@ -250,7 +249,7 @@ def dashboard_button(model_wrapper):
         'subject_dashboard_url')
     return dict(
         subject_dashboard_url=subject_dashboard_url,
-        subject_identifier=model_wrapper.consent_model_obj.subject_identifier)
+        subject_identifier=model_wrapper.consent.subject_identifier)
 
 
 @register.inclusion_tag(
