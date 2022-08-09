@@ -10,7 +10,7 @@
 		function confirm_fu_enrollment() {
 			let confirmAction = confirm("Are you sure  you want to enroll participant in the follow up schedule?");
 			if (confirmAction) {
-			window.location.href="{% url subject_dashboard_url subject_identifier %}fu_enrollment";
+			window.location.href="{% url child_dashboard_url subject_identifier %}fu_enrollment";
 			} else {
 			alert("Action cancelled");
 			}
