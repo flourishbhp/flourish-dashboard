@@ -11,6 +11,12 @@ class ConsentModelWrapperMixin:
     consent_model_wrapper_cls = None
 
     @property
+    def screening_identifier(self):
+        if self.consent_older_version_model_obj:
+            return self.consent_older_version_model_obj.screening_identifier
+        return None
+
+    @property
     def consent_object(self):
         """Returns a consent configuration object from site_consents
         relative to the wrapper's "object" report_datetime.
@@ -37,6 +43,7 @@ class ConsentModelWrapperMixin:
     @property
     def consent_version(self):
         version = None
+        
         try:
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=self.screening_identifier)
@@ -187,4 +194,3 @@ class ConsentModelWrapperMixin:
                 screening_identifier=self.object.screening_identifier)
         if consents:
             return consents.latest('consent_datetime')
-
