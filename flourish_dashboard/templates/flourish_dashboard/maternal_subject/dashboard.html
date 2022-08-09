@@ -4,17 +4,6 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
-{% block other_special_buttons %}
-    {% if fu_participant_note %}
-		<table>
-    		<tr>
-    			<td>{% assents_button subject_consent %}</td>
-    		</tr>
-		</table>
-{% endif %}
-
-{% endblock other_special_buttons %}
-
 {% block locator_information %}{% endblock locator_information %}
 
 {% block dashboard_schedule_footer %}
