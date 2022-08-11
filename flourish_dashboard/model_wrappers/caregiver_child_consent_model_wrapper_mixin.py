@@ -1,5 +1,4 @@
 from django.apps import apps as django_apps
-from django.core.exceptions import ObjectDoesNotExist
 from edc_base.utils import age, get_utcnow
 
 
@@ -36,11 +35,11 @@ class CaregiverChildConsentModelWrapperMixin:
         """
         try:
             # was returning non with caregiverchildconsent_options, so subject identifier
-            # and version was used instead 
-            
+            # and version was used instead
+
             return self.caregiver_childconsent_cls.objects.get(
-                subject_identifier = self.subject_identifier,
-                version = self.child_consent_version
+                subject_identifier=self.subject_identifier,
+                version=self.child_consent_version
             )
         except self.caregiver_childconsent_cls.DoesNotExist:
             return None
