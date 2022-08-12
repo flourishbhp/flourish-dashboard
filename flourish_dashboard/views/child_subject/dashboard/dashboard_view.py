@@ -377,7 +377,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             return flourish_calendar_cls.objects.filter(
                     subject_identifier=self.subject_identifier,
-                    title='Follow Up',)
+                    title='Follow Up Schedule',)
 
     @property
     def maternal_hiv_status(self):
