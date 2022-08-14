@@ -100,7 +100,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
     @property
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
-        
+
         Overriden from consent_mixin because it was used in numerous mixins but in this instance
         SubjectConsentModelWrapper is what is needed
         """

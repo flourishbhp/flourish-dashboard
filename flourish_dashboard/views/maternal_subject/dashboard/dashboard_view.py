@@ -5,17 +5,16 @@ from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
 from edc_constants.constants import YES
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
+from edc_dashboard.views import DashboardView as BaseDashboardView
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
     AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
+
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -25,6 +24,8 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -44,6 +45,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     subject_locator_model = 'flourish_caregiver.caregiverlocator'
     subject_locator_model_wrapper_cls = CaregiverLocatorModelWrapper
     visit_model_wrapper_cls = MaternalVisitModelWrapper
+    child_consent_model_wrapper_cls = CaregiverChildConsentModelWrapper
     mother_infant_study = True
     infant_links = True
     maternal_links = False
@@ -81,7 +83,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_caregiver.screeningpregwomen')
 
         try:
-            # subject_consent_wrapper is never null, 
+            # subject_consent_wrapper is never null,
             # reused a wrapper because it already carry the object required
             # hence reducing errors
             subject_screening = screening_cls.objects.get(
@@ -119,8 +121,20 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             subject_identifier__startswith=self.subject_identifier)
         for child_consent in child_consents:
             wrapped_consents.append(
-                CaregiverChildConsentModelWrapper(child_consent))
+                self.child_consent_model_wrapper_cls(child_consent))
         return wrapped_consents
+
+    @property
+    def caregiver_child_consent_missing(self):
+
+        missing_child_consent = False
+
+        for wrapped_child_consent in self.caregiver_child_consents:
+            if wrapped_child_consent.caregiverchildconsent.id is None:
+                missing_child_consent = True
+                break
+
+        return missing_child_consent
 
     @property
     def subject_consent_wrapper(self):
@@ -182,6 +196,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
+            caregiver_child_consent_missing=self.caregiver_child_consent_missing,
             hiv_status=self.hiv_status,
             child_names=self.child_names_schedule_dict,
             caregiver_child_consents=self.caregiver_child_consents,
@@ -194,6 +209,19 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
+
+    @property
+    def consents_wrapped(self):
+        """Returns a generator of wrapped consents.
+        """
+        wrapped_consents = [self.consent_model_wrapper_cls(obj) for obj in self.consents]
+
+        current_consent = wrapped_consents[0].consent
+
+        if current_consent.id not in self.consents.values_list('id', flat=True):
+            wrapped_consents.append(current_consent)
+
+        return (wrapped_consent for wrapped_consent in wrapped_consents)
 
     @property
     def child_names_schedule_dict(self):
@@ -268,7 +296,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
-            visit_schedule=None, is_onschedule=True):
+                             visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:
                 self.current_schedule = schedule

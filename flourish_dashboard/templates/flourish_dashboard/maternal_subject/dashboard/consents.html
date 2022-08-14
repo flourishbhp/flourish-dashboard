@@ -1,0 +1,24 @@
+{% if consents %}
+
+<table class="table table-condensed">
+    <thead></thead>
+    <tbody>
+    	{% for consent in consents %}
+	        <tr>
+	        <td class="{% if consent %}success{% else %}warning{% endif %}">
+		        {% with wrapped=consent %}
+		            {% include 'edc_dashboard/controls/change_button.html' %}
+		        {% endwith %}
+			</td>
+	        <td class="{% if consent and consent.id != None and caregiver_child_consent_missing is True %}success{% else %}warning{% endif %}">
+	            <span class="h6">{{ consent.verbose_name|title }}&nbsp;v{{ consent.version }}
+	           	<span class="text text-muted">{% if consent and consent.id != None and caregiver_child_consent_missing is True %} consented
+	           	 {{ consent.object.consent_datetime|date:"SHORT_DATE_FORMAT"}} {% else %} awaiting consent {{caregiver_child_consent_missing}} {% endif %}</span>
+	           </span>
+	        </td>
+	      	</tr>
+      	{% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
