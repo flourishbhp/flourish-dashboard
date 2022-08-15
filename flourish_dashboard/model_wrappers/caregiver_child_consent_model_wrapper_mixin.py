@@ -50,7 +50,10 @@ class CaregiverChildConsentModelWrapperMixin:
         """
         model_obj = self.caregiverchildconsent_obj or self.child_consent_model_wrapper_cls(
             **self.caregiverchildconsent_options)
-        return self.child_consent_model_wrapper_cls(model_obj=model_obj)
+        if self.child_consent_model_wrapper_cls:
+            return self.child_consent_model_wrapper_cls(model_obj=model_obj)
+        else:
+            return self.__class__(model_obj=model_obj)
 
     @property
     def caregiverchildconsent_options(self):
