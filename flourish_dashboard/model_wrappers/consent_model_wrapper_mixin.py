@@ -12,7 +12,9 @@ class ConsentModelWrapperMixin:
 
     @property
     def screening_identifier(self):
-        if self.consent_older_version_model_obj:
+        if self.object:
+            return self.object.screening_identifier
+        elif self.consent_older_version_model_obj:
             return self.consent_older_version_model_obj.screening_identifier
         return None
 
