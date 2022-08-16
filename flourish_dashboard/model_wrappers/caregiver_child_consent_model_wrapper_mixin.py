@@ -1,5 +1,4 @@
 from django.apps import apps as django_apps
-from django.core.exceptions import ObjectDoesNotExist
 from edc_base.utils import age, get_utcnow
 
 
@@ -48,7 +47,7 @@ class CaregiverChildConsentModelWrapperMixin:
     def caregiverchildconsent(self):
         """"Returns a wrapped saved or unsaved consent on behalf of child
         """
-        model_obj = self.caregiverchildconsent_obj or self.child_consent_model_wrapper_cls(
+        model_obj = self.caregiverchildconsent_obj or self.caregiver_childconsent_cls(
             **self.caregiverchildconsent_options)
         if self.child_consent_model_wrapper_cls:
             return self.child_consent_model_wrapper_cls(model_obj=model_obj)
