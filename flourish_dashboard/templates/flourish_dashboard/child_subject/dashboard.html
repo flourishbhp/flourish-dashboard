@@ -4,6 +4,36 @@
 {% load edc_subject_dashboard_extras %}
 {% load static %}
 
+{% block extra-scripts %}
+	<script>
+	
+		function confirm_fu_enrollment() {
+			let confirmAction = confirm("Are you sure  you want to enroll participant in the follow up schedule?");
+			if (confirmAction) {
+			window.location.href="{% url subject_dashboard_url subject_identifier %}fu_enrollment";
+			} else {
+			alert("Action cancelled");
+			}
+		}
+	</script>
+
+{% endblock extra-scripts %}
+
+{% block other_special_buttons %}
+    {% if fu_participant_note %}
+		<table>
+    		<tr>
+    			<td>{% assents_button caregiver_child_consent %}</td>
+    			<td><button class="btn btn-sm btn-info"  onclick="confirm_fu_enrollment()">
+					Follow Up Enrol
+					</button>
+				</td>
+    		</tr>
+		</table>
+	{% endif %}
+
+{% endblock other_special_buttons %}
+
 {% block schedule_button %}
 <span class="pull-right"><span class="text test-muted">
     <a href="{% url child_dashboard_url subject_identifier=subject_identifier %}"
@@ -12,6 +42,7 @@
     </a>
 </span></span>
 {% endblock schedule_button %}
+
 
 {% block visit_schedules_panel %}
 	{% for visit_schedule in visit_schedules.values %}
