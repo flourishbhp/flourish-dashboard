@@ -324,7 +324,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         #                           death_cls=child_death_cls)
         if 'fu_enrollment' in self.request.path:
             self.enrol_subject()
-            
+
         self.get_consent_version_object_or_message(
             screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
 
