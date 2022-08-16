@@ -292,8 +292,7 @@ def infant_dash_link(subject_identifier):
 
 @register.inclusion_tag('edc_visit_schedule/subject_schedule_footer_row.html')
 def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
-        subject_dashboard_url
-        ):
+                                subject_dashboard_url):
     context = {}
     try:
         history_obj = SubjectScheduleHistory.objects.get(
