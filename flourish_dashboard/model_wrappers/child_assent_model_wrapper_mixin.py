@@ -92,7 +92,6 @@ class ChildAssentModelWrapperMixin:
             caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
                 .only('child_age_at_enrollment', 'is_eligible') \
                 .filter(is_eligible=True, child_age_at_enrollment__gte=7)
-                
 
             for caregiverchildconsent in caregiverchildconsents:
                 model_obj = self.child_assent_model_obj(caregiverchildconsent) or \
