@@ -20,10 +20,18 @@
 {% endblock extra-scripts %}
 
 {% block other_special_buttons %}
-    {% assents_button subject_consent %}
-    <button class="btn btn-md btn-info"  onclick="confirm_fu_enrollment()">
-		Follow Up Enrol
-	</button>
+    {% if fu_participant_note %}
+		<table>
+    		<tr>
+    			<td>{% assents_button subject_consent %}</td>
+    			<td><button class="btn btn-sm btn-info"  onclick="confirm_fu_enrollment()">
+					Follow Up Enrol
+					</button>
+				</td>
+    		</tr>
+		</table>
+{% endif %}
+
 {% endblock other_special_buttons %}
 
 {% block locator_information %}{% endblock locator_information %}

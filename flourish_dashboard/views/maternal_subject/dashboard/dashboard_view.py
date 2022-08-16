@@ -206,6 +206,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                             self.onschedule_models],
             cohorts=self.get_cohorts,
             subject_consent=self.subject_consent_wrapper,
+            fu_participant_note=self.fu_participant_note,
             gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
@@ -241,6 +242,23 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             wrapped_consents.append(current_consent)
 
         return (wrapped_consent for wrapped_consent in wrapped_consents)
+
+    @property
+    def fu_participant_note(self):
+
+        schedule_history_cls = django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
+
+        fu_schedule = schedule_history_cls.objects.filter(
+            subject_identifier=self.subject_identifier,
+            schedule_name__contains='_fu')
+        if not fu_schedule:
+            flourish_calendar_cls = django_apps.get_model(
+                'flourish_calendar.participantnote')
+
+            return flourish_calendar_cls.objects.filter(
+                    subject_identifier__startswith=self.subject_identifier,
+                    title='Follow Up',)
 
     @property
     def child_names_schedule_dict(self):
@@ -349,7 +367,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier, ).order_by(
+            subject_identifier=subject_identifier,).order_by(
             '-report_datetime').first()
 
         if latest_visit:
