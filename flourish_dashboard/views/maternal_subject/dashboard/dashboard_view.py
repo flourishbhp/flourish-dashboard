@@ -125,16 +125,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return wrapped_consents
 
     @property
-    def caregiver_child_consent_missing(self):
+    def missing_child_version(self):
 
         missing_child_consent = False
-
+        
         for wrapped_child_consent in self.caregiver_child_consents:
             if wrapped_child_consent.caregiverchildconsent.id is None:
-                missing_child_consent = True
+                missing_child_version  = wrapped_child_consent.caregiverchildconsent.version[0]
                 break
 
-        return missing_child_consent
+        return missing_child_version
 
     @property
     def subject_consent_wrapper(self):
@@ -196,7 +196,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
             maternal_dataset=self.maternal_dataset,
-            caregiver_child_consent_missing=self.caregiver_child_consent_missing,
+            missing_child_version=self.missing_child_version,
             hiv_status=self.hiv_status,
             child_names=self.child_names_schedule_dict,
             caregiver_child_consents=self.caregiver_child_consents,
