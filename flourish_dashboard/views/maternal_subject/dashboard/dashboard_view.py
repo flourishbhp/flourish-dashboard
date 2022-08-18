@@ -128,7 +128,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def missing_child_version(self):
 
         missing_child_consent = False
-        
+
         for wrapped_child_consent in self.caregiver_child_consents:
             if wrapped_child_consent.caregiverchildconsent.id is None:
                 missing_child_version  = wrapped_child_consent.caregiverchildconsent.version[0]
