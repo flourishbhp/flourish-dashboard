@@ -3,10 +3,10 @@ from django.apps import apps as django_apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
-from edc_action_item.site_action_items import site_action_items
 from edc_base.utils import get_utcnow
 from edc_constants.constants import OFF_STUDY, NEW
 
+from edc_action_item.site_action_items import site_action_items
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION, \
     CHILDASSENT_ACTION
 
@@ -104,7 +104,7 @@ class DashboardViewMixin:
             messages.add_message(self.request, messages.WARNING, msg)
 
     def get_continued_consent_object_or_message(self, child_age=None,
-            subject_identifier=None):
+                                                subject_identifier=None):
         obj = None
         child_continued_consent_cls = django_apps.get_model(
             'flourish_child.childcontinuedconsent')
@@ -145,7 +145,7 @@ class DashboardViewMixin:
                          maternal_delivery_obj.delivery_datetime.date()).days <= 3)
 
     def get_consent_from_version_form_or_message(self, subject_identifier,
-            screening_identifier):
+                                                 screening_identifier):
 
         caregiver_child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
