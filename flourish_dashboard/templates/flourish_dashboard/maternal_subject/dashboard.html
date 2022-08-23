@@ -4,6 +4,10 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
+{% block alert %}
+    {% include "flourish_dashboard/maternal_subject/dashboard/tb_schedule_alert.html" %}
+{% endblock alert %}
+
 {% block other_special_buttons %}
     {% assents_button subject_consent %}
 {% endblock other_special_buttons %}

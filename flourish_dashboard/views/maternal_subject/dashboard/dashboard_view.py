@@ -165,6 +165,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
             'flourish_caregiver.maternalvisit')
+        
+        tb_off_study_cls = django_apps.get_model(
+            'flourish_caregiver.tboffstudy')
+        
         self.get_offstudy_or_message(
             visit_cls=caregiver_visit_cls,
             offstudy_cls=caregiver_offstudy_cls,
@@ -177,6 +181,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
+        
+        self.get_offstudy_message(offstudy_cls=tb_off_study_cls)
 
         self.get_assent_continued_consent_obj_or_msg()
         self.get_assent_object_or_message()
@@ -439,3 +445,4 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             return False
         else:
             return True
+        
