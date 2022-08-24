@@ -166,9 +166,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         caregiver_visit_cls = django_apps.get_model(
             'flourish_caregiver.maternalvisit')
         
-        tb_off_study_cls = django_apps.get_model(
-            'flourish_caregiver.tboffstudy')
-        
         self.get_offstudy_or_message(
             visit_cls=caregiver_visit_cls,
             offstudy_cls=caregiver_offstudy_cls,
