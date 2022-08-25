@@ -380,6 +380,23 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                     title='Follow Up Schedule',)
 
     @property
+    def fu_participant_note(self):
+
+        schedule_history_cls = django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
+
+        fu_schedule = schedule_history_cls.objects.filter(
+            subject_identifier=self.subject_identifier,
+            schedule_name__contains='_fu')
+        if not fu_schedule:
+            flourish_calendar_cls = django_apps.get_model(
+                'flourish_calendar.participantnote')
+
+            return flourish_calendar_cls.objects.filter(
+                    subject_identifier=self.subject_identifier,
+                    title='Follow Up',)
+
+    @property
     def maternal_hiv_status(self):
         """Returns mother's current hiv status.
         """
