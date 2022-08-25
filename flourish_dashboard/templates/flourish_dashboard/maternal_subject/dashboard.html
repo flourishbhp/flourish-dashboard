@@ -4,6 +4,31 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
+<<<<<<< HEAD
+=======
+{% block extra-scripts %}
+	<script>
+	
+		function confirm_fu_enrollment() {
+			let confirmAction = confirm("Are you sure  you want to enroll participant in the follow up schedule?");
+			if (confirmAction) {
+			window.location.href="{% url subject_dashboard_url subject_identifier %}fu_enrollment";
+			} else {
+			alert("Action cancelled");
+			}
+		}
+	</script>
+
+{% endblock extra-scripts %}
+
+{% block other_special_buttons %}
+    {% assents_button subject_consent %}
+    <button class="btn btn-md btn-info"  onclick="confirm_fu_enrollment()">
+		Follow Up Enrol
+	</button>
+{% endblock other_special_buttons %}
+
+>>>>>>> 4f4a508 (add follow up schedule button)
 {% block locator_information %}{% endblock locator_information %}
 
 {% block dashboard_schedule_footer %}
