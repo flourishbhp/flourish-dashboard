@@ -31,6 +31,7 @@ class DashboardViewMixin:
             trigger=trigger)
 
     def get_offstudy_message(self, offstudy_cls=None, msg=None):
+    
         action_item_obj = self.get_action_item_obj(offstudy_cls)
         msg=msg or mark_safe(f'Please complete the off-study form to take subject off-study.')
         
