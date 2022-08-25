@@ -30,9 +30,12 @@ class DashboardViewMixin:
             action_type=offstudy_action,
             trigger=trigger)
 
-    def get_offstudy_message(self, offstudy_cls=None):
+    def get_offstudy_message(self, offstudy_cls=None, msg=None):
         action_item_obj = self.get_action_item_obj(offstudy_cls)
-        if action_item_obj:
+        if action_item_obj and offstudy_cls.action_name == 'submit-tb-off-study':
+            messages.add_message(self.request, messages.ERROR, msg)
+           
+        elif action_item_obj:
             msg = mark_safe(
                 f'Please complete the off-study form to take subject off-study.')
             messages.add_message(self.request, messages.ERROR, msg)

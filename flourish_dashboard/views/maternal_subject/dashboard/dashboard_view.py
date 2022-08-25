@@ -183,7 +183,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
         
         if not self.tb_take_off_study:
-            self.get_offstudy_message(offstudy_cls=tb_off_study_cls)
+            msg = 'Please complete the TB Off study form to take the subject Off study'
+            self.get_offstudy_message(offstudy_cls=tb_off_study_cls,msg=msg)
 
         self.get_assent_continued_consent_obj_or_msg()
         self.get_assent_object_or_message()
