@@ -35,7 +35,7 @@ class DashboardViewMixin:
         action_item_obj = self.get_action_item_obj(offstudy_cls)
         msg=msg or mark_safe(f'Please complete the off-study form to take subject off-study.')
         
-        if action_item_obj
+        if action_item_obj:
             messages.add_message(self.request, messages.ERROR, msg)
 
     def action_cls_item_creator(self, subject_identifier=None, action_cls=None,
