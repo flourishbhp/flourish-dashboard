@@ -292,8 +292,7 @@ def infant_dash_link(subject_identifier):
 
 @register.inclusion_tag('edc_visit_schedule/subject_schedule_footer_row.html')
 def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
-        subject_dashboard_url
-        ):
+                                subject_dashboard_url):
     context = {}
     try:
         history_obj = SubjectScheduleHistory.objects.get(
@@ -375,11 +374,55 @@ def caregiver_child_consent_button(model_wrapper):
         title=' '.join(title))
 
 
+def is_delivery_window(subject_identifier):
+
+        maternal_delivery_cls = django_apps.get_model(
+            'flourish_caregiver.maternaldelivery')
+
+        preg_screen_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomen')
+
+        try:
+            preg_screen_cls.objects.get(subject_identifier=subject_identifier)
+        except preg_screen_cls.DoesNotExist:
+            return False
+        else:
+            try:
+                maternal_delivery_obj = maternal_delivery_cls.objects.get(
+                    subject_identifier=subject_identifier)
+            except maternal_delivery_cls.DoesNotExist:
+                return True
+            else:
+                return ((get_utcnow().date() -
+                         maternal_delivery_obj.delivery_datetime.date()).days <= 3)
+
+
+def requires_child_version(subject_identifier, screening_identifier):
+
+        caregiver_child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+
+        consent_version_cls = django_apps.get_model(
+            'flourish_caregiver.flourishconsentversion')
+        try:
+            consent_version_obj = consent_version_cls.objects.get(
+                screening_identifier=screening_identifier)
+        except consent_version_cls.DoesNotExist:
+            return False
+        else:
+            return (is_delivery_window(subject_identifier)
+                    and not consent_version_obj.child_version)
+
+
 @register.inclusion_tag(
     'flourish_dashboard/buttons/consent_version_button.html')
 def consent_version_button(model_wrapper):
     title = ['Add Consent Version.']
+
     return dict(
+        requires_child_version=requires_child_version(
+                                    model_wrapper.object.subject_identifier,
+                                    model_wrapper.object.screening_identifier),
         consent_versioned=model_wrapper.flourish_consent_version,
         screening_identifier=model_wrapper.object.screening_identifier,
         add_consent_version_href=model_wrapper.flourish_consent_version.href,

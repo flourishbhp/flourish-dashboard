@@ -17,6 +17,8 @@ from edc_registration.models import RegisteredSubject
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_caregiver.helper_classes.fu_onschedule_helper import FollowUpEnrolmentHelper
+from flourish_child.helper_classes.child_fu_onschedule_helper import ChildFollowUpEnrolmentHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 
 from ....model_wrappers import (
@@ -320,6 +322,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         # self.update_messages(offstudy_cls=child_offstudy_cls)
         # self.get_death_or_message(visit_cls=child_visit_cls,
         #                           death_cls=child_death_cls)
+        if 'fu_enrollment' in self.request.path:
+            self.enrol_subject()
+
         self.get_consent_version_object_or_message(
             screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
 
@@ -342,7 +347,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                             self.onschedule_models],
             child_offstudy=self.consent_wrapped.child_offstudy,
             cohort=self.consent_wrapped.get_cohort,
-            child_version=self.consent_wrapped.child_consent_version
+            child_version=self.consent_wrapped.child_consent_version,
+            fu_participant_note=self.fu_participant_note,
             )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
@@ -350,6 +356,28 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             context=context
             )
         return context
+
+    def enrol_subject(self):
+        schedule_enrol_helper = ChildFollowUpEnrolmentHelper(
+            subject_identifier=self.subject_identifier)
+        schedule_enrol_helper.activate_child_fu_schedule()
+
+    @property
+    def fu_participant_note(self):
+
+        schedule_history_cls = django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
+
+        fu_schedule = schedule_history_cls.objects.filter(
+            subject_identifier=self.subject_identifier,
+            schedule_name__contains='_fu')
+        if not fu_schedule:
+            flourish_calendar_cls = django_apps.get_model(
+                'flourish_calendar.participantnote')
+
+            return flourish_calendar_cls.objects.filter(
+                    subject_identifier=self.subject_identifier,
+                    title='Follow Up Schedule',)
 
     @property
     def maternal_hiv_status(self):

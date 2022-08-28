@@ -45,7 +45,7 @@ class ConsentModelWrapperMixin:
     @property
     def consent_version(self):
         version = None
-        
+
         try:
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=self.screening_identifier)

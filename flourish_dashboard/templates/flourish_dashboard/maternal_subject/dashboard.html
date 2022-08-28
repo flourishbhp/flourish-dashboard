@@ -4,8 +4,14 @@
 {% load edc_subject_dashboard_extras %}
 {% load flourish_dashboard_extras %}
 
+
 {% block other_special_buttons %}
-    {% assents_button subject_consent %}
+	<table>
+   		<tr>
+   			<td>{% assents_button subject_consent %}</td>
+   		</tr>
+	</table>
+
 {% endblock other_special_buttons %}
 
 {% block locator_information %}{% endblock locator_information %}

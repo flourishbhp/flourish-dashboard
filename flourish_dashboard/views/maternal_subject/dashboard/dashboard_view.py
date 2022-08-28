@@ -165,6 +165,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_prn.caregiveroffstudy')
         caregiver_visit_cls = django_apps.get_model(
             'flourish_caregiver.maternalvisit')
+        
+        tb_off_study_cls = django_apps.get_model(
+            'flourish_caregiver.tboffstudy')
+        
         self.get_offstudy_or_message(
             visit_cls=caregiver_visit_cls,
             offstudy_cls=caregiver_offstudy_cls,
@@ -177,6 +181,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
+        
+        if not self.tb_take_off_study:
+            msg = 'Please complete the TB Off study form to take the subject Off study'
+            self.get_offstudy_message(offstudy_cls=tb_off_study_cls, msg=msg)
 
         self.get_assent_continued_consent_obj_or_msg()
         self.get_assent_object_or_message()
@@ -222,6 +230,23 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             wrapped_consents.append(current_consent)
 
         return (wrapped_consent for wrapped_consent in wrapped_consents)
+
+    @property
+    def fu_participant_note(self):
+
+        schedule_history_cls = django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
+
+        fu_schedule = schedule_history_cls.objects.filter(
+            subject_identifier=self.subject_identifier,
+            schedule_name__contains='_fu')
+        if not fu_schedule:
+            flourish_calendar_cls = django_apps.get_model(
+                'flourish_calendar.participantnote')
+
+            return flourish_calendar_cls.objects.filter(
+                    subject_identifier__startswith=self.subject_identifier,
+                    title='Follow Up',)
 
     @property
     def child_names_schedule_dict(self):
@@ -330,7 +355,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier, ).order_by(
+            subject_identifier=subject_identifier,).order_by(
             '-report_datetime').first()
 
         if latest_visit:
@@ -439,3 +464,4 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             return False
         else:
             return True
+        
