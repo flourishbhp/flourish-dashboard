@@ -1,1 +1,2 @@
 from .dashboard_view_mixin import DashboardViewMixin
+from .tb_study_view_mixin import TBStudyViewMixin
