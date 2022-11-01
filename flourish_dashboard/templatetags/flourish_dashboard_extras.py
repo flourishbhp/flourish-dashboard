@@ -483,6 +483,16 @@ def tb_consent_button(model_wrapper):
         title=' '.join(title))
 
 
+@register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')
+def tb_adol_screening_button(model_wrapper):
+    title = ['TB Adol Screening']
+    return dict(
+        tb_adol_screening=model_wrapper.tb_adol_screening_model_obj,
+        subject_identifier=model_wrapper.tb_adol_screening.subject_identifier,
+        add_adol_screening_href=model_wrapper.tb_adol_screening.href,
+        title=' '.join(title))
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_consent_button.html')
 def tb_adol_consent_button(model_wrapper):
     title = ['TB Adol Consent']

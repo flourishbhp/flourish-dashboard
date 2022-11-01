@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from edc_constants.constants import YES
 
 from .tb_adol_screening_model_wrapper import TbAdolScreeningModelWrapper
 
@@ -28,7 +29,12 @@ class TbAdolScreeningModelWrapperMixin:
 
     @property
     def tb_adol_screening_cls(self):
-        return django_apps.get_model('flourish_caregiver.tbadolscreening')
+        return django_apps.get_model('flourish_caregiver.tbadoleligibility')
+
+    @property
+    def tb_adol_eligibility(self):
+        if self.tb_adol_screening_model_obj:
+            return self.tb_adol_screening_model_obj.tb_adol_participation == YES
 
     @property
     def create_tb_adol_screening_options(self):
@@ -37,7 +43,6 @@ class TbAdolScreeningModelWrapperMixin:
         """
         options = dict(
             subject_identifier=self.object.subject_identifier,
-            screening_identifier=self.object.screening_identifier,
             )
         return options
 
