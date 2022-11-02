@@ -3,8 +3,9 @@ from datetime import datetime
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import make_aware
-from edc_consent.site_consents import site_consents
 import pytz
+
+from edc_consent.site_consents import site_consents
 
 from .tb_adol_consent_model_wrapper import TbAdolConsentModelWrapper
 

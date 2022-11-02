@@ -1,11 +1,11 @@
  <a id="informedconsent_add_{{ screening_identifier }}"
  	title="{{ title }}"
-	{% if not tb_consent %}
+	{% if not tb_adol_consent %}
     	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-        href="{{ add_consent_href }}">
+        href="{{ add_adol_consent_href }}">
 	{% else %}
 	    class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
-        href="{{ add_consent_href }}">
+        href="{{ add_adol_consent_href }}">
     {% endif %}
     TB Consent (v{{ consent_version }})
  </a>

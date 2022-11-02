@@ -510,9 +510,9 @@ def tb_adol_consent_button(model_wrapper):
     title = ['TB Adol Consent']
     consent_version = model_wrapper.tb_adol_consent_version
     return dict(
-        tb_consent=model_wrapper.tb_adol_consent_model_obj,
+        tb_adol_consent=model_wrapper.tb_adol_consent_model_obj,
         subject_identifier=model_wrapper.tb_adol_consent.subject_identifier,
-        add_consent_href=model_wrapper.tb_adol_consent.href,
+        add_adol_consent_href=model_wrapper.tb_adol_consent.href,
         consent_version=consent_version,
         title=' '.join(title))
 
