@@ -1,10 +1,12 @@
  <a id="tbadoleligibility_add_{{ screening_identifier }}"
  	title="{{ title }}"
-	{% if not tb_adol_screening %}
-    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+	{% if tb_adol_screening %}
+		
+		 class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
         href="{{ add_adol_screening_href }}">
-	{% else %}
-	    class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+    	
+	{% elif age_adol_range %}
+	   class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
         href="{{ add_adol_screening_href }}">
         
     {% endif %}

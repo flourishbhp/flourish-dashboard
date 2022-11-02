@@ -2,10 +2,10 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_consent.exceptions import NotConsentedError
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 
+from edc_consent.exceptions import NotConsentedError
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
@@ -212,10 +212,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
             tb_eligibility=tb_eligibility,
+            tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
+
+    def age_adol_range(self, child_age):
+
+        if child_age:
+            return child_age >= 10 and child_age <= 17
+        return False
 
     @property
     def consents_wrapped(self):

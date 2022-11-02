@@ -5,7 +5,9 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
+from edc_base.navbars import consent
 from edc_base.utils import age, get_utcnow
+
 from edc_visit_schedule.models import SubjectScheduleHistory
 
 register = template.Library()
@@ -486,21 +488,31 @@ def tb_consent_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')
 def tb_adol_screening_button(model_wrapper):
     title = ['TB Adol Screening']
+
+    children_age = [age(consent.child_dob, get_utcnow()).years
+                    for consent in model_wrapper.child_consents]
+    age_adol_range = False
+    for child_age in children_age:
+        if child_age >= 10 and child_age <= 17:
+            age_adol_range = True
+            break
+
     return dict(
         tb_adol_screening=model_wrapper.tb_adol_screening_model_obj,
         subject_identifier=model_wrapper.tb_adol_screening.subject_identifier,
         add_adol_screening_href=model_wrapper.tb_adol_screening.href,
+        age_adol_range=age_adol_range,
         title=' '.join(title))
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_consent_button.html')
 def tb_adol_consent_button(model_wrapper):
     title = ['TB Adol Consent']
-    consent_version = model_wrapper.tb_consent.version
+    consent_version = model_wrapper.tb_adol_consent_version
     return dict(
-        tb_consent=model_wrapper.tb_consent_model_obj,
-        subject_identifier=model_wrapper.tb_consent.subject_identifier,
-        add_consent_href=model_wrapper.tb_consent.href,
+        tb_consent=model_wrapper.tb_adol_consent_model_obj,
+        subject_identifier=model_wrapper.tb_adol_consent.subject_identifier,
+        add_consent_href=model_wrapper.tb_adol_consent.href,
         consent_version=consent_version,
         title=' '.join(title))
 
