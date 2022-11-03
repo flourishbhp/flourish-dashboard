@@ -27,6 +27,8 @@ from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .flourish_consent_version_model_wrapper_mixin import \
     FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .tb_adol_consent_model_wrapper_mixin import TbAdolConsentModelWrapperMixin
+from .tb_adol_screening_model_wrapper_mixin import TbAdolScreeningModelWrapperMixin
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
 
@@ -49,6 +51,8 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  CaregiverDeathReportModelWrapperMixin,
                                  ChildAssentModelWrapperMixin,
                                  TbOffstudyModelWrapperMixin,
+                                 TbAdolConsentModelWrapperMixin,
+                                 TbAdolScreeningModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
