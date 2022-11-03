@@ -4,7 +4,6 @@
 
 <!--begin unscheduled appointment -->
  {%block unscheduled_appt%}
- {{ wrapped.object.next_by_timepoint }}
 	 {% if wrapped.object.next_by_timepoint or wrapped.object.visit_code == '1000M' or wrapped.object.visit_code == '3000M' %}
 	   {% if not wrapped.disabled and wrapped.object.visit_code_sequence == 0 %}
 	 	{% if wrapped.appt_status == INCOMPLETE_APPT or wrapped.appt_status == COMPLETE_APPT %}
