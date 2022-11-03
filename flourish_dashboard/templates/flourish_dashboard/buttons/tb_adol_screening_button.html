@@ -1,0 +1,14 @@
+ <a id="tbadoleligibility_add_{{ screening_identifier }}"
+ 	title="{{ title }}"
+	{% if tb_adol_screening %}
+		
+		 class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+        href="{{ add_adol_screening_href }}">
+    	
+	{% elif age_adol_range %}
+	   class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+        href="{{ add_adol_screening_href }}">
+        
+    {% endif %}
+    Tb Adol Screening
+ </a>

@@ -5,7 +5,9 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
+from edc_base.navbars import consent
 from edc_base.utils import age, get_utcnow
+
 from edc_visit_schedule.models import SubjectScheduleHistory
 
 register = template.Library()
@@ -142,7 +144,7 @@ def antenatal_enrollment_button(model_wrapper):
         antenatal_enrollment_model_obj=model_wrapper.antenatal_enrollment_model_obj,
         screening_identifier=model_wrapper.object.screening_identifier,
         preg_screening_obj=preg_screening_obj,
-        title=' '.join(title), )
+        title=' '.join(title),)
 
 
 @register.inclusion_tag(
@@ -154,7 +156,7 @@ def maternal_delivery_button(model_wrapper):
         add_maternal_delivery_href=model_wrapper.maternal_delivery.href,
         maternal_delivery_model_obj=model_wrapper.maternal_delivery_model_obj,
         maternal_ultrasound_initial_obj=model_wrapper.maternal_ultrasound_initial_obj,
-        title=' '.join(title), )
+        title=' '.join(title),)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
@@ -218,7 +220,7 @@ def caregiver_contact_button(model_wrapper):
     return dict(
         subject_identifier=model_wrapper.object.subject_identifier,
         add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
-        title=' '.join(title), )
+        title=' '.join(title),)
 
 
 @register.inclusion_tag(
@@ -240,7 +242,7 @@ def assents_button(model_wrapper):
     return dict(
         wrapped_assents=model_wrapper.child_assents,
         unsaved=unsaved,
-        title=' '.join(title), )
+        title=' '.join(title),)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')
@@ -303,7 +305,7 @@ def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
     except SubjectScheduleHistory.DoesNotExist:
         onschedule_model_obj = schedule.onschedule_model_cls.objects.get(
             subject_identifier=subject_identifier,
-            schedule_name=schedule.name, )
+            schedule_name=schedule.name,)
         options = dict(subject_identifier=subject_identifier)
         query = unquote(urlencode(options))
         href = (
@@ -362,7 +364,7 @@ def child_birth_button(child_birth_values):
         add_child_birth_href=child_birth_values.child_birth.href,
         child_birth_model_obj=child_birth_values.child_birth_obj,
         maternal_deliv_obj=child_birth_values.maternal_delivery_model_obj,
-        title=' '.join(title), )
+        title=' '.join(title),)
 
 
 @register.inclusion_tag(
@@ -479,6 +481,38 @@ def tb_consent_button(model_wrapper):
         tb_consent=model_wrapper.tb_consent_model_obj,
         subject_identifier=model_wrapper.tb_consent.subject_identifier,
         add_consent_href=model_wrapper.tb_consent.href,
+        consent_version=consent_version,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')
+def tb_adol_screening_button(model_wrapper):
+    title = ['TB Adol Screening']
+
+    children_age = [age(consent.child_dob, get_utcnow()).years
+                    for consent in model_wrapper.child_consents]
+    age_adol_range = False
+    for child_age in children_age:
+        if child_age >= 10 and child_age <= 17:
+            age_adol_range = True
+            break
+
+    return dict(
+        tb_adol_screening=model_wrapper.tb_adol_screening_model_obj,
+        subject_identifier=model_wrapper.tb_adol_screening.subject_identifier,
+        add_adol_screening_href=model_wrapper.tb_adol_screening.href,
+        age_adol_range=age_adol_range,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/tb_adol_consent_button.html')
+def tb_adol_consent_button(model_wrapper):
+    title = ['TB Adol Consent']
+    consent_version = model_wrapper.tb_adol_consent_version
+    return dict(
+        tb_adol_consent=model_wrapper.tb_adol_consent_model_obj,
+        subject_identifier=model_wrapper.tb_adol_consent.subject_identifier,
+        add_adol_consent_href=model_wrapper.tb_adol_consent.href,
         consent_version=consent_version,
         title=' '.join(title))
 
