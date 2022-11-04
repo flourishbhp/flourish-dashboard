@@ -54,6 +54,7 @@ class DashboardViewMixin:
                 action_item_cls(
                     subject_identifier=subject_identifier)
         else:
+
             self.delete_action_item_if_new(action_cls)
 
     def delete_action_item_if_new(self, action_model_cls):

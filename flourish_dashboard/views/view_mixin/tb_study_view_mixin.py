@@ -17,8 +17,7 @@ class TBStudyViewMixin:
         subject_identifier = self.kwargs.get('subject_identifier')
         try:
             tb_study_screening_obj = tb_study_eligibility_cls.objects.get(
-                maternal_visit__subject_identifier=subject_identifier
-            )
+                maternal_visit__subject_identifier=subject_identifier)
         except tb_study_eligibility_cls.DoesNotExist:
             pass
         else:
