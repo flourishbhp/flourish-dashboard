@@ -1,6 +1,9 @@
 from django.apps import apps as django_apps
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.utils.safestring import mark_safe
+from edc_base.utils import get_utcnow, age
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
@@ -111,8 +114,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         wrapped_consents = []
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
+
         child_consents = child_consent_cls.objects.filter(
-            subject_identifier__startswith=self.subject_identifier)
+            subject_identifier__startswith=self.kwargs.get('subject_identifier'))
         for child_consent in child_consents:
             wrapped_consents.append(
                 self.child_consent_model_wrapper_cls(child_consent))
@@ -152,8 +156,28 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 'No consent object found for participant with subject '
                 f'identifier {self.subject_identifier}')
 
+    def get_tb_adol_eligible_message(self, msg=None):
+
+        msg = msg or mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                               ' Tb Adol Screening form under special forms.')
+
+        children_age = [age(consent.object.child_dob, get_utcnow()).years
+                        for consent in self.caregiver_child_consents]
+
+        age_adol_range = False
+        for child_age in children_age:
+            if child_age >= 10 and child_age <= 17:
+                age_adol_range = True
+                break
+
+        if age_adol_range:
+            messages.add_message(self.request, messages.WARNING, msg)
+
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
+
+        self.get_tb_adol_eligible_message()
+
         context = super().get_context_data(**kwargs)
 
         caregiver_offstudy_cls = django_apps.get_model(
