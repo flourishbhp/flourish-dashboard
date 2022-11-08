@@ -64,7 +64,7 @@ class ChildBirthValues(object):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier, )
+                subject_identifier=caregiver_subject_identifier,)
         except ObjectDoesNotExist:
             return None
         else:
@@ -173,7 +173,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values, )
+            infant_birth_values=infant_birth_values,)
         return context
 
 
@@ -386,7 +386,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier[:-3], ).order_by(
+            subject_identifier=subject_identifier[:-3],).order_by(
             '-report_datetime').first()
 
         if latest_visit:
@@ -441,8 +441,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 trigger=trigger)
 
     def set_current_schedule(self, onschedule_model_obj=None,
-            schedule=None, visit_schedule=None,
-            is_onschedule=True):
+                             schedule=None, visit_schedule=None,
+                             is_onschedule=True):
 
         if onschedule_model_obj:
             if is_onschedule:
