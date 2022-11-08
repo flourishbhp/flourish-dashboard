@@ -1,20 +1,21 @@
 from django.apps import apps as django_apps
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.utils.safestring import mark_safe
+from edc_base.utils import get_utcnow, age
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_consent.exceptions import NotConsentedError
-from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 
+from edc_consent.exceptions import NotConsentedError
+from edc_dashboard.views import DashboardView as BaseDashboardView
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
     AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
-from ...child_subject.dashboard.dashboard_view import ChildBirthValues
-from ...view_mixin import DashboardViewMixin
-from ...view_mixin import TBStudyViewMixin
+
 from ....model_wrappers import AppointmentModelWrapper, \
     SubjectConsentModelWrapper
 from ....model_wrappers import CaregiverChildConsentModelWrapper
@@ -24,6 +25,9 @@ from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
 from ....model_wrappers import MaternalDatasetModelWrapper, \
     CaregiverRequisitionModelWrapper
+from ...child_subject.dashboard.dashboard_view import ChildBirthValues
+from ...view_mixin import DashboardViewMixin
+from ...view_mixin import TBStudyViewMixin
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -110,8 +114,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         wrapped_consents = []
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
+
         child_consents = child_consent_cls.objects.filter(
-            subject_identifier__startswith=self.subject_identifier)
+            subject_identifier__startswith=self.kwargs.get('subject_identifier'))
         for child_consent in child_consents:
             wrapped_consents.append(
                 self.child_consent_model_wrapper_cls(child_consent))
@@ -151,8 +156,28 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 'No consent object found for participant with subject '
                 f'identifier {self.subject_identifier}')
 
+    def get_tb_adol_eligible_message(self, msg=None):
+
+        msg = msg or mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                               ' Tb Adol Screening form under special forms.')
+
+        children_age = [age(consent.object.child_dob, get_utcnow()).years
+                        for consent in self.caregiver_child_consents]
+
+        age_adol_range = False
+        for child_age in children_age:
+            if child_age >= 10 and child_age <= 17:
+                age_adol_range = True
+                break
+
+        if age_adol_range:
+            messages.add_message(self.request, messages.WARNING, msg)
+
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
+
+        self.get_tb_adol_eligible_message()
+
         context = super().get_context_data(**kwargs)
 
         caregiver_offstudy_cls = django_apps.get_model(
@@ -162,7 +187,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         tb_off_study_cls = django_apps.get_model(
             'flourish_caregiver.tboffstudy')
-        
+
         self.get_offstudy_or_message(
             visit_cls=caregiver_visit_cls,
             offstudy_cls=caregiver_offstudy_cls,
@@ -190,6 +215,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         tb_eligibility = self.tb_eligibility
 
+        tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
+
         context.update(
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
@@ -209,9 +236,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
             tb_eligibility=tb_eligibility,
+            tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
+            tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment)
         return context
+
+    def age_adol_range(self, child_age):
+
+        if child_age:
+            return child_age >= 10 and child_age <= 17
+        return False
 
     @property
     def consents_wrapped(self):
@@ -241,7 +276,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             return flourish_calendar_cls.objects.filter(
                 subject_identifier__startswith=self.subject_identifier,
-                title='Follow Up', )
+                title='Follow Up',)
 
     @property
     def child_names_schedule_dict(self):
@@ -350,7 +385,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             MaternalVisitModelWrapper.model)
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier, ).order_by(
+            subject_identifier=subject_identifier,).order_by(
             '-report_datetime').first()
 
         if latest_visit:
