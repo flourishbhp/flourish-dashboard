@@ -177,9 +177,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         
         
         
+
         
         children_age = [age(consent.object.child_dob, get_utcnow()).years
-                        for consent in self.caregiver_child_consents]
+                        for consent in self.caregiver_child_consents if consent.child_dob]
 
         age_adol_range = False
         for child_age in children_age:
