@@ -57,6 +57,23 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     infant_subject_dashboard_url = 'child_dashboard_url'
     antenatal_enrolment_model = 'flourish_caregiver.antenatalenrollment'
     odk_archive_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/odk_archives.html'
+    
+    tb_adol_screening_model = 'flourish_caregiver.tbadoleligibility'
+    tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
+    tb_adol_assent_model = 'flourish_child.tbadolassent'
+    
+    #tb adol classes
+    @property
+    def tb_adol_screening_cls(self):
+        return django_apps.get_model(self.tb_adol_screening_model)
+    
+    @property
+    def tb_adol_consent_cls(self):
+        return django_apps.get_model(self.tb_consent_model)
+    
+    @property
+    def tb_adol_assent_cls(self):
+        return django_apps.get_model(self.tb_adol_assent_model)
 
     @property
     def antenatal_enrolment_cls(self):
@@ -157,21 +174,55 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 f'identifier {self.subject_identifier}')
 
     def get_tb_adol_eligible_message(self, msg=None):
+        
+        
+        
 
-        msg = msg or mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                               ' Tb Adol Screening form under special forms.')
-
+        
         children_age = [age(consent.object.child_dob, get_utcnow()).years
-                        for consent in self.caregiver_child_consents]
+                        for consent in self.caregiver_child_consents if consent.child_dob]
 
         age_adol_range = False
         for child_age in children_age:
             if child_age >= 10 and child_age <= 17:
                 age_adol_range = True
                 break
+            
 
-        if age_adol_range:
-            messages.add_message(self.request, messages.WARNING, msg)
+        subject_identifier = self.kwargs.get('subject_identifier', None)
+        
+        # if condition are meet excute the following if
+        if subject_identifier and age_adol_range and not msg:
+            
+            # used exists cause its faster than filter
+            
+            tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
+                subject_identifier=subject_identifier).exists()
+            
+            
+            tb_consent_exists = self.tb_adol_consent_cls.objects.filter(
+                subject_identifier=subject_identifier).exists()
+            
+            tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
+                subject_identifier=subject_identifier).exists()
+            
+            # if a model is deleted or does not exist, show the notification
+            if not tb_screening_exists:
+                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                               ' Tb Adol Screening form under special forms.')
+            elif not tb_consent_exists:
+                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                               ' Tb Adol Consent form under special forms.')
+            elif not tb_assent_exists:
+                msg =  mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                               ' Tb Adol Assent form under special forms.')
+                
+    
+        
+        
+        messages.add_message(self.request, messages.WARNING, msg)
+                
+
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
