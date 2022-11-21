@@ -69,7 +69,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     
     @property
     def tb_adol_consent_cls(self):
-        return django_apps.get_model(self.tb_consent_model)
+        return django_apps.get_model(self.tb_adol_consent_model)
     
     @property
     def tb_adol_assent_cls(self):
@@ -204,21 +204,21 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 subject_identifier=subject_identifier).exists()
             
             tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
-                subject_identifier=subject_identifier).exists()
+                subject_identifier__istartswith=subject_identifier).exists()
+            
+            
             
             # if a model is deleted or does not exist, show the notification
             if not tb_screening_exists:
                 msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
                                ' Tb Adol Screening form under special forms.')
             elif not tb_consent_exists:
-                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                msg = mark_safe(f'Kindly complete'
                                ' Tb Adol Consent form under special forms.')
             elif not tb_assent_exists:
-                msg =  mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                msg =  mark_safe(f'Kindly complete'
                                ' Tb Adol Assent form under special forms.')
-                
     
-        
         
         messages.add_message(self.request, messages.WARNING, msg)
                 
