@@ -261,7 +261,6 @@ def tb_adol_assents_button(model_wrapper):
 def tb_adol_assent_button(model_wrapper):
     title = ['TB Adol. Assent to participate.']
 
-    breakpoint()
 
     return dict(
         consent_obj=model_wrapper.object,
