@@ -1,0 +1,16 @@
+{% if assent_age %}
+ <a id="tbadolassent_add_{{ screening_identifier }}"
+ 	title="{{ title }}"
+
+ 	{% if consent_obj %}
+ 	   {% if not tb_adol_assent %}
+	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+	        href="{{ tb_adol_assent.href }}">
+		{% else %}
+		     class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+	        href="{{ tb_adol_assent.href }}">
+	    {% endif %}
+	 {% endif %}
+	 TB Adol. Assent
+ </a>
+{% endif %}

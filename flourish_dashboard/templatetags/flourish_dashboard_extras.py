@@ -255,6 +255,19 @@ def tb_adol_assents_button(model_wrapper):
         wrapped_assents=model_wrapper.tb_adol_assents,
         unsaved=unsaved,
         title=' '.join(title),)
+    
+    
+@register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assent_button.html')
+def tb_adol_assent_button(model_wrapper):
+    title = ['TB Adol. Assent to participate.']
+
+    breakpoint()
+
+    return dict(
+        consent_obj=model_wrapper.object,
+        assent_age=model_wrapper.child_age >= 10,
+        tb_adol_assent=model_wrapper.tb_adol_assent,
+        title=' '.join(title))
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/dashboard_button.html')

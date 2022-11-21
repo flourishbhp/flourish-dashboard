@@ -12,9 +12,11 @@ from .child_death_report_model_wrapper_mixin import ChildDeathReportModelWrapper
 from .child_offstudy_model_wrapper_mixin import ChildOffstudyModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .tb_adol_assent_model_wrapper_mixin import TbAdolChildAssentModelWrapperMixin
 
 
 class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
+                                        TbAdolChildAssentModelWrapperMixin,
                                         ConsentModelWrapperMixin,
                                         ChildAssentModelWrapperMixin,
                                         ChildContinuedConsentModelWrapperMixin,
