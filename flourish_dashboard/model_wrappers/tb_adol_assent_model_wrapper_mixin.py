@@ -156,6 +156,7 @@ class TbAdolChildAssentModelWrapperMixin:
             last_name=last_name,
             initials=initials,
             version=version,
+            gender=caregiverchildconsent.gender,
             identity=caregiverchildconsent.identity,
             identity_type=caregiverchildconsent.identity_type,
             confirm_identity=caregiverchildconsent.confirm_identity,
