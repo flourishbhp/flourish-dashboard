@@ -11,6 +11,11 @@
 	          <li>
 	          	<a href="{{ assent.get_absolute_url }}?next={{ assent.next_url }}&{{ assent.querystring }}">
 	               <small>{{ assent.first_name }} {{ assent.last_name }}, ID: {{assent.identity}}</small>
+				   {% if assent.ineligibility %}
+					<div>
+							{{ assent.ineligibility}}
+					</div>
+				   {% endif %}
 	            </a>
 	         </li>
 	        {% endfor %}
