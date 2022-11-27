@@ -50,7 +50,7 @@ class TBStudyViewMixin:
 
     def get_tb_enroll_msg(self):
         if self.is_tb_enroll and not self.tb_take_off_study:
-            messages.info(self.request, 'Participant enrolled on the TB Maternal Study')
+            messages.success(self.request, 'Participant enrolled on the TB Maternal Study')
 
     @property
     def tb_take_off_study(self):

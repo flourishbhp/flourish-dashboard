@@ -80,7 +80,7 @@
 			</div>
 
 				{% block appointments_schedule_footer %}
-					{% subject_schedule_footer_row subject_identifier visit_schedule schedule subject_dashboard_url %}
+					{% subject_schedule_footer_row subject_identifier visit_schedule schedule child_dashboard_url %}
 				{% endblock appointments_schedule_footer %}	
 	     	</div>
 	     {% endif %}
@@ -91,7 +91,7 @@
 
 
 {% block dashboard_schedule_footer %}
-{% subject_schedule_footer_row subject_identifier current_visit_schedule current_schedule subject_dashboard_url %}
+{% subject_schedule_footer_row subject_identifier current_visit_schedule current_schedule child_dashboard_url %}
 {% endblock dashboard_schedule_footer %}
 
 	            

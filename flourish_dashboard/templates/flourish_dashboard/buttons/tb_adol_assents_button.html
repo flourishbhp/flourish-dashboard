@@ -1,0 +1,20 @@
+{% if model_wrapper.tb_adol_assents and model_wrapper.tb_adol_consent_model_obj %}
+	<div class="btn-group">
+
+		<button title = "{{ title|default:'Assents' }}" type="button" class="btn {% if unsaved %} btn-warning {% else %} btn-success {% endif %} btn-sm dropdown-toggle" data-toggle="dropdown">
+		  	{{ wrapped_assents|length }} Tb Adolecent Assent(s) <i class=""></i>
+		    <span class="caret"></span>
+		</button>
+	    <ul class="dropdown-menu" role="menu">
+	        <li class="dropdown-header">{{ title|default:'Assent' }}</li>
+	        {% for assent in model_wrapper.tb_adol_assents %}
+	          <li>
+	          	<a href="{{ assent.get_absolute_url }}?next={{ assent.next_url }}&{{ assent.querystring }}">
+	               <small>{{ assent.first_name }} {{ assent.last_name }}, ID: {{assent.identity}}</small>
+	            </a>
+	         </li>
+	        {% endfor %}
+	     </ul>
+	</div>
+	<br>
+{% endif %}
