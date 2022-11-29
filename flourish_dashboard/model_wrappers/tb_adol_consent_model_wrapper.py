@@ -12,4 +12,4 @@ class TbAdolConsentModelWrapper(ModelWrapper):
     querystring_attrs = ['subject_identifier', 'first_name', 'last_name', 'initials',
                          'dob', 'identity', 'identity_type', 'language',
                          'is_literate', 'witness_name', 'confirm_identity',
-                         'adol_firstname', 'adol_lastname', 'adol_gender']
+                         'adol_firstname', 'adol_lastname', 'adol_gender', 'adol_dob']
