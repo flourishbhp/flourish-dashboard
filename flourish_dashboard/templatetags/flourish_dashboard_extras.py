@@ -512,9 +512,10 @@ def tb_consent_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')
 def tb_adol_screening_button(model_wrapper):
     title = ['TB Adol Screening']
+    
 
     children_age = [age(consent.child_dob, get_utcnow()).years
-                    for consent in model_wrapper.child_consents]
+                    for consent in model_wrapper.child_consents if consent.child_dob]
     age_adol_range = False
     for child_age in children_age:
         if child_age >= 10 and child_age <= 17:
@@ -533,6 +534,7 @@ def tb_adol_screening_button(model_wrapper):
 def tb_adol_consent_button(model_wrapper):
     title = ['TB Adol Consent']
     consent_version = model_wrapper.tb_adol_consent_version
+    
     return dict(
         tb_adol_consent=model_wrapper.tb_adol_consent_model_obj,
         subject_identifier=model_wrapper.tb_adol_consent.subject_identifier,
