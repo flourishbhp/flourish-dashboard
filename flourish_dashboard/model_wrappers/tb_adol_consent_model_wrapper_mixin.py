@@ -90,6 +90,7 @@ class TbAdolConsentModelWrapperMixin:
             witness_name=self.object.witness_name,
             is_dob_estimated=self.object.is_dob_estimated,
             confirm_identity=self.object.confirm_identity,
+            citizen = self.object.citizen,
             **data)
         
         return options
