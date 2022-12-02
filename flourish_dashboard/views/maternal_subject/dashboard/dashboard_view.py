@@ -174,11 +174,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 f'identifier {self.subject_identifier}')
 
     def get_tb_adol_eligible_message(self, msg=None):
-        
-        
-        
 
-        
         children_age = [age(consent.object.child_dob, get_utcnow()).years
                         for consent in self.caregiver_child_consents if consent.child_dob]
 
@@ -389,9 +385,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         cohorts_query = child_consent.values_list('cohort',
                                                   flat=True).distinct()
         cohorts = ''
-        for a in self.onschedule_models:
-            if a.schedule_name == 'a_antenatal1_schedule1':
-                cohorts = 'COHORT_A'
 
         for cohort in cohorts_query:
             if cohort:
