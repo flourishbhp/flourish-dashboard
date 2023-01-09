@@ -28,8 +28,8 @@ class ChildAssentModelWrapperMixin:
         """Returns a child assent model instance or None.
         """
         try:
-            return self.assent_model_cls.objects.get(
-                **self.assent_options)
+            return self.assent_model_cls.objects.filter(
+                **self.assent_options).latest('consent_datetime')
         except ObjectDoesNotExist:
             return None
 
@@ -69,7 +69,7 @@ class ChildAssentModelWrapperMixin:
         """
         options = dict(
             subject_identifier=self.subject_identifier,
-            identity=self.identity,)
+            identity=self.identity, )
         return options
 
     def child_assent_obj(self, **kwargs):
@@ -83,7 +83,7 @@ class ChildAssentModelWrapperMixin:
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
             """
-            consent_model_obj is version 1 or 2
+            consent_model_obj is version 1, 2 or 3
             """
 
             # set was used, to get care giver child consent in v1 or v2
@@ -155,7 +155,9 @@ class ChildAssentModelWrapperMixin:
 
     def child_assent_model_obj(self, caregiverchildconsent):
         try:
-            return self.assent_model_cls.objects.get(subject_identifier=caregiverchildconsent.subject_identifier)
+            return self.assent_model_cls.objects.get(
+                subject_identifier=caregiverchildconsent.subject_identifier,
+                version=caregiverchildconsent.version)
         except self.assent_model_cls.DoesNotExist:
             return None
 

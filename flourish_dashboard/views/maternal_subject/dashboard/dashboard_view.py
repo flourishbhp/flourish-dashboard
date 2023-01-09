@@ -57,20 +57,20 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     infant_subject_dashboard_url = 'child_dashboard_url'
     antenatal_enrolment_model = 'flourish_caregiver.antenatalenrollment'
     odk_archive_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/odk_archives.html'
-    
+
     tb_adol_screening_model = 'flourish_caregiver.tbadoleligibility'
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
-    
+
     #tb adol classes
     @property
     def tb_adol_screening_cls(self):
         return django_apps.get_model(self.tb_adol_screening_model)
-    
+
     @property
     def tb_adol_consent_cls(self):
         return django_apps.get_model(self.tb_consent_model)
-    
+
     @property
     def tb_adol_assent_cls(self):
         return django_apps.get_model(self.tb_adol_assent_model)
@@ -146,8 +146,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         for wrapped_child_consent in self.caregiver_child_consents:
             if wrapped_child_consent.caregiverchildconsent.id is None:
-                missing_child_version = \
-                wrapped_child_consent.caregiverchildconsent.version[0]
+                missing_child_version = wrapped_child_consent.caregiverchildconsent.version[0]
                 break
 
         return missing_child_version
@@ -183,42 +182,35 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             if child_age >= 10 and child_age <= 17:
                 age_adol_range = True
                 break
-            
 
         subject_identifier = self.kwargs.get('subject_identifier', None)
-        
+
         # if condition are meet excute the following if
         if subject_identifier and age_adol_range and not msg:
-            
+
             # used exists cause its faster than filter
-            
+
             tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
                 subject_identifier=subject_identifier).exists()
-            
-            
+
             tb_consent_exists = self.tb_adol_consent_cls.objects.filter(
                 subject_identifier=subject_identifier).exists()
-            
+
             tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
                 subject_identifier=subject_identifier).exists()
-            
+
             # if a model is deleted or does not exist, show the notification
             if not tb_screening_exists:
                 msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                               ' Tb Adol Screening form under special forms.')
+                                ' Tb Adol Screening form under special forms.')
             elif not tb_consent_exists:
                 msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                               ' Tb Adol Consent form under special forms.')
+                                ' Tb Adol Consent form under special forms.')
             elif not tb_assent_exists:
-                msg =  mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                               ' Tb Adol Assent form under special forms.')
-                
-    
-        
-        
-        messages.add_message(self.request, messages.WARNING, msg)
-                
+                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
+                                ' Tb Adol Assent form under special forms.')
 
+        messages.add_message(self.request, messages.WARNING, msg)
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
@@ -395,7 +387,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return cohorts.replace('_', ' ')
 
     def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
-            visit_schedule=None, is_onschedule=True):
+                             visit_schedule=None, is_onschedule=True):
         if onschedule_model_obj:
             if is_onschedule:
                 self.current_schedule = schedule

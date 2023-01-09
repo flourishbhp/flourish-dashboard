@@ -64,11 +64,11 @@ class ChildBirthValues(object):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier,)
+                subject_identifier=caregiver_subject_identifier,).latest('consent_datetime')
         except ObjectDoesNotExist:
             return None
         else:
-            screening_identifier = consent[0]
+            screening_identifier = consent.screening_identifier
             try:
                 consent_version_obj = self.consent_version_cls.objects.get(
                     screening_identifier=screening_identifier)
@@ -253,26 +253,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     @property
     def latest_consent_version(self):
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
-
-        version = None
-        try:
-            consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier)
-        except ObjectDoesNotExist:
-            return None
-        else:
-            latest_consent = consent[0]
-            try:
-                consent_version_obj = self.consent_version_cls.objects.get(
-                    screening_identifier=latest_consent.screening_identifier)
-            except self.consent_version_cls.DoesNotExist:
-                version = '1'
-            else:
-                version = consent_version_obj.version
-            return version
+        return ChildBirthValues(
+            subject_identifier=self.subject_identifier).latest_consent_version
 
     @property
     def caregiver_child_consent(self):
@@ -337,7 +319,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         self.get_continued_consent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age)
         self.get_assent_object_or_message(
-            subject_identifier=self.subject_identifier, child_age=child_age)
+            subject_identifier=self.subject_identifier, child_age=child_age,
+            version=self.latest_consent_version)
 
         context.update(
             caregiver_child_consent=self.caregiver_child_consent,

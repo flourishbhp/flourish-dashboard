@@ -243,15 +243,15 @@ def assents_button(model_wrapper):
         wrapped_assents=model_wrapper.child_assents,
         unsaved=unsaved,
         title=' '.join(title),)
-    
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assents_button.html')
 def tb_adol_assents_button(model_wrapper):
     title = ['TB Adol Assent(s)']
-    
     unsaved = any(
         instance.id is None for instance in model_wrapper.tb_adol_assents)
     return dict(
-        model_wrapper = model_wrapper,
+        model_wrapper=model_wrapper,
         wrapped_assents=model_wrapper.tb_adol_assents,
         unsaved=unsaved,
         title=' '.join(title),)
