@@ -72,7 +72,8 @@ class DashboardViewMixin:
             try:
                 action_item_model_cls.objects.get(
                     subject_identifier=subject_identifier,
-                    action_type__name=action_type)
+                    action_type__name=action_type,
+                    status=NEW)
             except ObjectDoesNotExist:
                 action_item_cls(
                     subject_identifier=subject_identifier)
@@ -100,19 +101,26 @@ class DashboardViewMixin:
             return None
         return action_item_obj
 
-    def get_assent_object_or_message(self, child_age=None, subject_identifier=None):
+    def get_assent_object_or_message(
+            self, child_age=None, subject_identifier=None, version=None):
         obj = None
         assent_cls = django_apps.get_model('flourish_child.childassent')
         if child_age and ((child_age / 12) >= 7 and (child_age / 12 < 18)):
             try:
-                obj = assent_cls.objects.get(subject_identifier=subject_identifier)
+                obj = assent_cls.objects.get(
+                    subject_identifier=subject_identifier,
+                    version=version)
             except assent_cls.DoesNotExist:
                 self.action_cls_item_creator(
                     subject_identifier=subject_identifier,
                     action_cls=assent_cls,
                     action_type=CHILDASSENT_ACTION)
-                msg = mark_safe(
-                    f'Please complete the assent for child {subject_identifier}.')
+                if version:
+                    msg = mark_safe(
+                        f'Please complete the v{version} assent for child {subject_identifier}')
+                else:
+                    msg = mark_safe(
+                        f'Please complete assent for child {subject_identifier}')
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
 
@@ -191,8 +199,8 @@ class DashboardViewMixin:
 
                 if not caregiver_child_consent_objs:
                     msg = mark_safe(
-                        'Please complete the v2.1 consent on behalf of child'
-                        f' {subject_identifier}.')
+                        f'Please complete the v{consent_version_obj.child_version} consent '
+                        f'on behalf of child {subject_identifier}.')
                     messages.add_message(self.request, messages.WARNING, msg)
             if (self.is_delivery_window(subject_identifier)
                     and not consent_version_obj.child_version):
