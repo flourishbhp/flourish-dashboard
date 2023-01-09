@@ -62,18 +62,6 @@ class TbAdolConsentModelWrapperMixin:
         """Returns a dictionary of options to create a new
         unpersisted tb adolescent consent model instance.
         """
-        
-        data = dict()
-        
-        if self.child_consent_obj:
-        
-            data = dict(
-                adol_firstname = self.child_consent_obj.first_name,
-                adol_lastname = self.child_consent_obj.last_name,
-                adol_gender = self.child_consent_obj.gender,
-                adol_dob = self.child_consent_obj.child_dob)
-            
-            
     
                 
         options = dict(
@@ -90,8 +78,7 @@ class TbAdolConsentModelWrapperMixin:
             witness_name=self.object.witness_name,
             is_dob_estimated=self.object.is_dob_estimated,
             confirm_identity=self.object.confirm_identity,
-            citizen = self.object.citizen,
-            **data)
+            citizen = self.object.citizen,)
         
         return options
 
