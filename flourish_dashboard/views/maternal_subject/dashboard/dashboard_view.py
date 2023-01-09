@@ -304,10 +304,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """Returns a generator of wrapped consents.
         """
         wrapped_consents = [self.consent_model_wrapper_cls(obj) for obj in self.consents]
+        
 
-        current_consent = wrapped_consents[0].consent
+        current_consent = wrapped_consents[0].consent if wrapped_consents else None
 
-        if current_consent.id not in self.consents.values_list('id', flat=True):
+        if current_consent and current_consent.id not in self.consents.values_list('id', flat=True):
             wrapped_consents.append(current_consent)
 
         return (wrapped_consent for wrapped_consent in wrapped_consents)
