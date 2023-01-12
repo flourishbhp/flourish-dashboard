@@ -93,7 +93,7 @@ class TbAdolChildAssentModelWrapperMixin:
                         child_age_at_enrollment__lte=17)
 
             for caregiverchildconsent in caregiverchildconsents:
-                model_obj = self.tb_adol_assent_model_obj(caregiverchildconsent) or \
+                model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
                             self.tb_adol_assent_model_cls(
                                 **self.create_tb_adol_assent_options(caregiverchildconsent))
                 # create options based on caregiverchildconsent, which is either version 1 or version 2
@@ -114,7 +114,7 @@ class TbAdolChildAssentModelWrapperMixin:
                 .filter(is_eligible=True, child_age_at_enrollment__gte=7)
 
             for caregiverchildconsent in caregiverchildconsents:
-                model_obj = self.tb_adol_assent_model_obj(caregiverchildconsent) or \
+                model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
                             self.tb_adol_assent_model_cls(
                                 **self.create_tb_adol_assent_options(caregiverchildconsent))
                 # create options based on caregiverchildconsent, which is either version 1 or version 2
@@ -156,13 +156,14 @@ class TbAdolChildAssentModelWrapperMixin:
             last_name=last_name,
             initials=initials,
             version=version,
+            gender=caregiverchildconsent.gender,
             identity=caregiverchildconsent.identity,
             identity_type=caregiverchildconsent.identity_type,
             confirm_identity=caregiverchildconsent.confirm_identity,
             dob=caregiverchildconsent.child_dob)
         return options
 
-    def tb_adol_assent_options(self, caregiverchildconsent):
+    def get_tb_adol_assent_options(self, caregiverchildconsent):
         first_name = caregiverchildconsent.first_name
         last_name = caregiverchildconsent.last_name
         version = self.current_version
@@ -175,7 +176,7 @@ class TbAdolChildAssentModelWrapperMixin:
             identity=caregiverchildconsent.identity)
         return options
 
-    def tb_adol_assent_model_obj(self, caregiverchildconsent):
+    def get_tb_adol_assent_model_obj(self, caregiverchildconsent):
         try:
             return self.tb_adol_assent_model_cls.objects.get(subject_identifier=caregiverchildconsent.subject_identifier)
         except self.tb_adol_assent_model_cls.DoesNotExist:

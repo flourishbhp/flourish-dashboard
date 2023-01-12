@@ -27,7 +27,7 @@ from ....model_wrappers import (
     ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
     ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
     ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper,
-    ChildRequisitionModelWrapper)
+    ChildRequisitionModelWrapper, TbAdolReferralModelWrapper)
 from ...view_mixin import DashboardViewMixin
 
 
@@ -233,6 +233,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     subject_consent_cls = django_apps.get_model(
         'flourish_caregiver.subjectconsent')
+    
+    tb_adol_referal_cls = django_apps.get_model(
+        'flourish_prn.tbreferaladol')
 
     @property
     def data_action_item(self):
@@ -332,13 +335,26 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             cohort=self.consent_wrapped.get_cohort,
             child_version=self.consent_wrapped.child_consent_version,
             fu_participant_note=self.fu_participant_note,
-            )
+            tb_adol_referal = self.tb_adol_referal)
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
             context=context
             )
         return context
+    
+    @property
+    def tb_adol_referal(self):
+        
+        try:
+            tb_referal = self.tb_adol_referal_cls.objects.filter(
+                subject_identifier = self.subject_identifier
+            ).latest('report_datetime')
+        except self.tb_adol_referal_cls.DoesNotExist:
+            pass
+        else:
+            return TbAdolReferralModelWrapper(model_obj=tb_referal)
+        
 
     def enrol_subject(self):
         schedule_enrol_helper = ChildFollowUpEnrolmentHelper(
