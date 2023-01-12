@@ -221,6 +221,14 @@ def caregiver_contact_button(model_wrapper):
         subject_identifier=model_wrapper.object.subject_identifier,
         add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
         title=' '.join(title),)
+    
+    
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/child_tb_referal_button.html')
+def tb_adol_referal_button(model_wrapper):
+    return dict(
+        subject_identifier=model_wrapper.object.subject_identifier,
+        href=model_wrapper.href,)
 
 
 @register.inclusion_tag(

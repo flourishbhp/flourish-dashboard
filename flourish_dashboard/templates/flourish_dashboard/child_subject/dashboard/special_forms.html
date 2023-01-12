@@ -36,6 +36,15 @@
             </td>
         </tr>
     {% endif %}
+
+    {% if tb_adol_referal %}
+        <tr>
+            <td>
+                {% tb_adol_referal_button tb_adol_referal %}
+            </td>
+        </tr>
+    {% endif %}
+
     {% if caregiver_child_consent.child_death_report %}
         <tr>
             <td>

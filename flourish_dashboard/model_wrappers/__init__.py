@@ -43,3 +43,4 @@ from .tb_informed_consent_model_wrapper import TbInformedConsentModelWrapper
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 from .tb_offstudy_model_wrapper import TbOffstudyModelWrapper
 from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
+from .child_tb_adol_referral_model_wrapper import TbAdolReferralModelWrapper
