@@ -69,8 +69,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def tb_adol_consent_cls(self):
-        return django_apps.get_model(self.tb_consent_model)
-
+        return django_apps.get_model(self.tb_adol_consent_model)
+    
     @property
     def tb_adol_assent_cls(self):
         return django_apps.get_model(self.tb_adol_assent_model)
@@ -197,25 +197,31 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 subject_identifier=subject_identifier).exists()
 
             tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
-                subject_identifier=subject_identifier).exists()
-
+                subject_identifier__istartswith=subject_identifier).exists()
+            
+            
+            
             # if a model is deleted or does not exist, show the notification
             if not tb_screening_exists:
                 msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
                                 ' Tb Adol Screening form under special forms.')
             elif not tb_consent_exists:
-                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                                ' Tb Adol Consent form under special forms.')
+                msg = mark_safe(f'Kindly complete'
+                               ' Tb Adol Consent form under special forms.')
             elif not tb_assent_exists:
-                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                                ' Tb Adol Assent form under special forms.')
+                msg =  mark_safe(f'Kindly complete'
+                               ' Tb Adol Assent form under special forms.')
+    
+        
+        messages.add_message(self.request, messages.WARNING, msg)
+                
 
         messages.add_message(self.request, messages.WARNING, msg)
 
     def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
         global offstudy_cls_model_obj
 
-        # self.get_tb_adol_eligible_message()
+        self.get_tb_adol_eligible_message()
 
         context = super().get_context_data(**kwargs)
 
@@ -292,10 +298,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """Returns a generator of wrapped consents.
         """
         wrapped_consents = [self.consent_model_wrapper_cls(obj) for obj in self.consents]
+        
 
-        current_consent = wrapped_consents[0].consent
+        current_consent = wrapped_consents[0].consent if wrapped_consents else None
 
-        if current_consent.id not in self.consents.values_list('id', flat=True):
+        if current_consent and current_consent.id not in self.consents.values_list('id', flat=True):
             wrapped_consents.append(current_consent)
 
         return (wrapped_consent for wrapped_consent in wrapped_consents)
