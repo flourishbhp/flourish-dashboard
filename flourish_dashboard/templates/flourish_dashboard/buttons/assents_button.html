@@ -12,9 +12,16 @@
             {% for assent in wrapped_assents %}
                 <li>
                     <a href="{{ assent.get_absolute_url }}?next={{ assent.next_url }}&{{ assent.querystring }}">
+              			{% if assent.id %}
+              				<small><i class="fa fa-check-circle" aria-hidden="true" style='color:green'></i></small>
+              			{% else %}
+              				<small><i class="fa fa-times-circle" aria-hidden="true" style='color:red'></i></small>
+              			{%endif%}
                         <small>{{ assent.first_name }} {{ assent.last_name }},
-                            ID: {{ assent.identity }}</small>
-                        <small>{{ assent.ineligibility }}</small>
+                            ID: {{ assent.identity }} (v{{assent.version}})</small>
+                        {% if not assent.is_eligible %}
+                        	<small>{{ assent.ineligibility }}</small>
+                        {% endif %}
                     </a>
 
                 </li>
