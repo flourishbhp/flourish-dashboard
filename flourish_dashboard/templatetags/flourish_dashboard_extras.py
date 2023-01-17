@@ -256,7 +256,6 @@ def assents_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assents_button.html')
 def tb_adol_assents_button(model_wrapper):
     title = ['TB Adol Assent(s)']
-    breakpoint()
     unsaved = any(
         instance.id is None for instance in model_wrapper.tb_adol_assents)
     return dict(

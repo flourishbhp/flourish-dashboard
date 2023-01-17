@@ -80,7 +80,6 @@ class TbAdolChildAssentModelWrapperMixin:
     @property
     def tb_adol_assents(self):
         
-        breakpoint()
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
             """
