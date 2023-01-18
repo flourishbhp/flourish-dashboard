@@ -93,6 +93,10 @@ class TbAdolChildAssentModelWrapperMixin:
 
             for caregiverchildconsent in caregiverchildconsents:
                 
+                # exclude all unborn babies
+                if not caregiverchildconsent.child_dob:
+                    continue
+                
                 child_age = age(caregiverchildconsent.child_dob, get_utcnow()).years
                 
                 if 10 <= child_age <= 17:
