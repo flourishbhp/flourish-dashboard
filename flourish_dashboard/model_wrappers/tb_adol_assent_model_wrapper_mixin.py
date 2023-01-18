@@ -100,7 +100,8 @@ class TbAdolChildAssentModelWrapperMixin:
                                 self.tb_adol_assent_model_cls(
                                     **self.create_tb_adol_assent_options(caregiverchildconsent))
 
-                wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
+                    wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
+                    
         return wrapped_entries
     
     def tb_adol_child_assents(self):
