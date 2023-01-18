@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from edc_base.utils import get_utcnow
+from edc_base.utils import get_utcnow, age
 
 from .tb_adol_assent_model_wrapper import TbAdolAssentModelWrapper
 
@@ -79,6 +79,7 @@ class TbAdolChildAssentModelWrapperMixin:
 
     @property
     def tb_adol_assents(self):
+        
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
             """
@@ -88,15 +89,16 @@ class TbAdolChildAssentModelWrapperMixin:
             # set was used, to get care giver child consent in v1 or v2
             caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
                 .only('child_age_at_enrollment', 'is_eligible') \
-                .filter(is_eligible=True, 
-                        child_age_at_enrollment__gte=10, 
-                        child_age_at_enrollment__lte=17)
+                .filter(is_eligible=True)
 
             for caregiverchildconsent in caregiverchildconsents:
-                model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
-                            self.tb_adol_assent_model_cls(
-                                **self.create_tb_adol_assent_options(caregiverchildconsent))
-                # create options based on caregiverchildconsent, which is either version 1 or version 2
+                
+                child_age = age(caregiverchildconsent.child_dob, get_utcnow()).years
+                
+                if 10 <= child_age <= 17:
+                    model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
+                                self.tb_adol_assent_model_cls(
+                                    **self.create_tb_adol_assent_options(caregiverchildconsent))
 
                 wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
         return wrapped_entries
