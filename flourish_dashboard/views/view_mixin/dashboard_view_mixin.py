@@ -147,6 +147,7 @@ class DashboardViewMixin:
                     subject_identifier=subject_identifier)
             except ObjectDoesNotExist:
                 self.action_cls_item_creator(
+                    trigger = True,
                     subject_identifier=subject_identifier,
                     action_cls=child_continued_consent_cls,
                     action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)
