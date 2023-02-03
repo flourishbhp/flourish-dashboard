@@ -233,7 +233,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     subject_consent_cls = django_apps.get_model(
         'flourish_caregiver.subjectconsent')
-    
+
     tb_adol_referal_cls = django_apps.get_model(
         'flourish_prn.tbreferaladol')
 
@@ -297,6 +297,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return ChildDatasetModelWrapper(child_dataset)
 
     def get_context_data(self, **kwargs):
+        # Put on schedule before getting the context, so schedule shows onreload.
+        if 'fu_enrollment' in self.request.path:
+            self.enrol_subject()
+
         context = super().get_context_data(**kwargs)
 
         child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
@@ -307,8 +311,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         # self.update_messages(offstudy_cls=child_offstudy_cls)
         # self.get_death_or_message(visit_cls=child_visit_cls,
         #                           death_cls=child_death_cls)
-        if 'fu_enrollment' in self.request.path:
-            self.enrol_subject()
 
         self.get_consent_version_object_or_message(
             screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
@@ -335,30 +337,29 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             cohort=self.consent_wrapped.get_cohort,
             child_version=self.consent_wrapped.child_consent_version,
             fu_participant_note=self.fu_participant_note,
-            tb_adol_referal = self.tb_adol_referal)
+            tb_adol_referal=self.tb_adol_referal)
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
             context=context
             )
         return context
-    
+
     @property
     def tb_adol_referal(self):
-        
         try:
             tb_referal = self.tb_adol_referal_cls.objects.filter(
-                subject_identifier = self.subject_identifier
+                subject_identifier=self.subject_identifier
             ).latest('report_datetime')
         except self.tb_adol_referal_cls.DoesNotExist:
             pass
         else:
             return TbAdolReferralModelWrapper(model_obj=tb_referal)
-        
 
     def enrol_subject(self):
+        subject_identifier = self.kwargs.get('subject_identifier')
         schedule_enrol_helper = ChildFollowUpEnrolmentHelper(
-            subject_identifier=self.subject_identifier)
+            subject_identifier=subject_identifier)
         schedule_enrol_helper.activate_child_fu_schedule()
 
     @property
