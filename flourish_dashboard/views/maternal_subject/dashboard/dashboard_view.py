@@ -62,7 +62,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
 
-    #tb adol classes
     @property
     def tb_adol_screening_cls(self):
         return django_apps.get_model(self.tb_adol_screening_model)
@@ -70,7 +69,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     @property
     def tb_adol_consent_cls(self):
         return django_apps.get_model(self.tb_adol_consent_model)
-    
+
     @property
     def tb_adol_assent_cls(self):
         return django_apps.get_model(self.tb_adol_assent_model)
@@ -198,23 +197,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
                 subject_identifier__istartswith=subject_identifier).exists()
-            
-            
-            
+
             # if a model is deleted or does not exist, show the notification
             if not tb_screening_exists:
-                msg = mark_safe(f'Subject is eligible for TB Adolescent study, kindly complete'
-                                ' Tb Adol Screening form under special forms.')
+                msg = mark_safe('Subject is eligible for TB Adolescent study, kindly complete'
+                                'TB adol Screening form under special forms.')
             elif not tb_consent_exists:
-                msg = mark_safe(f'Kindly complete'
-                               ' Tb Adol Consent form under special forms.')
+                msg = mark_safe('Kindly complete TB adol Consent form under special forms.')
             elif not tb_assent_exists:
-                msg =  mark_safe(f'Kindly complete'
-                               ' Tb Adol Assent form under special forms.')
-    
-        
-        messages.add_message(self.request, messages.WARNING, msg)
-                
+                msg = mark_safe('Kindly complete TB adol Assent form under special forms.')
 
         messages.add_message(self.request, messages.WARNING, msg)
 
@@ -252,7 +243,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         self.get_tb_enroll_msg()
 
         self.get_assent_continued_consent_obj_or_msg()
-        self.get_assent_object_or_message()
 
         locator_obj = self.get_locator_info()
 
@@ -298,7 +288,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """Returns a generator of wrapped consents.
         """
         wrapped_consents = [self.consent_model_wrapper_cls(obj) for obj in self.consents]
-        
 
         current_consent = wrapped_consents[0].consent if wrapped_consents else None
 
@@ -496,8 +485,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         for consent in child_consents:
             subject_identifier = consent.subject_identifier
             child_age = ChildBirthValues(
-                subject_identifier=subject_identifier).child_age
+                subject_identifier=subject_identifier).get_difference(birth_date=consent.object.child_dob)
             self.get_continued_consent_object_or_message(
                 subject_identifier=subject_identifier, child_age=child_age)
             self.get_assent_object_or_message(
-                subject_identifier=subject_identifier, child_age=child_age)
+                subject_identifier=subject_identifier,
+                child_age=child_age,
+                version=consent.version)

@@ -79,7 +79,6 @@ class TbAdolChildAssentModelWrapperMixin:
 
     @property
     def tb_adol_assents(self):
-        
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
             """
@@ -92,22 +91,22 @@ class TbAdolChildAssentModelWrapperMixin:
                 .filter(is_eligible=True)
 
             for caregiverchildconsent in caregiverchildconsents:
-                
+
                 # exclude all unborn babies
                 if not caregiverchildconsent.child_dob:
                     continue
-                
+
                 child_age = age(caregiverchildconsent.child_dob, get_utcnow()).years
-                
+
                 if 10 <= child_age <= 17:
                     model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
                                 self.tb_adol_assent_model_cls(
                                     **self.create_tb_adol_assent_options(caregiverchildconsent))
 
                     wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
-                    
+
         return wrapped_entries
-    
+
     def tb_adol_child_assents(self):
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
@@ -128,7 +127,6 @@ class TbAdolChildAssentModelWrapperMixin:
 
                 wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
         return wrapped_entries
-    
 
     def tb_adol_assents_exists(self) -> bool:
 
