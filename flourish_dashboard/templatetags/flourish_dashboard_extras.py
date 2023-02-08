@@ -5,9 +5,7 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
-from edc_base.navbars import consent
 from edc_base.utils import age, get_utcnow
-
 from edc_visit_schedule.models import SubjectScheduleHistory
 
 register = template.Library()
@@ -237,7 +235,8 @@ def childcontinuedconsent_button(model_wrapper):
     title = ['Child Continued Consent']
     return dict(
         child_age=model_wrapper.child_age,
-        childcontinuedconsent=model_wrapper.child_continued_consent_model_obj,
+        childcontinuedconsent=getattr(
+            model_wrapper, 'child_continued_consent_model_obj', None),
         add_childcontinuedconsent_href=model_wrapper.child_continued_consent.href,
         title=' '.join(title))
 

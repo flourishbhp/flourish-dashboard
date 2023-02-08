@@ -5,7 +5,6 @@ from .caregiver_locator_model_wrapper import CaregiverLocatorModelWrapper
 
 
 class CaregiverLocatorModelWrapperMixin:
-
     locator_model_wrapper_cls = CaregiverLocatorModelWrapper
 
     @property
@@ -36,10 +35,10 @@ class CaregiverLocatorModelWrapperMixin:
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,)
-        if self.study_maternal_identifier and getattr(self, 'study_maternal_identifier'):
+            screening_identifier=self.object.screening_identifier, )
+        if getattr(self, 'study_maternal_identifier', None):
             options.update({'study_maternal_identifier': self.study_maternal_identifier})
-        if getattr(self, 'first_name'):
+        if hasattr(self, 'first_name'):
             options.update({'first_name': self.first_name, 'last_name': self.last_name})
         return options
 
@@ -49,5 +48,5 @@ class CaregiverLocatorModelWrapperMixin:
          caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,)
+            screening_identifier=self.object.screening_identifier, )
         return options
