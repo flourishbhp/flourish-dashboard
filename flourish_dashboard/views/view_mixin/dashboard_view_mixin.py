@@ -112,6 +112,7 @@ class DashboardViewMixin:
                     version=version)
             except assent_cls.DoesNotExist:
                 self.action_cls_item_creator(
+                    trigger=True,
                     subject_identifier=subject_identifier,
                     action_cls=assent_cls,
                     action_type=CHILDASSENT_ACTION)
@@ -147,7 +148,7 @@ class DashboardViewMixin:
                     subject_identifier=subject_identifier)
             except ObjectDoesNotExist:
                 self.action_cls_item_creator(
-                    trigger = True,
+                    trigger=True,
                     subject_identifier=subject_identifier,
                     action_cls=child_continued_consent_cls,
                     action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)

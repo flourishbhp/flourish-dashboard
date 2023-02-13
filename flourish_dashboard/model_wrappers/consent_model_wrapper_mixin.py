@@ -102,10 +102,13 @@ class ConsentModelWrapperMixin:
                                'subject_identifier_as_pk', 'created', 'modified',
                                'site_id', 'device_created', 'device_modified',
                                'hostname_modified', 'hostname_created', 'user_created',
-                               'screening_identifier'
+                               'screening_identifier', '_django_version'
                                ]
             for option in exclude_options:
-                del consent_version_older[option]
+                try:
+                    del consent_version_older[option]
+                except KeyError:
+                    continue
 
             options.update(**consent_version_older)
 
