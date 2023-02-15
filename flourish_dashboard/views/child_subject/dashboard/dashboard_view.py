@@ -13,6 +13,7 @@ from edc_constants.constants import YES, POS
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
+from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
@@ -446,6 +447,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         if onschedule_model_obj:
             if is_onschedule:
+                self.current_schedule = schedule
+                self.current_visit_schedule = visit_schedule
+                self.current_onschedule_model = onschedule_model_obj
+            else:
+                model_name = f'flourish_child.{onschedule_model_obj._meta.model_name}'
+                visit_schedule, schedule = site_visit_schedules.get_by_onschedule_model_schedule_name(
+                    model_name, onschedule_model_obj.schedule_name)
                 self.current_schedule = schedule
                 self.current_visit_schedule = visit_schedule
                 self.current_onschedule_model = onschedule_model_obj
