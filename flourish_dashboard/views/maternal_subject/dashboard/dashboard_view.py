@@ -11,6 +11,7 @@ from edc_registration.models import RegisteredSubject
 from edc_consent.exceptions import NotConsentedError
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
+from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
     AntenatalEnrollmentModelWrapper
@@ -389,6 +390,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 self.current_schedule = schedule
                 self.current_visit_schedule = visit_schedule
                 self.current_onschedule_model = onschedule_model_obj
+            else:
+                model_name = f'flourish_caregiver.{onschedule_model_obj._meta.model_name}'
+                visit_schedule, schedule = site_visit_schedules.get_by_onschedule_model_schedule_name(
+                    model_name, onschedule_model_obj.schedule_name)
+                self.current_schedule = schedule
+                self.current_visit_schedule = visit_schedule
+                self.current_onschedule_model = onschedule_model_obj
+
             self.onschedule_models.append(onschedule_model_obj)
             self.visit_schedules.update(
                 {visit_schedule.name: visit_schedule})

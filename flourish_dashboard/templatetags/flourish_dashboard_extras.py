@@ -219,8 +219,8 @@ def caregiver_contact_button(model_wrapper):
         subject_identifier=model_wrapper.object.subject_identifier,
         add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
         title=' '.join(title),)
-    
-    
+
+
 @register.inclusion_tag(
     'flourish_dashboard/buttons/child_tb_referal_button.html')
 def tb_adol_referal_button(model_wrapper):
@@ -262,12 +262,11 @@ def tb_adol_assents_button(model_wrapper):
         wrapped_assents=model_wrapper.tb_adol_assents,
         unsaved=unsaved,
         title=' '.join(title),)
-    
-    
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assent_button.html')
 def tb_adol_assent_button(model_wrapper):
     title = ['TB Adol. Assent to participate.']
-
 
     return dict(
         consent_obj=model_wrapper.object,
@@ -519,7 +518,6 @@ def tb_consent_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')
 def tb_adol_screening_button(model_wrapper):
     title = ['TB Adol Screening']
-    
 
     children_age = [age(consent.child_dob, get_utcnow()).years
                     for consent in model_wrapper.child_consents if consent.child_dob]
@@ -541,7 +539,7 @@ def tb_adol_screening_button(model_wrapper):
 def tb_adol_consent_button(model_wrapper):
     title = ['TB Adol Consent']
     consent_version = model_wrapper.tb_adol_consent_version
-    
+
     return dict(
         tb_adol_consent=model_wrapper.tb_adol_consent_model_obj,
         subject_identifier=model_wrapper.tb_adol_consent.subject_identifier,
