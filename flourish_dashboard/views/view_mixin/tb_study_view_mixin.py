@@ -16,8 +16,9 @@ class TBStudyViewMixin:
             'flourish_caregiver.tbstudyeligibility')
         subject_identifier = self.kwargs.get('subject_identifier')
         try:
-            tb_study_screening_obj = tb_study_eligibility_cls.objects.get(
-                maternal_visit__subject_identifier=subject_identifier)
+            tb_study_screening_obj = tb_study_eligibility_cls.objects.filter(
+                maternal_visit__subject_identifier=subject_identifier)\
+                    .latest('report_datetime') 
         except tb_study_eligibility_cls.DoesNotExist:
             pass
         else:
