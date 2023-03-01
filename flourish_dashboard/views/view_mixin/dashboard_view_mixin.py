@@ -42,6 +42,7 @@ class DashboardViewMixin:
 
         preg_test_obj = preg_test_cls.objects.filter(
             child_visit__subject_identifier=subject_identifier,
+            child_visit__visit_code='2000',
             preg_test_result=POS)
 
         child_continued_consent_cls = django_apps.get_model(
