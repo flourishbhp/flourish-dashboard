@@ -289,9 +289,14 @@ def dashboard_button(model_wrapper):
 def caregiver_dashboard_button(model_wrapper):
     subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'subject_dashboard_url')
+    
+    subject_identifier = model_wrapper.object\
+        .subject_consent.subject_identifier
+
     return dict(
         subject_dashboard_url=subject_dashboard_url,
-        subject_identifier=model_wrapper.subject_identifier)
+        subject_identifier=subject_identifier)
+
 
 
 @register.inclusion_tag(
