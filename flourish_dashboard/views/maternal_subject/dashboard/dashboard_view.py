@@ -248,12 +248,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     subject_identifier = self.subject_identifier,
                 ).only('schedule_name', 'subject_identifier')
                 
-                # nocache works even cache being installed, just a check
-                # to avoid any instabilities when removed
-                if 'cacheops' in settings.INSTALLED_APPS:
-                    appts = appts.nocache()
-
-
                 for appt in appts:
                     if appt.visit_schedule_name != key:
                         appt.visit_schedule_name = key
