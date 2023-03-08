@@ -3,8 +3,11 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.safestring import mark_safe
+from django.conf import settings
 from edc_base.utils import get_utcnow, age
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_navbar import NavbarViewMixin
+from edc_registration.models import RegisteredSubject
 from edc_consent.exceptions import NotConsentedError
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
@@ -243,12 +246,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     Q(schedule_name='tb_2_months_schedule') |
                     Q(schedule_name='tb_6_months_schedule'),
                     subject_identifier = self.subject_identifier,
-                )
-
+                ).only('schedule_name', 'subject_identifier')
+                
                 for appt in appts:
-                    appt.visit_schedule_name = key
-                    appt.save()
-
+                    if appt.visit_schedule_name != key:
+                        appt.visit_schedule_name = key
+                        appt.save()
+                
                 if prev_key:
                     old_visit_schedule = self.visit_schedules[prev_key]
                     new_visit_schedule = self.visit_schedules[key]
