@@ -11,8 +11,8 @@
     <th>Subject</th>
     <th>Age / Born</th>
     <th>Consented</th>
-    <th>User Created</th>
-    <th>Modified</th>
+    <th>Enrollment Cohort</th>
+    <th>Age Up Cohort</th>
     
     <!-- end results header -->
 
@@ -70,8 +70,8 @@
     </td>
     <td>{% age_in_years result.object.dob %}yrs {{ result.object.dob|date:"SHORT_DATE_FORMAT" }}</td>
     <td>{{ result.object.consent_datetime|date:"SHORT_DATE_FORMAT" }}</td>
-    <td>{{ result.user_created }}</td>
-    <td>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
+    <td>{{ result.object.get_cohort }}</td>
+    <td>Cohort Y</td>
     
 
 {% endblock listboard_table_columns %}

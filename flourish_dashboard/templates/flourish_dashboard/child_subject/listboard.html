@@ -13,8 +13,8 @@
     <th>Subject</th>
     <th>Age</th>
     <th>Assent Date</th>
-    <th>Modified</th>
-    <th>Host</th>
+    <th>Enrollment Cohort</th>
+    <th>Age Up Cohort</th>
     <!-- end results header -->
 
 {% endblock listboard_table_header %}
@@ -41,7 +41,7 @@
     </td>
     <td>{{ result.child_age }} Yrs</td>
     <td>{{ result.assent_date }}</td>
-    <td>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
-    <td>{{ result.hostname_created }}</td>
+    <td>{{ result.get_cohort }}</td>
+    <td>No Value yet</td>
 
 {% endblock listboard_table_columns %}
