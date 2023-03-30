@@ -9,27 +9,27 @@ from django.views.generic.base import ContextMixin
 from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_constants.constants import YES, POS
+from edc_constants.constants import POS, YES
+from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
+from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
-from edc_dashboard.views import DashboardView as BaseDashboardView
-from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from flourish_caregiver.helper_classes import MaternalStatusHelper
-from flourish_caregiver.helper_classes.fu_onschedule_helper import FollowUpEnrolmentHelper
-from flourish_child.helper_classes.child_fu_onschedule_helper import ChildFollowUpEnrolmentHelper
+from flourish_child.helper_classes.child_fu_onschedule_helper import \
+    ChildFollowUpEnrolmentHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
-
-from ....model_wrappers import (
-    ChildAppointmentModelWrapper, ChildDummyConsentModelWrapper,
-    ChildCrfModelWrapper, ChildOffstudyModelWrapper,
-    ChildVisitModelWrapper, CaregiverLocatorModelWrapper,
-    ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
-    ChildDatasetModelWrapper, MaternalRegisteredSubjectModelWrapper,
-    ChildRequisitionModelWrapper, TbAdolReferralModelWrapper)
 from ...view_mixin import DashboardViewMixin
+from ....model_wrappers import (ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
+                                CaregiverLocatorModelWrapper,
+                                ChildAppointmentModelWrapper, ChildCrfModelWrapper,
+                                ChildDatasetModelWrapper, ChildDummyConsentModelWrapper,
+                                ChildOffstudyModelWrapper, ChildRequisitionModelWrapper,
+                                ChildVisitModelWrapper,
+                                MaternalRegisteredSubjectModelWrapper,
+                                TbAdolReferralModelWrapper)
 
 
 class ChildBirthValues(object):
@@ -338,6 +338,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             cohort=self.consent_wrapped.get_cohort,
             child_version=self.consent_wrapped.child_consent_version,
             fu_participant_note=self.fu_participant_note,
+            is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal)
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
@@ -475,3 +476,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         action items for child.
         """
         pass
+
+    @property
+    def is_tb_off_study(self):
+        tb_take_off_study_cls = django_apps.get_model(
+            'flourish_child.tbadoloffstudy')
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            tb_take_off_study_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except tb_take_off_study_cls.DoesNotExist:
+            return False
+        else:
+            return True
