@@ -480,7 +480,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     @property
     def is_tb_off_study(self):
         tb_take_off_study_cls = django_apps.get_model(
-            'flourish_child.tbadoloffstudy')
+            'flourish_prn.tbadoloffstudy')
         subject_identifier = self.kwargs.get('subject_identifier')
         try:
             tb_take_off_study_cls.objects.get(
