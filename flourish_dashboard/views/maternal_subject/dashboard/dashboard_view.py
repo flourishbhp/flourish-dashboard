@@ -3,11 +3,8 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.safestring import mark_safe
-from django.conf import settings
-from edc_base.utils import get_utcnow, age
+from edc_base.utils import age, get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_navbar import NavbarViewMixin
-from edc_registration.models import RegisteredSubject
 from edc_consent.exceptions import NotConsentedError
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
@@ -27,10 +24,10 @@ from ....model_wrappers import AppointmentModelWrapper, \
 from ....model_wrappers import CaregiverChildConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, \
     MaternalVisitModelWrapper
+from ....model_wrappers import CaregiverRequisitionModelWrapper, \
+    MaternalDatasetModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
-from ....model_wrappers import MaternalDatasetModelWrapper, \
-    CaregiverRequisitionModelWrapper
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
