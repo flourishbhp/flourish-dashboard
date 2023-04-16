@@ -244,12 +244,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     Q(schedule_name='tb_6_months_schedule'),
                     subject_identifier = self.subject_identifier,
                 ).only('schedule_name', 'subject_identifier')
-                
+
                 for appt in appts:
                     if appt.visit_schedule_name != key:
                         appt.visit_schedule_name = key
                         appt.save()
-                
+
                 if prev_key:
                     old_visit_schedule = self.visit_schedules[prev_key]
                     new_visit_schedule = self.visit_schedules[key]
@@ -305,8 +305,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         tb_eligibility = self.tb_eligibility
 
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
-
-        self.tb_schedule_shifter()
 
         context.update(
             locator_obj=locator_obj,
