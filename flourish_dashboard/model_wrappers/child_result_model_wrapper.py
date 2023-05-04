@@ -13,3 +13,7 @@ class ChildResultModelWrapper(ResultModelWrapper):
     @property
     def result_model_cls(self):
         return django_apps.get_model('flourish_child.childrequisitionresult')
+
+    @property
+    def dashboard_url(self):
+        return 'flourish_dashboard:child_dashboard_url'

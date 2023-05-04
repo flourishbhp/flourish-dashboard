@@ -9,7 +9,7 @@
         	$('#resultTable').on('refresh.bs.table', function() {
         		// Make an AJAX request to fetch the updated data
         		$.ajax({
-        	    	url: "{% url listboard_url 'all' 'True' %}",
+        	    	url: "{% url listboard_url %}?refresh=True",
         	      	method: 'GET',
         	      	success: function(data) {
         	        	// Update the table with the new data using the "load" method

@@ -13,9 +13,9 @@ Including another URLconf
 """
 from django.urls import path
 from edc_dashboard import UrlConfig
-from edc_senaite_interface import UrlConfig
 
 from .patterns import subject_identifier, screening_identifier, study_maternal_identifier
+from .patterns import sample_result_identifier
 from .views import (
     ChildListboardView, ChildDashboardView, ChildScreeningListboardView,
     MaternalScreeningListBoardView, MaternalSubjectListboardView,
@@ -78,14 +78,14 @@ caregiver_listboard_result_url_config = UrlConfig(
     view_class=CaregiverResultListboardView,
     label='caregiver_result_listboard',
     identifier_label='sample_id',
-    identifier_pattern='[a-zA-Z0-9]+')
+    identifier_pattern=sample_result_identifier)
 
 child_listboard_result_url_config = UrlConfig(
     url_name='child_result_listboard_url',
     view_class=ChildResultListboardView,
     label='child_result_listboard',
     identifier_label='sample_id',
-    identifier_pattern='[a-zA-Z0-9]+')
+    identifier_pattern=sample_result_identifier)
 
 urlpatterns = [
     path('locator_logs_report', LocatorLogReportView.as_view(),
