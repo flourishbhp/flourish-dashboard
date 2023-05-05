@@ -15,10 +15,12 @@ from django.urls import path
 from edc_dashboard import UrlConfig
 
 from .patterns import subject_identifier, screening_identifier, study_maternal_identifier
+from .patterns import sample_result_identifier
 from .views import (
     ChildListboardView, ChildDashboardView, ChildScreeningListboardView,
     MaternalScreeningListBoardView, MaternalSubjectListboardView,
     MaternalDatasetListBoardView, MaternalDashboardView, LocatorLogReportView)
+from .views import CaregiverResultListboardView, ChildResultListboardView
 
 app_name = 'flourish_dashboard'
 
@@ -71,6 +73,20 @@ subject_listboard_url_config = UrlConfig(
     identifier_label='subject_identifier',
     identifier_pattern=subject_identifier)
 
+caregiver_listboard_result_url_config = UrlConfig(
+    url_name='caregiver_result_listboard_url',
+    view_class=CaregiverResultListboardView,
+    label='caregiver_result_listboard',
+    identifier_label='sample_id',
+    identifier_pattern=sample_result_identifier)
+
+child_listboard_result_url_config = UrlConfig(
+    url_name='child_result_listboard_url',
+    view_class=ChildResultListboardView,
+    label='child_result_listboard',
+    identifier_label='sample_id',
+    identifier_pattern=sample_result_identifier)
+
 urlpatterns = [
     path('locator_logs_report', LocatorLogReportView.as_view(),
          name='locator_report_url'),
@@ -83,3 +99,5 @@ urlpatterns += subject_listboard_url_config.listboard_urls
 urlpatterns += maternal_dataset_listboard_url_config.listboard_urls
 urlpatterns += maternal_screening_listboard_url_config.listboard_urls
 urlpatterns += subject_dashboard_url_config.dashboard_urls
+urlpatterns += caregiver_listboard_result_url_config.listboard_urls
+urlpatterns += child_listboard_result_url_config.listboard_urls

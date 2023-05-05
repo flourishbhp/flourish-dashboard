@@ -1,0 +1,41 @@
+{% extends "edc_senaite_interface/listboard.html" %}
+{% load edc_base_extras %}
+{% load flourish_dashboard_extras %}
+
+{% block extra-scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+        $(function() {
+        	$('#resultTable').on('refresh.bs.table', function() {
+        		// Make an AJAX request to fetch the updated data
+        		$.ajax({
+        	    	url: "{% url listboard_url %}?refresh=True",
+        	      	method: 'GET',
+        	      	success: function(data) {
+        	        	// Update the table with the new data using the "load" method
+        	        	$('#myTable').bootstrapTable('load', data);
+        	        	console.log('Table refreshed!');
+        	      	},
+        	      	error: function(xhr, status, error) {
+        	        	console.log('Error:', error);
+        	      	}
+        	    });
+        	});
+        });
+    </script>
+{% endblock %}
+
+{% block header_cards %}
+	{{ block.super }}
+	<div class="row">
+		<ul class="nav nav-pills nav-justified">
+		  <li class="{% if 'caregiver' in listboard_url %} active {% endif %} col-md-4 col-xl-3">
+		  	<a href="{% url senaite_result_listboard_url %}">Caregiver Results</a>
+		  </li>
+		  <li class="{% if 'child' in listboard_url %} active {% endif %} col-md-4 col-xl-3">
+		  	<a href="{% url child_result_listboard_url %}">Child Results</a>
+		  </li>
+		</ul>
+	</div>
+
+{% endblock %}
