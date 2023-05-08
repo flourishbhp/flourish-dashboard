@@ -5,18 +5,30 @@
 {% block extra-scripts %}
 	{{ block.super }}
 	<script type="text/javascript">
+		function setLoading(loading=false) {
+	    	let loader = document.getElementById('loader');
+	    	if (loading) {
+	    		loader.classList.remove('hide-loader');
+	    	} else {
+	    		loader.classList.add('hide-loader');
+	    	}
+	    }
+
         $(function() {
         	$('#resultTable').on('refresh.bs.table', function() {
         		// Make an AJAX request to fetch the updated data
+        		setLoading(true);
         		$.ajax({
         	    	url: "{% url listboard_url %}?refresh=True",
         	      	method: 'GET',
         	      	success: function(data) {
         	        	// Update the table with the new data using the "load" method
         	        	$('#myTable').bootstrapTable('load', data);
+        	        	setLoading(false);
         	        	console.log('Table refreshed!');
         	      	},
         	      	error: function(xhr, status, error) {
+        	      		setLoading(false);
         	        	console.log('Error:', error);
         	      	}
         	    });
