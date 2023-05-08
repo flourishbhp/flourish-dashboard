@@ -412,7 +412,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                         full_names = None
 
                         if child.first_name:
-                            full_names = child.first_name + ' ' + child.last_name
+                            full_names = child.subject_identifier
+#                             full_names = child.first_name + ' ' + child.last_name
                         else:
                             full_names = 'ANC SCHEDULE'
 
