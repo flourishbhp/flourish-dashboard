@@ -409,15 +409,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                             schedule_name=onschedule_model.schedule_name,
                             visit_code_sequence='0')
 
-                        full_names = None
-
-                        if child.first_name:
-                            full_names = child.subject_identifier
-#                             full_names = child.first_name + ' ' + child.last_name
-                        else:
-                            full_names = 'ANC SCHEDULE'
-
-                        schedule_child_dict[appt.visit_schedule_name] = full_names
+                        schedule_child_dict[appt.visit_schedule_name] = child.subject_identifier
 
             return schedule_child_dict
 
