@@ -1,2 +1,3 @@
 from .dashboard_view_mixin import DashboardViewMixin
+from .result_refresh_view_mixin import ResultRefreshViewMixin
 from .tb_study_view_mixin import TBStudyViewMixin

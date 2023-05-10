@@ -15,6 +15,7 @@ from .caregiver_offstudy_model_wrapper_mixin import \
     CaregiverOffstudyModelWrapperMixin
 from .caregiver_requisition_model_wrapper import \
     CaregiverRequisitionModelWrapper
+from .caregiver_result_model_wrapper import CaregiverResultModelWrapper
 from .child_appointment_model_wrapper import ChildAppointmentModelWrapper
 from .child_assent_model_wrapper import ChildAssentModelWrapper
 from .child_continued_consent_model_wrapper import \
@@ -28,6 +29,7 @@ from .child_dummy_consent_model_wrapper import ChildDummyConsentModelWrapper
 from .child_offstudy_model_wrapper import ChildOffstudyModelWrapper
 from .child_offstudy_model_wrapper_mixin import ChildOffstudyModelWrapperMixin
 from .child_requisition_model_wrapper import ChildRequisitionModelWrapper
+from .child_result_model_wrapper import ChildResultModelWrapper
 from .child_tb_adol_referral_model_wrapper import TbAdolReferralModelWrapper
 from .child_visit_model_wrapper import ChildVisitModelWrapper
 from .flourish_consent_version_model_wrapper import \
