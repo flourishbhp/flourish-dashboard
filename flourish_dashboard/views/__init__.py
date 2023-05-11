@@ -1,8 +1,10 @@
 from .child_subject import DashboardView as ChildDashboardView
 from .child_subject import ListboardView as ChildListboardView
 from .child_subject import ScreeningListboardView as ChildScreeningListboardView
+from .child_subject import ResultListboardView as ChildResultListboardView
 from .maternal_dataset import MaternalDatasetListBoardView
 from .maternal_subject import DashboardView as MaternalDashboardView
 from .maternal_dataset import LocatorLogReportView
 from .maternal_subject import ListboardView as MaternalSubjectListboardView
+from .maternal_subject import ResultListboardView as CaregiverResultListboardView
 from .screening import MaternalScreeningListBoardView

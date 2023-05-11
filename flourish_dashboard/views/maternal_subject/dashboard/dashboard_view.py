@@ -3,11 +3,8 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.safestring import mark_safe
-from django.conf import settings
-from edc_base.utils import get_utcnow, age
+from edc_base.utils import age, get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_navbar import NavbarViewMixin
-from edc_registration.models import RegisteredSubject
 from edc_consent.exceptions import NotConsentedError
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
@@ -27,10 +24,10 @@ from ....model_wrappers import AppointmentModelWrapper, \
 from ....model_wrappers import CaregiverChildConsentModelWrapper
 from ....model_wrappers import CaregiverLocatorModelWrapper, \
     MaternalVisitModelWrapper
+from ....model_wrappers import CaregiverRequisitionModelWrapper, \
+    MaternalDatasetModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
-from ....model_wrappers import MaternalDatasetModelWrapper, \
-    CaregiverRequisitionModelWrapper
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -247,12 +244,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     Q(schedule_name='tb_6_months_schedule'),
                     subject_identifier = self.subject_identifier,
                 ).only('schedule_name', 'subject_identifier')
-                
+
                 for appt in appts:
                     if appt.visit_schedule_name != key:
                         appt.visit_schedule_name = key
                         appt.save()
-                
+
                 if prev_key:
                     old_visit_schedule = self.visit_schedules[prev_key]
                     new_visit_schedule = self.visit_schedules[key]
@@ -308,8 +305,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         tb_eligibility = self.tb_eligibility
 
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
-
-        self.tb_schedule_shifter()
 
         context.update(
             locator_obj=locator_obj,
@@ -414,14 +409,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                             schedule_name=onschedule_model.schedule_name,
                             visit_code_sequence='0')
 
-                        full_names = None
-
-                        if child.first_name:
-                            full_names = child.first_name + ' ' + child.last_name
-                        else:
-                            full_names = 'ANC SCHEDULE'
-
-                        schedule_child_dict[appt.visit_schedule_name] = full_names
+                        schedule_child_dict[appt.visit_schedule_name] = child.subject_identifier
 
             return schedule_child_dict
 
