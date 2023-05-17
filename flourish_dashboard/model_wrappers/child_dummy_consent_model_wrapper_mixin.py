@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from edc_base.utils import age, get_utcnow
 
 
+
 class ChildDummyConsentModelWrapperMixin:
 
     @property
@@ -81,6 +82,38 @@ class ChildDummyConsentModelWrapperMixin:
         if childconsent.cohort:
             cohort = childconsent.cohort.upper()
             return cohort.replace('_', ' ')
+
+    @property
+    def enrol_cohort(self):
+        """Returns an enrollment cohort.
+        """
+        cohort_cls = django_apps.get_model(
+            'flourish_caregiver.cohort')
+        try:
+            cohort = cohort_cls.objects.get(
+                suject_identifier=self.object.subject_identifier,
+                enrollment_cohort=True
+            )
+        except cohort_cls.DoesNotExist:
+            raise Validation(
+                f"Enrollment Cohort is missing, {self.object.subject_identifier}")
+        else:
+            return cohort.name
+        return None
+
+    @property
+    def current_cohort(self):
+        """Returns the current cohort.
+        """
+        cohort_cls = django_apps.get_model(
+            'flourish_caregiver.cohort')
+        cohort = cohort_cls.objects.objects(
+            suject_identifier=self.subject_subject_identifier).order_by(
+                'assign_datetime'
+            )
+        if cohort:
+            return cohort.name
+        return None
 
     @property
     def assent_date(self):
