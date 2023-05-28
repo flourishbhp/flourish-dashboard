@@ -14,4 +14,3 @@ class ResultListboardView(ResultRefreshViewMixin, ListboardView):
         if refresh_table:
             self.refresh_context_data(app_label='flourish_caregiver')
         return super().get(request, *args, **kwargs)
-

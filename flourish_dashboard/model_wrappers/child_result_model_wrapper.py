@@ -17,3 +17,8 @@ class ChildResultModelWrapper(ResultModelWrapper):
     @property
     def dashboard_url(self):
         return 'flourish_dashboard:child_dashboard_url'
+
+    @property
+    def results_objs(self):
+        if self.object:
+            return self.object.childresultvalue_set.all()
