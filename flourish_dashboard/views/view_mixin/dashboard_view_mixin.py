@@ -52,7 +52,7 @@ class DashboardViewMixin:
             subject_identifier=subject_identifier,
             is_eligible=False)
 
-        infant_hiv_test_cls = django_apps.get_model('flourish_infant.infanthivtesting')
+        infant_hiv_test_cls = django_apps.get_model('flourish_child.infanthivtesting')
 
         infant_hiv_test_obj = infant_hiv_test_cls.objects.filter(
             child_visit__subject_identifier=subject_identifier,
