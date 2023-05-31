@@ -24,10 +24,6 @@ class ChildAssentModelWrapperMixin:
         return django_apps.get_model('flourish_caregiver.subjectconsent')
 
     @property
-    def heu_huu_match_cls(self):
-        return django_apps.get_model('pre_flourish.heuhuumatch')
-
-    @property
     def assent_model_obj(self):
         """Returns a child assent model instance or None.
         """
@@ -103,16 +99,6 @@ class ChildAssentModelWrapperMixin:
 
                 wrapped_entries.append(ChildAssentModelWrapper(model_obj))
         return wrapped_entries
-
-    @property
-    def huu_participant(self):
-        try:
-            heu_huu_match_obj = self.heu_huu_match_cls.objects.get(
-                heu_prt=self.subject_identifier)
-        except self.heu_huu_match_cls.DoesNotExist:
-            return None
-        else:
-            return heu_huu_match_obj.huu_prt
 
     def child_assents_exists(self) -> bool:
 

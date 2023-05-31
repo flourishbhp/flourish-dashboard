@@ -1,7 +1,8 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
-from .offstudy_model_wrapper import CaregiverOffstudyModelWrapper
+from flourish_dashboard.model_wrappers.death_report_model_wrapper import \
+    CaregiverOffstudyModelWrapper
 
 
 class CaregiverOffstudyModelWrapperMixin:
