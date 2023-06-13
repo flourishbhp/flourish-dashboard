@@ -5,13 +5,14 @@
 
 
 {% block listboard_panel %}
-{% if results %}
-	<span class="pull-right">
+    {% if results %}
+        <span class="pull-right">
 	<span class="glyphicon glyphicon-folder-open"></span>
-	<a href="{% url 'flourish_dashboard:locator_report_url' %}" class="btn btn-sm btn-info">Locator report</a>
+	<a href="{% url 'flourish_dashboard:locator_report_url' %}"
+       class="btn btn-sm btn-info">Locator report</a>
 	</span>
-	&nbsp;&nbsp;
- {% endif %}
+        &nbsp;&nbsp;
+    {% endif %}
 {% endblock listboard_panel %}
 {% block listboard_table_header %}
     <!-- begin results header -->
@@ -25,47 +26,48 @@
 {% endblock listboard_table_header %}
 
 
-{% block listboard_table_button_column %} 
+{% block listboard_table_button_column %}
     <td style="white-space: nowrap;">
-    <div class="btn-group">
-    {% edit_maternal_dataset_button result %}
-    {% with history_objects=result.log_entries title="Locator logs" history_object=result.log_entry add_button=result.locator_exists %}
-	  {% include "flourish_dashboard/maternal_dataset/locator_log_entries.html" %}   
-	{% endwith %}
-	{% if result.locator_exists %}
-		{% locator_button result %}
-	{% endif %}
+        <div class="btn-group">
+            {% edit_maternal_dataset_button result %}
+            {% with history_objects=result.log_entries title="Locator logs" history_object=result.log_entry add_button=result.locator_exists %}
+                {% include "flourish_dashboard/maternal_dataset/locator_log_entries.html" %}
+            {% endwith %}
+            {% if result.locator_exists %}
+                {% locator_button result %}
+            {% endif %}
 
-	{% if result.consent_model_obj %}
-    	{% if result.consent_model_obj.is_eligible %}
-    			{% dashboard_button result.consent %}
-    	{% else %}
-    		{% eligibility_button result.consent %}
-    	{% endif %}
-    {% else %}
-    	{% if result.call_or_home_visit_success or result.is_td_onstudy %}
-			{% bhp_prior_screening_button result %}
-		{% if result.bhp_prior_screening_model_obj %}
-			{% if result.bhp_prior_screening_model_obj.is_eligible %}
-				{% consent_button result %}
-			{% else %}
-				{% eligibility_button result.bhp_prior_screening %}
-			{% endif %}
-		{% endif %}
-		{% endif %}
-	{% endif %}
-    </div>
+            {% if result.consent_model_obj %}
+                {% if result.consent_model_obj.is_eligible %}
+                    {% dashboard_button result.consent %}
+                {% else %}
+                    {% eligibility_button result.consent %}
+                {% endif %}
+            {% else %}
+                {% if result.call_or_home_visit_success or result.is_td_onstudy %}
+                    {% bhp_prior_screening_button result %}
+                    {% if result.bhp_prior_screening_model_obj %}
+                        {% if result.bhp_prior_screening_model_obj.is_eligible %}
+                            {% consent_button result %}
+                        {% else %}
+                            {% eligibility_button result.bhp_prior_screening %}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
     </td>
-{% endblock listboard_table_button_column %}		
+{% endblock listboard_table_button_column %}
 
 
 {% block listboard_table_columns %}
 
-	<td>{{ result.protocol }} </td>
-	<td>{{ result.study_maternal_identifier }}
-	{% if result.multiple_births > 1 %} <sup> {{result.multiple_births}}</sup> {% endif %} </td>
+    <td>{{ result.protocol }} </td>
+    <td>{{ result.study_maternal_identifier }}
+        {% if result.multiple_births > 1 %}
+            <sup> {{ result.multiple_births }}</sup> {% endif %} </td>
     <td>{{ result.subject_identifier }} </td>
     <td nowrap>{{ result.object.screening_identifier }}</td>
-	</fieldset>
-</form>
+    </fieldset>
+    </form>
 {% endblock listboard_table_columns %}
