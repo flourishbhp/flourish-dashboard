@@ -12,7 +12,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='flourish-dashboard',
-    version='0.1.67',
+    version='0.1.68',
     author=u'Software Engineering & Data Management',
     author_email='se-dmc@bhp.org.bw',
     packages=find_packages(),

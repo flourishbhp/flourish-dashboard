@@ -52,7 +52,13 @@ class DashboardViewMixin:
             subject_identifier=subject_identifier,
             is_eligible=False)
 
-        return hiv_obj or preg_test_obj or offstudy_visit_obj or child_continued_consent_obj
+        infant_hiv_test_cls = django_apps.get_model('flourish_child.infanthivtesting')
+
+        infant_hiv_test_obj = infant_hiv_test_cls.objects.filter(
+            child_visit__subject_identifier=subject_identifier,
+            hiv_test_result=POS)
+
+        return hiv_obj or preg_test_obj or offstudy_visit_obj or child_continued_consent_obj or infant_hiv_test_obj
 
     def get_offstudy_message(self, offstudy_cls=None, msg=None):
 
