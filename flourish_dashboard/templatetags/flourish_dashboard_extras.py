@@ -15,6 +15,13 @@ register = template.Library()
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+@register.filter
+def get_values_unique(dictionary):
+    return set(list(dictionary.values()))
+
+@register.filter
+def get_keys(dictionary, value):
+    return [k for k, v in dictionary.items() if v == value]
 
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
