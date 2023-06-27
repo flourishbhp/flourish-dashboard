@@ -7,7 +7,6 @@ from edc_constants.constants import FEMALE
 
 
 class ConsentModelWrapperMixin:
-
     consent_model_wrapper_cls = None
 
     @property
@@ -139,16 +138,21 @@ class ConsentModelWrapperMixin:
                                                  'identity_type', None),
                         'confirm_identity': getattr(self.pre_flourish_consent_model_obj,
                                                     'confirm_identity', None),
-                        'biological_caregiver': getattr(self.pre_flourish_consent_model_obj,
-                                                        'biological_caregiver',None),
-                        'recruit_source': getattr(self.pre_flourish_consent_model_obj,'recruit_source', None),
-                        'recruit_source_other': getattr(self.pre_flourish_consent_model_obj,
-                                                        'recruit_source_other', None),
+                        'biological_caregiver': getattr(
+                            self.pre_flourish_consent_model_obj,
+                            'biological_caregiver', None),
+                        'recruit_source': getattr(self.pre_flourish_consent_model_obj,
+                                                  'recruit_source', None),
+                        'recruit_source_other': getattr(
+                            self.pre_flourish_consent_model_obj,
+                            'recruit_source_other', None),
                         'recruitment_clinic': getattr(self.pre_flourish_consent_model_obj,
                                                       'recruitment_clinic', None),
-                        'recruitment_clinic_other': getattr(self.pre_flourish_consent_model_obj,
-                                                            'recruitment_clinic_other', None),
-                        'is_literate': getattr(self.pre_flourish_consent_model_obj,'is_literate', None),
+                        'recruitment_clinic_other': getattr(
+                            self.pre_flourish_consent_model_obj,
+                            'recruitment_clinic_other', None),
+                        'is_literate': getattr(self.pre_flourish_consent_model_obj,
+                                               'is_literate', None),
                     })
         return options
 
@@ -232,11 +236,9 @@ class ConsentModelWrapperMixin:
     def pre_flourish_consent_model_obj(self):
         """Returns a pre flourish consent model instance or None.
         """
-        if hasattr(self, 'bhp_prior_screening_model_obj'):
-            try:
-                return self.pre_flourish_consent_cls.objects.filter(
-                    subject_identifier=self.bhp_prior_screening_model_obj
-                    .pre_flourish_identifier
-                ).latest('consent_datetime')
-            except ObjectDoesNotExist:
-                return None
+        try:
+            return self.pre_flourish_consent_cls.objects.filter(
+                screening_identifier=self.object.screening_identifier
+            ).latest('consent_datetime')
+        except ObjectDoesNotExist:
+            return None
