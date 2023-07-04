@@ -6,6 +6,12 @@ from django.core.exceptions import ValidationError
 
 class ChildDummyConsentModelWrapperMixin:
 
+    cohort_model = 'flourish_caregiver.cohort'
+    
+    @property
+    def cohort_model_cls(self):
+        return django_apps.get_model(self.cohort_model)
+
     @property
     def screening_identifier(self):
         subject_consent = self.subject_consent_cls.objects.filter(
@@ -20,9 +26,11 @@ class ChildDummyConsentModelWrapperMixin:
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
 
-        childconsent = child_consent_cls.objects.filter(
-            subject_identifier=self.object.subject_identifier).latest('consent_datetime')
-
+        try:
+            childconsent = child_consent_cls.objects.filter(
+                subject_identifier=self.object.subject_identifier).latest('consent_datetime')
+        except child_consent_cls.DoesNotExist:
+            return None
         return childconsent
 
     @property
@@ -88,14 +96,11 @@ class ChildDummyConsentModelWrapperMixin:
     def enrol_cohort(self):
         """Returns an enrollment cohort.
         """
-        cohort_cls = django_apps.get_model(
-            'flourish_caregiver.cohort')
         try:
-            cohort = cohort_cls.objects.get(
+            cohort = self.cohort_model_cls.objects.get(
                 subject_identifier=self.object.subject_identifier,
-                enrollment_cohort=True
-            )
-        except cohort_cls.DoesNotExist:
+                enrollment_cohort=True, )
+        except self.cohort_model_cls.DoesNotExist:
             raise ValidationError(
                 f"Enrollment Cohort is missing, {self.object.subject_identifier}")
         else:
@@ -106,13 +111,10 @@ class ChildDummyConsentModelWrapperMixin:
     def current_cohort(self):
         """Returns the current cohort.
         """
-        cohort_cls = django_apps.get_model(
-            'flourish_caregiver.cohort')
-        cohort = cohort_cls.objects.objects(
-            suject_identifier=self.subject_subject_identifier).order_by(
-                'assign_datetime'
-            )
-        if cohort:
+        cohort = self.cohort_model_cls.objects.filter(
+            subject_identifier=self.object.subject_identifier)
+        if cohort.exists():
+            cohort = cohort.latest('assign_datetime')
             return cohort.name
         return None
 
@@ -139,8 +141,8 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def get_assent(self):
-        return getattr(self, 'assent_model_obj')
+        return getattr(self, 'assent_model_obj', None)
 
     @property
     def get_antenatal(self):
-        getattr(self, 'maternal_delivery_obj')
+        getattr(self, 'maternal_delivery_obj', None)
