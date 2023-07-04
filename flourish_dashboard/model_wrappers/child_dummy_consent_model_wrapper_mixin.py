@@ -91,7 +91,7 @@ class ChildDummyConsentModelWrapperMixin:
             'flourish_caregiver.cohort')
         try:
             cohort = cohort_cls.objects.get(
-                suject_identifier=self.object.subject_identifier,
+                subject_identifier=self.object.subject_identifier,
                 enrollment_cohort=True
             )
         except cohort_cls.DoesNotExist:
