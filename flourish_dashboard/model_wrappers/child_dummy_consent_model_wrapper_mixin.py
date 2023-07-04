@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from edc_base.utils import age, get_utcnow
+from django.core.exceptions import ValidationError
 
 
 
@@ -91,11 +92,11 @@ class ChildDummyConsentModelWrapperMixin:
             'flourish_caregiver.cohort')
         try:
             cohort = cohort_cls.objects.get(
-                suject_identifier=self.object.subject_identifier,
+                subject_identifier=self.object.subject_identifier,
                 enrollment_cohort=True
             )
         except cohort_cls.DoesNotExist:
-            raise Validation(
+            raise ValidationError(
                 f"Enrollment Cohort is missing, {self.object.subject_identifier}")
         else:
             return cohort.name
