@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from edc_base.utils import age, get_utcnow
+from django.core.exceptions import ValidationError
 
 
 
@@ -95,7 +96,7 @@ class ChildDummyConsentModelWrapperMixin:
                 enrollment_cohort=True
             )
         except cohort_cls.DoesNotExist:
-            raise Validation(
+            raise ValidationError(
                 f"Enrollment Cohort is missing, {self.object.subject_identifier}")
         else:
             return cohort.name
