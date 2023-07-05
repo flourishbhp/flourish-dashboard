@@ -22,8 +22,19 @@
 {{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ initials }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
 </a>
 
-<a class="list-group-item"><i class="fa fa-users"></i>
-{{ cohorts|default:'No Cohort Assigned' }} <span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default"></span>
+<a class="list-group-item">
+	<i class="fa fa-users"></i>
+	<span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default">
+		Cohort(s) Assigned
+	</span>
+	{% for sid, cohort_list in cohorts.items %}
+	<li class="list-group-item">
+		<b>{{sid|upper|slice:"-9:"}}</b> <i class="fa fa-ellipsis-v"></i>
+		{% for cohort in cohort_list %}
+			{{ cohort|upper }} {% if forloop.counter > 1 %} <i class="fa fa-arrow-right"></i> {{ cohort|upper }} {% endif %} 
+		{% endfor %}
+	</li>
+	{% endfor %}
 </a>
 
 <a class="list-group-item"><i class="fa fa-clone"></i>

@@ -57,10 +57,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     infant_subject_dashboard_url = 'child_dashboard_url'
     antenatal_enrolment_model = 'flourish_caregiver.antenatalenrollment'
     odk_archive_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/odk_archives.html'
-
     tb_adol_screening_model = 'flourish_caregiver.tbadoleligibility'
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
+    cohort_model = 'flourish_caregiver.cohort'
 
     @property
     def tb_adol_screening_cls(self):
@@ -414,20 +414,34 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             return schedule_child_dict
 
     @property
+    def cohort_model_cls(self):
+        return django_apps.get_model(self.cohort_model)
+
+    @property
     def get_cohorts(self):
+        cohorts = {}
         subject_consent = self.subject_consent_wrapper.object
-        child_consent = subject_consent.caregiverchildconsent_set.all()
-        cohorts_query = child_consent.values_list('cohort',
-                                                  flat=True).distinct()
-        cohorts = ''
+        child_consents = subject_consent.caregiverchildconsent_set.values_list(
+            'subject_identifier', flat=True).distinct()
+        child_consents = list(set(child_consents))
 
-        for cohort in cohorts_query:
-            if cohort:
-                cohorts += ' ' + cohort.upper()
+        for child_idx in child_consents:
+            cohort = []
+            cohort_objs = self.cohort_model_cls.objects.filter(
+                subject_identifier=child_idx)
 
-        cohorts = cohorts.strip().replace(' ', '| ')
+            enrol_cohort = cohort_objs.filter(
+                enrollment_cohort=True).values_list('name', flat=True).first()
+            current_cohort = cohort_objs.exclude(enrollment_cohort=True).order_by(
+                '-assign_datetime').values_list('name', flat=True).first()
 
-        return cohorts.replace('_', ' ')
+            if enrol_cohort:
+                cohort.append(enrol_cohort.replace('_', ' '))
+            if current_cohort:
+                cohort.append(current_cohort.replace('_', ' '))
+            cohorts.update({f'{child_idx}': cohort})
+
+        return cohorts
 
     def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
                              visit_schedule=None, is_onschedule=True):
