@@ -310,6 +310,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
+            in_person_visits=['1000M', '2000D', '3000M'],
             cohorts=self.get_cohorts,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
@@ -372,20 +373,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """ Return a key value pair of mother's visit schedule's corresponding
         child names for dashboard display"""
 
-        child_consent_cls = django_apps.get_model(
-            'flourish_caregiver.caregiverchildconsent')
-        all_child_consents = child_consent_cls.objects.filter(
-            subject_identifier__icontains=self.subject_identifier).exclude(
-            Q(subject_identifier__icontains='-35') | Q(
-                subject_identifier__icontains='-46') | Q(
-                subject_identifier__icontains='-56')).order_by('created')
-
-        if all_child_consents.count() > 1:
+        if len(self.child_consents) > 1:
 
             appt_cls = django_apps.get_model('edc_appointment.appointment')
-            cohorts = []
-            for child in all_child_consents:
-                cohorts.append(child.cohort)
 
             appointments = appt_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
@@ -394,24 +384,35 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             schedule_child_dict = {}
 
             for onschedule_model in self.onschedule_models:
-
                 if (('sec' in onschedule_model.schedule_name
                      and 'quart' not in onschedule_model.schedule_name)
                         or 'enrol' in onschedule_model.schedule_name
                         or 'antenatal' in onschedule_model.schedule_name):
-                    child_consents = all_child_consents.filter(
-                        subject_identifier=onschedule_model.child_subject_identifier)
-
-                    if child_consents:
-                        child = child_consents.latest('consent_datetime')
+    
+                    child_sidx = getattr(
+                        onschedule_model, 'child_subject_identifier', None)
+                    if child_sidx in self.child_consents:
 
                         appt = appointments.get(
                             schedule_name=onschedule_model.schedule_name,
                             visit_code_sequence='0')
 
-                        schedule_child_dict[appt.visit_schedule_name] = child.subject_identifier
-
+                        schedule_child_dict[appt.visit_schedule_name] = child_sidx
             return schedule_child_dict
+
+    @property
+    def child_consents(self):
+        child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+
+        child_consents = child_consent_cls.objects.filter(
+            subject_consent__subject_identifier=self.subject_identifier).exclude(
+            Q(subject_identifier__endswith='-35') | Q(
+                subject_identifier__endswith='-46') | Q(
+                subject_identifier__endswith='-56')).values_list(
+                    'subject_identifier', flat=True).distinct()
+
+        return list(set(child_consents))
 
     @property
     def get_cohorts(self):
