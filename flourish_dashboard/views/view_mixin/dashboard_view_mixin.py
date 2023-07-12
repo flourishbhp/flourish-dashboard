@@ -6,11 +6,16 @@ from edc_base.utils import get_utcnow
 from edc_constants.constants import OFF_STUDY, NEW, POS
 
 from edc_action_item.site_action_items import site_action_items
-from flourish_child.action_items import CHILDASSENT_ACTION
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 
 
 class DashboardViewMixin:
+
+    data_action_item_model = 'edc_data_manager.dataactionitem'
+
+    @property
+    def data_action_item_cls(self):
+        return django_apps.get_model(self.data_action_item_model)
 
     def get_offstudy_or_message(self, visit_cls=None, offstudy_cls=None,
                                 offstudy_action=None, trigger=False):
@@ -88,6 +93,17 @@ class DashboardViewMixin:
 
             self.delete_action_item_if_new(action_cls)
 
+    def data_action_item_creator(self, subject_identifier=None, subject=None,
+                                 message=None, assigned=None, priority='Normal'):
+        defaults = {'assigned': assigned,
+                    'comment': message,
+                    'action_priority': priority}
+        self.data_action_item_cls.objects.update_or_create(
+            subject=subject,
+            subject_identifier=subject_identifier,
+            defaults=defaults)
+
+
     def delete_action_item_if_new(self, action_model_cls):
         action_item_obj = self.get_action_item_obj(action_model_cls)
         if action_item_obj:
@@ -118,17 +134,17 @@ class DashboardViewMixin:
                     subject_identifier=subject_identifier,
                     version=version)
             except assent_cls.DoesNotExist:
-                self.action_cls_item_creator(
-                    trigger=True,
-                    subject_identifier=subject_identifier,
-                    action_cls=assent_cls,
-                    action_type=CHILDASSENT_ACTION)
                 if version:
                     msg = mark_safe(
                         f'Please complete the v{version} assent for child {subject_identifier}')
                 else:
                     msg = mark_safe(
                         f'Please complete assent for child {subject_identifier}')
+                self.data_action_item_creator(
+                    subject_identifier=subject_identifier,
+                    subject=f'Complete v{version} assent',
+                    message=msg,
+                    assigned='clinic', )
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
 
