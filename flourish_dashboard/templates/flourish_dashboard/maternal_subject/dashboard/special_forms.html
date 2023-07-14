@@ -50,11 +50,15 @@
             </td>
         </tr>
     {% endif %}
-    <tr>
-         <td>
-             {% tb_adol_screening_button subject_consent %}
-         </td>
-     </tr>
+
+    {% if result.tb_adol_screening_model_obj or result.total_huu_limits %}
+        <tr>
+            <td>
+                {% tb_adol_screening_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
+
     {% if tb_adol_eligibility %}
     <tr>
        <td>
