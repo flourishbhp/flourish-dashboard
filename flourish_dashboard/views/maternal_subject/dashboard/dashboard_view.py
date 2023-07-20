@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.db.models.functions import Lower
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -61,6 +62,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     tb_adol_screening_model = 'flourish_caregiver.tbadoleligibility'
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
+
+    child_dataset_model = 'flourish_child.childdataset'
+
+    @property
+    def child_dataset_cls(self):
+        return django_apps.get_model(self.child_dataset_model)
 
     @property
     def tb_adol_screening_cls(self):
@@ -174,7 +181,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_tb_adol_eligible_message(self, msg=None):
 
         children_age = [age(consent.object.child_dob, get_utcnow()).years
-                        for consent in self.caregiver_child_consents if consent.child_dob]
+                        for consent in self.caregiver_child_consents if consent.child_dob and
+                        self.child_dataset_cls.objects.annotate(
+            infant_hiv_exposed_lower=Lower('infant_hiv_exposed')).filter(
+            study_child_identifier=consent.study_child_identifier,
+            infant_hiv_exposed_lower = 'unexposed').exists()]
 
         age_adol_range = False
         for child_age in children_age:

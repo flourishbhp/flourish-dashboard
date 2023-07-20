@@ -5,96 +5,105 @@
 {% load static %}
 
 {% block extra-scripts %}
-	<script>
-	
-		function confirm_fu_enrollment() {
-			let confirmAction = confirm("Are you sure  you want to enroll participant in the follow up schedule?");
-			if (confirmAction) {
-			window.location.href="{% url child_dashboard_url subject_identifier %}fu_enrollment";
-			} else {
-			alert("Action cancelled");
-			}
-		}
-	</script>
+    <script>
+
+        function confirm_fu_enrollment() {
+            let confirmAction = confirm("Are you sure  you want to enroll participant in the follow up schedule?");
+            if (confirmAction) {
+                window.location.href = "{% url child_dashboard_url subject_identifier %}fu_enrollment";
+            } else {
+                alert("Action cancelled");
+            }
+        }
+    </script>
 
 {% endblock extra-scripts %}
 
 {% block other_special_buttons %}
-    {% if fu_participant_note %}
-		<table>
-    		<tr>
-    			<td><button class="btn btn-sm btn-info"  onclick="confirm_fu_enrollment()">
-					Follow Up Enrol
-					</button>
-				</td>
-    		</tr>
-		</table>
-	{% endif %}
+    <table>
+        <tr>
+            {% if fu_participant_note %}
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="confirm_fu_enrollment()">
+                        Follow Up Enrol
+                    </button>
+                </td>
+            {% endif %}
+        </tr>
+    </table>
 
 {% endblock other_special_buttons %}
 
 {% block schedule_button %}
-<span class="pull-right"><span class="text test-muted">
+    <span class="pull-right"><span class="text test-muted">
     <a href="{% url child_dashboard_url subject_identifier=subject_identifier %}"
        role="button" class="btn btn-sm btn-primary">
-        <i class="fa fa-reply fa-fw" aria-hidden="true"></i> <i class="far fa-calendar fa-fw"></i> Schedule
+        <i class="fa fa-reply fa-fw" aria-hidden="true"></i> <i
+            class="far fa-calendar fa-fw"></i> Schedule
     </a>
 </span></span>
 {% endblock schedule_button %}
 
 
 {% block visit_schedules_panel %}
-	{% for visit_schedule in visit_schedules.values %}
-    	{% for schedule in visit_schedule.schedules.values %}
-    	  {% if schedule.name in schedule_names %}
-			<div id="subject_dashboard_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}"
-				class="panel panel-{% if anonymous %}danger{% else %}info{% endif %}">
-			<div class="panel-heading">
-			  <i class="far fa-calendar fa-lg fa-fw"></i> 
-			      <a data-toggle="collapse" data-parent="#accordion_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}" aria-hidden="true"
-			         href="#subject_dashboard_appointments_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}">
-			         {{ visit_schedule.verbose_name }} <i class="fa fa-caret-right"></i> {{ schedule.verbose_name }} <span class="caret"></span>
-			      </a>
+    {% for visit_schedule in visit_schedules.values %}
+        {% for schedule in visit_schedule.schedules.values %}
+            {% if schedule.name in schedule_names %}
+                <div id="subject_dashboard_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}"
+                     class="panel panel-{% if anonymous %}danger{% else %}info{% endif %}">
+                    <div class="panel-heading">
+                        <i class="far fa-calendar fa-lg fa-fw"></i>
+                        <a data-toggle="collapse"
+                           data-parent="#accordion_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}"
+                           aria-hidden="true"
+                           href="#subject_dashboard_appointments_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}">
+                            {{ visit_schedule.verbose_name }} <i
+                                class="fa fa-caret-right"></i> {{ schedule.verbose_name }}
+                            <span class="caret"></span>
+                        </a>
 
-			      <span class="text text-default pull-right"><small>
+                        <span class="text text-default pull-right"><small>
 			      
 			      	{% appointment_in_progress subject_identifier visit_schedule schedule as visit_code %}
-			      
-			      	{% if visit_code %}
-					 <i class="fa fa-spinner fa-fw" aria-hidden="true" data-toggle="tooltip" title="Appointment {{ visit_code }} is currently in progress"></i> {{ visit_code }}
-					{% endif %}
+
+                            {% if visit_code %}
+                                <i class="fa fa-spinner fa-fw" aria-hidden="true"
+                                   data-toggle="tooltip"
+                                   title="Appointment {{ visit_code }} is currently in progress"></i>
+                                {{ visit_code }}
+                            {% endif %}
 			  	    
 			  	  </small></span>
 
-			  
-			</div>
-		
-			<div id="subject_dashboard_appointments_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}"
-				class="panel-collapse collapse {% if visit_code != None %}in{% endif %}">
-				
 
-			{% block appointments %}
-				{% include "flourish_dashboard/child_subject/dashboard/appointments.html" %}
-			{% endblock appointments %}
+                    </div>
 
-			</div>
+                    <div id="subject_dashboard_appointments_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}"
+                         class="panel-collapse collapse {% if visit_code != None %}in{% endif %}">
 
-				{% block appointments_schedule_footer %}
-					{% subject_schedule_footer_row subject_identifier visit_schedule schedule child_dashboard_url %}
-				{% endblock appointments_schedule_footer %}	
-	     	</div>
-	     {% endif %}
-	    {% endfor %}
+
+                        {% block appointments %}
+                            {% include "flourish_dashboard/child_subject/dashboard/appointments.html" %}
+                        {% endblock appointments %}
+
+                    </div>
+
+                    {% block appointments_schedule_footer %}
+                        {% subject_schedule_footer_row subject_identifier visit_schedule schedule child_dashboard_url %}
+                    {% endblock appointments_schedule_footer %}
+                </div>
+            {% endif %}
+        {% endfor %}
     {% endfor %}
 
 {% endblock visit_schedules_panel %}
 
 
 {% block dashboard_schedule_footer %}
-{% subject_schedule_footer_row subject_identifier current_visit_schedule current_schedule child_dashboard_url %}
+    {% subject_schedule_footer_row subject_identifier current_visit_schedule current_schedule child_dashboard_url %}
 {% endblock dashboard_schedule_footer %}
 
-	            
+
 {% block locator_information %}{% endblock locator_information %}
 
 {% block top_bar %}
@@ -105,6 +114,6 @@
 
 
 {% block side_bar %}
-		{% include 'flourish_dashboard/child_subject/dashboard/sidebar.html' %}
+    {% include 'flourish_dashboard/child_subject/dashboard/sidebar.html' %}
 
 {% endblock side_bar %}

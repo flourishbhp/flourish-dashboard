@@ -19,7 +19,6 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
                                   BHPPriorScreeningModelWrapperMixin,
                                   MaternalScreeningModelWrapperMixin,
                                   ModelWrapper):
-
     consent_model_wrapper_cls = SubjectConsentModelWrapper
     model = 'flourish_caregiver.maternaldataset'
     querystring_attrs = [
@@ -27,7 +26,7 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
         'study_maternal_identifier', 'study_child_identifier']
     next_url_attrs = ['study_maternal_identifier', 'screening_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
-                                'maternal_dataset_listboard_url')
+        'maternal_dataset_listboard_url')
 
     @property
     def screening_identifier(self):
@@ -60,22 +59,33 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
         return wrapped_entries
 
     @property
+    def pre_flourish_log_entry_cls(self):
+        return django_apps.get_model('pre_flourish_follow.preflourishlogentry')
+
+    @property
+    def pre_flourish_in_person_contact_attempt_cls(self):
+        return django_apps.get_model(
+            'pre_flourish_follow.preflourishinpersoncontactattempt')
+
+    def filter_logs(self, model_cls, **kwargs):
+        q = Q(study_maternal_identifier=self.object.study_maternal_identifier)
+        for k, v in kwargs.items():
+            if v is not None:
+                q &= Q(**{k: v}) & ~Q(**{k: 'none_of_the_above'})
+        return model_cls.objects.filter(q)
+
+    @property
     def call_or_home_visit_success(self):
-        """Returns true if the call or home visit was a success.
-        """
-        log_entries = LogEntry.objects.filter(
-            ~Q(phone_num_success='none_of_the_above'),
-            study_maternal_identifier=self.object.study_maternal_identifier,
-            phone_num_success__isnull=False)
-        home_visit_logs = InPersonContactAttempt.objects.filter(
-            ~Q(successful_location='none_of_the_above'),
-            study_maternal_identifier=self.object.study_maternal_identifier,
-            successful_location__isnull=False)
-        if log_entries:
-            return True
-        elif home_visit_logs:
-            return True
-        return False
+        """Returns True if the call or home visit was a success."""
+        logs = [
+            self.filter_logs(LogEntry, phone_num_success__isnull=False),
+            self.filter_logs(self.pre_flourish_log_entry_cls,
+                             phone_num_success__isnull=False),
+            self.filter_logs(InPersonContactAttempt, successful_location__isnull=False),
+            self.filter_logs(self.pre_flourish_in_person_contact_attempt_cls,
+                             successful_location__isnull=False),
+        ]
+        return any(logs)
 
     @property
     def locator_exists(self):
@@ -126,4 +136,3 @@ class MaternalDatasetModelWrapper(ConsentModelWrapperMixin,
             else:
                 return child_datase_obj.infant_offstudy_complete == 0
         return False
-

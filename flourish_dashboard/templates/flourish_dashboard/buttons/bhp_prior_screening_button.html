@@ -1,16 +1,17 @@
 {% if caregiver_locator_obj %}
- <a id="subjectscreening_add_{{ screening_identifier }}" 
- 	title="{{ title }}"
- 	
- 	{% if prior_screening_obj %}
-            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
-            href="{{ add_screening_href }}">
-    {% else %}
-            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-        href="{{ add_screening_href }}">
-    {% endif %}
-        
-     	BHP Prior Screening
-     	
- </a>
+    <a id="subjectscreening_add_{{ screening_identifier }}"
+       title="{{ title }}"
+
+            {% if prior_screening_obj %}
+       class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+       href="{{ add_screening_href }}">
+            {% else %}
+                class="btn btn-warning btn-sm" data-toggle="tooltip"
+                data-placement="right"
+                href="{{ add_screening_href }}">
+            {% endif %}
+
+    BHP Prior Screening
+
+    </a>
 {% endif %}
