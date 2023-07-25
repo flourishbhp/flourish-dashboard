@@ -25,7 +25,7 @@ def get_keys(dictionary, value):
 
 @register.filter
 def readable_cohort(cohort):
-    cohort.replace('_', ' ')
+    return cohort.replace('_', ' ')
 
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
