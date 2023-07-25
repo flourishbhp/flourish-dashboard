@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.db.models.functions import Lower
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -61,6 +62,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
     cohort_model = 'flourish_caregiver.cohort'
+
+    child_dataset_model = 'flourish_child.childdataset'
+
+    @property
+    def child_dataset_cls(self):
+        return django_apps.get_model(self.child_dataset_model)
 
     @property
     def tb_adol_screening_cls(self):
@@ -174,7 +181,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def get_tb_adol_eligible_message(self, msg=None):
 
         children_age = [age(consent.object.child_dob, get_utcnow()).years
-                        for consent in self.caregiver_child_consents if consent.child_dob]
+                        for consent in self.caregiver_child_consents if consent.child_dob and
+                        self.child_dataset_cls.objects.annotate(
+            infant_hiv_exposed_lower=Lower('infant_hiv_exposed')).filter(
+            study_child_identifier=consent.study_child_identifier,
+            infant_hiv_exposed_lower = 'unexposed').exists()]
 
         age_adol_range = False
         for child_age in children_age:
@@ -310,6 +321,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
+            in_person_visits=['1000M', '2000D', '3000M'],
             cohorts=self.get_cohorts,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
@@ -372,20 +384,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """ Return a key value pair of mother's visit schedule's corresponding
         child names for dashboard display"""
 
-        child_consent_cls = django_apps.get_model(
-            'flourish_caregiver.caregiverchildconsent')
-        all_child_consents = child_consent_cls.objects.filter(
-            subject_identifier__icontains=self.subject_identifier).exclude(
-            Q(subject_identifier__icontains='-35') | Q(
-                subject_identifier__icontains='-46') | Q(
-                subject_identifier__icontains='-56')).order_by('created')
-
-        if all_child_consents.count() > 1:
+        if len(self.child_consents) > 1:
 
             appt_cls = django_apps.get_model('edc_appointment.appointment')
-            cohorts = []
-            for child in all_child_consents:
-                cohorts.append(child.cohort)
 
             appointments = appt_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
@@ -394,28 +395,38 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             schedule_child_dict = {}
 
             for onschedule_model in self.onschedule_models:
-
                 if (('sec' in onschedule_model.schedule_name
                      and 'quart' not in onschedule_model.schedule_name)
                         or 'enrol' in onschedule_model.schedule_name
                         or 'antenatal' in onschedule_model.schedule_name):
-                    child_consents = all_child_consents.filter(
-                        subject_identifier=onschedule_model.child_subject_identifier)
-
-                    if child_consents:
-                        child = child_consents.latest('consent_datetime')
+    
+                    child_sidx = getattr(
+                        onschedule_model, 'child_subject_identifier', None)
+                    if child_sidx in self.child_consents:
 
                         appt = appointments.get(
                             schedule_name=onschedule_model.schedule_name,
                             visit_code_sequence='0')
 
-                        schedule_child_dict[appt.visit_schedule_name] = child.subject_identifier
-
+                        schedule_child_dict[appt.visit_schedule_name] = child_sidx
             return schedule_child_dict
 
     @property
     def cohort_model_cls(self):
         return django_apps.get_model(self.cohort_model)
+
+    def child_consents(self):
+        child_consent_cls = django_apps.get_model(
+            'flourish_caregiver.caregiverchildconsent')
+
+        child_consents = child_consent_cls.objects.filter(
+            subject_consent__subject_identifier=self.subject_identifier).exclude(
+            Q(subject_identifier__endswith='-35') | Q(
+                subject_identifier__endswith='-46') | Q(
+                subject_identifier__endswith='-56')).values_list(
+                    'subject_identifier', flat=True).distinct()
+
+        return list(set(child_consents))
 
     @property
     def get_cohorts(self):

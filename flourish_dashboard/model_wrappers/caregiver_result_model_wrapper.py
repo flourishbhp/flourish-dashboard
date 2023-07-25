@@ -17,3 +17,9 @@ class CaregiverResultModelWrapper(ResultModelWrapper):
     @property
     def dashboard_url(self):
         return 'flourish_dashboard:subject_dashboard_url'
+
+    @property
+    def results_objs(self):
+        if self.object:
+            return self.object.caregiverresultvalue_set.all()
+        return {}

@@ -329,6 +329,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             version=self.latest_consent_version)
 
         context.update(
+            in_person_visits=['2000D', '2100A', '3000'],
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
             child_dataset=self.child_dataset,

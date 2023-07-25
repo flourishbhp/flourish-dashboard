@@ -25,6 +25,7 @@
         	        	// Update the table with the new data using the "load" method
         	        	$('#myTable').bootstrapTable('load', data);
         	        	setLoading(false);
+        	        	window.location.href = "{% url listboard_url %}";
         	        	console.log('Table refreshed!');
         	      	},
         	      	error: function(xhr, status, error) {

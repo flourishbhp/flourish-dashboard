@@ -2,7 +2,6 @@
 {% load edc_visit_schedule_extras %}
 {% load flourish_dashboard_extras %}
 {% load edc_subject_dashboard_extras %}
-
 {% for schedule in visit_schedule.schedules.values %}
  	  {% if schedule.name in schedule_names %}
 		<div id="subject_dashboard_for_{{ visit_schedule.name|slugify }}-{{ schedule.name|slugify }}"

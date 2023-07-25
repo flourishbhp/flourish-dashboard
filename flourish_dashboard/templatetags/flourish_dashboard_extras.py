@@ -15,6 +15,13 @@ register = template.Library()
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+@register.filter
+def get_values_unique(dictionary):
+    return set(list(dictionary.values()))
+
+@register.filter
+def get_keys(dictionary, value):
+    return [k for k, v in dictionary.items() if v == value]
 
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
@@ -38,6 +45,15 @@ def child_dashboard_button(model_wrapper):
     return dict(
         child_dashboard_url=child_dashboard_url,
         subject_identifier=model_wrapper.subject_identifier)
+
+@register.inclusion_tag(
+    'pre_flourish/buttons/heu_dashboard_button.html')
+def huu_match_child_dashboard_button(subject_identifier):
+    child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
+        'pre_flourish_child_dashboard_url')
+    return dict(
+        child_dashboard_url=child_dashboard_url,
+        subject_identifier=subject_identifier)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
