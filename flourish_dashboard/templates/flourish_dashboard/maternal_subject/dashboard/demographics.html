@@ -31,7 +31,7 @@
 	<li class="list-group-item">
 		<b>{{sid|upper|slice:"-9:"}}</b> <i class="fa fa-ellipsis-v"></i>
 		{% for cohort in cohort_list %}
-			{{ cohort|upper }} {% if forloop.counter > 1 %} <i class="fa fa-arrow-right"></i> {{ cohort|upper }} {% endif %} 
+			{{ cohort|upper }} {% if cohort_list|length > 1 and cohort_list|last != cohort %} <i class="fa fa-arrow-right"></i> {% endif %} 
 		{% endfor %}
 	</li>
 	{% endfor %}
