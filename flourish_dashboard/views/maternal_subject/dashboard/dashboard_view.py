@@ -415,6 +415,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def cohort_model_cls(self):
         return django_apps.get_model(self.cohort_model)
 
+    @property
     def child_consents(self):
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
