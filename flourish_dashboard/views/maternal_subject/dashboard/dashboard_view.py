@@ -59,6 +59,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     antenatal_enrolment_model = 'flourish_caregiver.antenatalenrollment'
     odk_archive_forms_include_value = 'flourish_dashboard/maternal_subject/dashboard/odk_archives.html'
 
+    caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
+
+
     tb_adol_screening_model = 'flourish_caregiver.tbadoleligibility'
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
@@ -177,48 +180,75 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             raise NotConsentedError(
                 'No consent object found for participant with subject '
                 f'identifier {self.subject_identifier}')
+        
+    @property
+    def caregiver_child_consent_cls(self):
+        return django_apps.get_model(self.caregiver_child_consent_model)
+        
+    @property
+    def tb_adol_huu_limit_reached(self):
+        """
+        Returns a count down out of 25 HUU participant being enrolled in tb adol
+        """
+
+        subject_identifiers = self.tb_adol_assent_cls.objects.filter(
+                is_eligible=True).values_list('subject_identifier', flat=True).distinct()
+        
+        study_child_identifiers = self.caregiver_child_consent_cls.objects.filter(
+            subject_identifier__in=subject_identifiers
+        ).values_list('study_child_identifier', flat=True).distinct()
+        
+
+        unexposed_adolencent = self.child_dataset_cls.objects.annotate(
+                    infant_hiv_exposed_lower=Lower('infant_hiv_exposed')
+                ).filter(
+            infant_hiv_exposed_lower='unexposed', study_child_identifier__in=study_child_identifiers).count()
+
+        return 25 >= unexposed_adolencent
 
     def get_tb_adol_eligible_message(self, msg=None):
 
-        children_age = [age(consent.object.child_dob, get_utcnow()).years
-                        for consent in self.caregiver_child_consents if consent.child_dob and
-                        self.child_dataset_cls.objects.annotate(
-            infant_hiv_exposed_lower=Lower('infant_hiv_exposed')).filter(
-            study_child_identifier=consent.study_child_identifier,
-            infant_hiv_exposed_lower = 'unexposed').exists()]
+        if self.tb_adol_huu_limit_reached:
 
-        age_adol_range = False
-        for child_age in children_age:
-            if child_age >= 10 and child_age <= 17:
-                age_adol_range = True
-                break
+            children_age = [age(consent.object.child_dob, get_utcnow()).years
+                            for consent in self.caregiver_child_consents if consent.child_dob and
+                            self.child_dataset_cls.objects.annotate(
+                infant_hiv_exposed_lower=Lower('infant_hiv_exposed')).filter(
+                study_child_identifier=consent.study_child_identifier,
+                infant_hiv_exposed_lower = 'unexposed').exists()]
 
-        subject_identifier = self.kwargs.get('subject_identifier', None)
+            age_adol_range = False
+            for child_age in children_age:
+                if child_age >= 10 and child_age <= 17:
+                    age_adol_range = True
+                    break
 
-        # if condition are meet excute the following if
-        if subject_identifier and age_adol_range and not msg:
+            subject_identifier = self.kwargs.get('subject_identifier', None)
 
-            # used exists cause its faster than filter
+            # if condition are meet excute the following if
+            if subject_identifier and age_adol_range and not msg:
 
-            tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
-                subject_identifier=subject_identifier).exists()
+                # used exists cause its faster than filter
 
-            tb_consent_exists = self.tb_adol_consent_cls.objects.filter(
-                subject_identifier=subject_identifier).exists()
+                tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
+                    subject_identifier=subject_identifier).exists()
 
-            tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
-                subject_identifier__istartswith=subject_identifier).exists()
+                tb_consent_exists = self.tb_adol_consent_cls.objects.filter(
+                    subject_identifier=subject_identifier).exists()
 
-            # if a model is deleted or does not exist, show the notification
-            if not tb_screening_exists:
-                msg = mark_safe('Subject is eligible for TB Adolescent study, kindly complete'
-                                'TB adol Screening form under special forms.')
-            elif not tb_consent_exists:
-                msg = mark_safe('Kindly complete TB adol Consent form under special forms.')
-            elif not tb_assent_exists:
-                msg = mark_safe('Kindly complete TB adol Assent form under special forms.')
+                tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
+                    subject_identifier__istartswith=subject_identifier).exists()
 
-        messages.add_message(self.request, messages.WARNING, msg)
+                # if a model is deleted or does not exist, show the notification
+                if not tb_screening_exists:
+                    msg = mark_safe('Subject is eligible for TB Adolescent study, kindly complete'
+                                    'TB adol Screening form under special forms.')
+                elif not tb_consent_exists:
+                    msg = mark_safe('Kindly complete TB adol Consent form under special forms.')
+                elif not tb_assent_exists:
+                    msg = mark_safe('Kindly complete TB adol Assent form under special forms.')
+
+            messages.add_message(self.request, messages.WARNING, msg)
 
     def tb_schedule_shifter(self):
         if self.consent:
@@ -340,7 +370,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
-            antenatal_enrolment=self.antenatal_enrolment)
+            antenatal_enrolment=self.antenatal_enrolment,
+            tb_adol_huu_limit_reached = self.tb_adol_huu_limit_reached)
         return context
 
     def age_adol_range(self, child_age):
