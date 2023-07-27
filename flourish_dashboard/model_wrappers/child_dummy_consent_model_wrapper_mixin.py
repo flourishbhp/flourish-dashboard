@@ -25,10 +25,7 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def caregiver_subject_identifier(self):
-        subject_identifier = self.object.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
-        return caregiver_subject_identifier
+        return getattr(self.object, 'relative_identifier', None)
 
     @property
     def child_name_initial(self):

@@ -451,9 +451,6 @@ def is_delivery_window(subject_identifier):
 
 def requires_child_version(subject_identifier, screening_identifier):
 
-        caregiver_child_consent_cls = django_apps.get_model(
-            'flourish_caregiver.caregiverchildconsent')
-
         consent_version_cls = django_apps.get_model(
             'flourish_caregiver.flourishconsentversion')
         try:
@@ -487,9 +484,7 @@ def child_off_study_button(model_wrapper):
     return dict(
         title=title,
         href=model_wrapper.child_offstudy.href,
-        subject_identifier=model_wrapper.subject_identifier
-
-        )
+        subject_identifier=model_wrapper.subject_identifier, )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/caregiver_off_study.html')

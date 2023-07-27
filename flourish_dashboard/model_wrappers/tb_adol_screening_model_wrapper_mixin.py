@@ -1,7 +1,6 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from edc_constants.constants import YES
-from django.db.models.functions import Lower
 from .tb_adol_screening_model_wrapper import TbAdolScreeningModelWrapper
 
 
