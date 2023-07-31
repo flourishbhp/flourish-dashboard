@@ -5,10 +5,14 @@ from edc_base.utils import age, get_utcnow
 class ChildDummyConsentModelWrapperMixin:
 
     @property
+    def registered_subject_cls(self):
+        return django_apps.get_model('edc_registration.registeredsubject')
+
+    @property
     def screening_identifier(self):
         subject_consent = self.subject_consent_cls.objects.filter(
-            subject_identifier=self.caregiver_subject_identifier, )
-        return subject_consent[0].screening_identifier
+            subject_identifier=self.caregiver_subject_identifier, ).first()
+        return getattr(subject_consent, 'screening_identifier', None)
 
     @property
     def child_consent(self):
@@ -25,7 +29,13 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def caregiver_subject_identifier(self):
-        return getattr(self.object, 'relative_identifier', None)
+        try:
+            registered_subject = self.registered_subject_cls.objects.get(
+                subject_identifier=self.object.subject_identifier)
+        except self.registered_subject_cls.DoesNotExist:
+            return None
+        else:
+            return getattr(registered_subject, 'relative_identifier', None)
 
     @property
     def child_name_initial(self):
