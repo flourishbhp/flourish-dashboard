@@ -9,7 +9,6 @@ class TbAdolScreeningModelWrapperMixin:
 
     adol_screening_model_wrapper_cls = TbAdolScreeningModelWrapper
 
-    caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
     tb_adol_assent_model = 'flourish_child.tbadolassent'
 
@@ -61,26 +60,7 @@ class TbAdolScreeningModelWrapperMixin:
         if self.tb_adol_screening_model_obj:
             return self.tb_adol_screening_model_obj.tb_adol_participation == YES
         
-    @property
-    def total_huu_adol_limits(self):
-        """
-        Returns a count down out of 25 HUU participant being enrolled in tb adol
-        """
 
-        subject_identifiers = self.tb_adol_assent_cls.objects.filter(
-                is_eligible=True).values_list('subject_identifier', flat=True).distinct()
-        
-        study_child_identifiers = self.caregiver_child_consent_cls.objects.filter(
-            subject_identifier__in=subject_identifiers
-        ).values_list('study_child_identifier', flat=True).distinct()
-        
-
-        unexposed_adolencent = self.child_dataset_cls.objects.annotate(
-                    infant_hiv_exposed_lower=Lower('infant_hiv_exposed')
-                ).filter(
-            infant_hiv_exposed_lower='unexposed', study_child_identifier__in=study_child_identifiers).count()
-        
-        return 25 - unexposed_adolencent
 
     @property
     def create_tb_adol_screening_options(self):
