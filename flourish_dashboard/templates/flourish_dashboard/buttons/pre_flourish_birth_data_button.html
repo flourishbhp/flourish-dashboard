@@ -1,0 +1,11 @@
+<a id="take_{{ subject_identifier }}_off_study"
+   title="{{ title }}"
+        {% if not pf_birth_data %}
+   class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+   href="{{ add_pf_birth_data_href }}">
+        {% else %}
+            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+            href="{{ add_pf_birth_data_href }}">
+        {% endif %}
+Birth Data
+</a>
