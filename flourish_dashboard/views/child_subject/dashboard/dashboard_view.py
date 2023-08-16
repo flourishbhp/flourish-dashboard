@@ -464,7 +464,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 model_name = f'flourish_child.{onschedule_model_obj._meta.model_name}'
                 visit_schedule, schedule = (
                     site_visit_schedules.get_by_onschedule_model_schedule_name(
-                    model_name, onschedule_model_obj.schedule_name))
+                        model_name, onschedule_model_obj.schedule_name))
                 self.current_schedule = schedule
                 self.current_visit_schedule = visit_schedule
                 self.current_onschedule_model = onschedule_model_obj
@@ -502,5 +502,4 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     @property
     def is_pf_enrolled(self):
-        return True if 'P' in getattr(self.child_dataset, 'study_child_identifier',
-                                      '') else False
+        return 'P' in getattr(self.child_dataset, 'study_child_identifier', None)
