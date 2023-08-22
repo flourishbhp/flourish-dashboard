@@ -502,4 +502,5 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     @property
     def is_pf_enrolled(self):
-        return 'P' in getattr(self.child_dataset, 'study_child_identifier', '')
+        if self.child_dataset and self.child_dataset.study_child_identifier:
+            return 'P' in self.child_dataset.study_child_identifier
