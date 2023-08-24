@@ -310,7 +310,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
         # child_death_cls = None
         # infant_death_cls = django_apps.get_model('flourish_prn.childdeathreport')
@@ -388,13 +389,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             return flourish_calendar_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
-                title='Follow Up Schedule', )
+                title='Follow Up Schedule',)
 
     @property
     def maternal_hiv_status(self):
         """Returns mother's current hiv status.
         """
-        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
+        maternal_visit_cls = django_apps.get_model(
+            'flourish_caregiver.maternalvisit')
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
             subject_identifier=subject_identifier[:-3], ).order_by(
@@ -413,7 +415,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
