@@ -433,9 +433,6 @@ def is_delivery_window(subject_identifier):
     maternal_delivery_cls = django_apps.get_model(
         'flourish_caregiver.maternaldelivery')
 
-    maternal_delivery_cls = django_apps.get_model(
-        'flourish_caregiver.maternaldelivery')
-
     preg_screen_cls = django_apps.get_model(
         'flourish_caregiver.screeningpregwomen')
 
@@ -455,9 +452,6 @@ def is_delivery_window(subject_identifier):
 
 
 def requires_child_version(subject_identifier, screening_identifier):
-    caregiver_child_consent_cls = django_apps.get_model(
-        'flourish_caregiver.caregiverchildconsent')
-
     caregiver_child_consent_cls = django_apps.get_model(
         'flourish_caregiver.caregiverchildconsent')
 

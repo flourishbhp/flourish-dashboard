@@ -141,6 +141,16 @@ class ChildBirthValues(object):
         return django_apps.get_model('flourish_prn.childoffstudy')
 
     @property
+    def child_offstudy_model_obj(self):
+        """Returns a child offstudy model instance or None.
+        """
+        try:
+            return self.child_offstudy_cls.objects.get(
+                **self.child_offstudy_options)
+        except ObjectDoesNotExist:
+            return None
+
+    @property
     def child_offstudy(self):
         """Returns a wrapped saved or unsaved infant offstudy.
         """
