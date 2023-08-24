@@ -433,6 +433,9 @@ def is_delivery_window(subject_identifier):
     maternal_delivery_cls = django_apps.get_model(
         'flourish_caregiver.maternaldelivery')
 
+    maternal_delivery_cls = django_apps.get_model(
+        'flourish_caregiver.maternaldelivery')
+
     preg_screen_cls = django_apps.get_model(
         'flourish_caregiver.screeningpregwomen')
 
@@ -452,6 +455,9 @@ def is_delivery_window(subject_identifier):
 
 
 def requires_child_version(subject_identifier, screening_identifier):
+    caregiver_child_consent_cls = django_apps.get_model(
+        'flourish_caregiver.caregiverchildconsent')
+
     caregiver_child_consent_cls = django_apps.get_model(
         'flourish_caregiver.caregiverchildconsent')
 
@@ -488,6 +494,17 @@ def child_off_study_button(model_wrapper):
     return dict(
         title=title,
         href=model_wrapper.child_offstudy.href,
+        subject_identifier=model_wrapper.subject_identifier
+
+    )
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/missed_birth_visit_button.html')
+def missed_birth_visit_button(model_wrapper):
+    title = 'Missed Birth Visit'
+    return dict(
+        title=title,
+        href=model_wrapper.missed_birth_visit.href,
         subject_identifier=model_wrapper.subject_identifier
 
     )
