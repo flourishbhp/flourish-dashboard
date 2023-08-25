@@ -53,3 +53,4 @@ from .pre_flourish_birth_data_model_wrapper import PreFlourishBirthDataModelWrap
 from .pre_flourish_birth_data_model_wrapper_mixin import \
     PreFlourishBirthDataModelWrapperMixin
 from .facet_screening_model_wrapper import FacetScreeningModelWrapper
+from .facet_consent_model_wrapper import FacetConsentModelWrapper
