@@ -52,3 +52,4 @@ from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
 from .pre_flourish_birth_data_model_wrapper import PreFlourishBirthDataModelWrapper
 from .pre_flourish_birth_data_model_wrapper_mixin import \
     PreFlourishBirthDataModelWrapperMixin
+from .facet_screening_model_wrapper import FacetScreeningModelWrapper
