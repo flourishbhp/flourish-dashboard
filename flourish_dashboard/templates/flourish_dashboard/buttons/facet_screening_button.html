@@ -1,0 +1,11 @@
+ <a id="facet_screening_add_{{ screening_identifier }}"
+ 	title="{{ title }}"
+ 	   {% if not facet_screening_obj %}
+	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+	        href="{{ facet_screening_wrapper.href }}">
+		{% else %}
+		     class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+	        href="{{  facet_screening_wrapper.href }}">
+	    {% endif %}
+	 FACET Subject Screening
+ </a>
