@@ -12,7 +12,8 @@ class CaregiverResultModelWrapper(ResultModelWrapper):
 
     @property
     def result_model_cls(self):
-        return django_apps.get_model('flourish_caregiver.caregiverrequisitionresult')
+        return django_apps.get_model(
+            'flourish_caregiver.caregiverrequisitionresult')
 
     @property
     def dashboard_url(self):

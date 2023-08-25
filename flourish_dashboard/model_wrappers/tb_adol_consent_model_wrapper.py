@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.apps import apps as django_apps
 from edc_model_wrapper import ModelWrapper
 
 

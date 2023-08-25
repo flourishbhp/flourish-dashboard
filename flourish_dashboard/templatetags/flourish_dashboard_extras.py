@@ -488,9 +488,7 @@ def child_off_study_button(model_wrapper):
     return dict(
         title=title,
         href=model_wrapper.child_offstudy.href,
-        subject_identifier=model_wrapper.subject_identifier
-
-    )
+        subject_identifier=model_wrapper.subject_identifier, )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/missed_birth_visit_button.html')
@@ -499,9 +497,7 @@ def missed_birth_visit_button(model_wrapper):
     return dict(
         title=title,
         href=model_wrapper.missed_birth_visit.href,
-        subject_identifier=model_wrapper.subject_identifier
-
-    )
+        subject_identifier=model_wrapper.subject_identifier, )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/caregiver_off_study.html')

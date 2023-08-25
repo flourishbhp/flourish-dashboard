@@ -142,7 +142,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             'flourish_caregiver.caregiverchildconsent')
 
         child_consents = child_consent_cls.objects.filter(
-            subject_identifier__startswith=self.kwargs.get('subject_identifier'))
+            subject_consent__subject_identifier=self.kwargs.get('subject_identifier'))
         for child_consent in child_consents:
             wrapped_consents.append(
                 self.child_consent_model_wrapper_cls(child_consent))
@@ -160,6 +160,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         return missing_child_version
 
+    def child_registered_subject(self, subject_identifier):
+        try:
+            registered_subject = RegisteredSubject.objects.get(
+                subject_identifier=subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            raise
+        else:
+            return registered_subject
+
     @property
     def subject_consent_wrapper(self):
 
@@ -168,7 +177,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         subject_identifier = self.kwargs.get('subject_identifier')
         if len(subject_identifier.split('-')) == 4:
-            subject_identifier = subject_identifier[:-3]
+            registered_subject = self.child_registered_subject(subject_identifier)
+            subject_identifier = getattr(
+                registered_subject, 'relative_identifier', None)
 
         subject_consents = subject_consent_cls.objects.filter(
             subject_identifier=subject_identifier)
@@ -184,6 +195,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     @property
     def caregiver_child_consent_cls(self):
         return django_apps.get_model(self.caregiver_child_consent_model)
+
+    @property
+    def child_subject_identifiers(self):
+        subject_identifier = self.kwargs.get('subject_identifier', None)
+        child_subject_identifiers = self.caregiver_child_consent_cls.objects.filter(
+            subject_consent__subject_identifier=subject_identifier).values_list(
+                'subject_identifier', flat=True).distinct()
+        return list(set(child_subject_identifiers))
         
     @property
     def tb_adol_huu_limit_reached(self):
@@ -228,8 +247,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             # if condition are meet excute the following if
             if subject_identifier and age_adol_range and not msg:
 
-                # used exists cause its faster than filter
-
                 tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
                     subject_identifier=subject_identifier).exists()
 
@@ -237,7 +254,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     subject_identifier=subject_identifier).exists()
 
                 tb_assent_exists = self.tb_adol_assent_cls.objects.filter(
-                    subject_identifier__istartswith=subject_identifier).exists()
+                    subject_identifier__in=self.child_subject_identifiers).exists()
 
                 # if a model is deleted or does not exist, show the notification
                 if not tb_screening_exists:
@@ -250,61 +267,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             messages.add_message(self.request, messages.WARNING, msg)
 
-    def tb_schedule_shifter(self):
-        if self.consent:
-            prev_key = None
-            tb_schedules_instances = []
-
-            tb_schedules_names = ['tb_2_months_schedule', 'tb_6_months_schedule']
-
-            tb_onschedule_obj = filter(lambda model: model.schedule_name in tb_schedules_names, self.onschedule_models)
-
-            for key, value in self.visit_schedules.items():
-                keys = value.schedules.keys()
-
-                for tb_n in tb_schedules_names:
-
-                    if tb_n in keys:
-                        tb_schedule = value.schedules[tb_n]
-                        tb_schedules_instances.append(tb_schedule)
-                        prev_key = key
-
-            for obj in tb_onschedule_obj:
-
-                subject_identifiers = self.consent.caregiverchildconsent_set\
-                    .order_by('subject_identifier').values_list('subject_identifier', flat=True)
-
-                subject_identifiers = [ e for e  in subject_identifiers]
-
-                index = subject_identifiers.index(obj.child_subject_identifier)
-
-                key = [key for key in self.visit_schedules.keys()][index]
-
-                appts = self.appointment_model_cls.objects.filter(
-                    Q(schedule_name='tb_2_months_schedule') |
-                    Q(schedule_name='tb_6_months_schedule'),
-                    subject_identifier = self.subject_identifier,
-                ).only('schedule_name', 'subject_identifier')
-
-                for appt in appts:
-                    if appt.visit_schedule_name != key:
-                        appt.visit_schedule_name = key
-                        appt.save()
-
-                if prev_key:
-                    old_visit_schedule = self.visit_schedules[prev_key]
-                    new_visit_schedule = self.visit_schedules[key]
-                    keys = old_visit_schedule.schedules.keys()
-
-                    for tb_n, tb_i in zip(tb_schedules_names, tb_schedules_instances):
-
-                        if tb_n in keys:
-                            old_visit_schedule.schedules.pop(tb_n)
-                            new_visit_schedule.schedules[tb_n] = tb_i
-
-                # self.visit_schedules
-
-    def get_context_data(self, offstudy_model_wrapper_cls=None, **kwargs):
+    def get_context_data(self, **kwargs):
         global offstudy_cls_model_obj
 
         self.get_tb_adol_eligible_message()
@@ -404,7 +367,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 'flourish_calendar.participantnote')
 
             return flourish_calendar_cls.objects.filter(
-                subject_identifier__startswith=self.subject_identifier,
+                subject_identifier__in=self.child_subject_identifiers,
                 title='Follow Up',)
 
     @property
@@ -528,13 +491,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """Returns an infant registered subjects.
         """
         subject_identifier = self.kwargs.get('subject_identifier')
-        try:
-            registered_subject = RegisteredSubject.objects.filter(
-                relative_identifier=subject_identifier)
-        except RegisteredSubject.DoesNotExist:
-            return None
-        else:
-            return registered_subject
+
+        return RegisteredSubject.objects.filter(
+            relative_identifier=subject_identifier)
 
     def get_locator_info(self):
 
