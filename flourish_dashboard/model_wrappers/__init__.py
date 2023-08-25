@@ -49,3 +49,6 @@ from .tb_informed_consent_model_wrapper import TbInformedConsentModelWrapper
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 from .tb_offstudy_model_wrapper import TbOffstudyModelWrapper
 from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
+from .pre_flourish_birth_data_model_wrapper import PreFlourishBirthDataModelWrapper
+from .pre_flourish_birth_data_model_wrapper_mixin import \
+    PreFlourishBirthDataModelWrapperMixin

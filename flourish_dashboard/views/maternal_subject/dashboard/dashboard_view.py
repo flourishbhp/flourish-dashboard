@@ -306,8 +306,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
-        tb_eligibility = self.tb_eligibility
-
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
 
         context.update(
@@ -329,7 +327,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             caregiver_offstudy=offstudy_cls_model,
             version=self.subject_consent_wrapper.consent_version,
             caregiver_death_report=self.consent_wrapped.caregiver_death_report,
-            tb_eligibility=tb_eligibility,
             tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,

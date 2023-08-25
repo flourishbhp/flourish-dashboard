@@ -71,7 +71,8 @@ class ChildBirthValues(object):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=self.caregiver_subject_identifier,).latest('consent_datetime')
+                subject_identifier=self.caregiver_subject_identifier,).latest(
+                    'consent_datetime')
         except ObjectDoesNotExist:
             return None
         else:
@@ -174,7 +175,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values,)
+            infant_birth_values=infant_birth_values, )
         return context
 
 
@@ -226,10 +227,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     mother_infant_study = True
     infant_links = False
     maternal_links = True
-    special_forms_include_value = 'flourish_dashboard/child_subject/dashboard/special_forms.html'
-    maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
-    data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
-    odk_archive_forms_include_value = 'flourish_dashboard/child_subject/dashboard/odk_archives.html'
+    special_forms_include_value = \
+        'flourish_dashboard/child_subject/dashboard/special_forms.html'
+    maternal_dashboard_include_value = \
+        "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
+    data_action_item_template = \
+        "flourish_dashboard/child_subject/dashboard/data_manager.html"
+    odk_archive_forms_include_value = \
+        'flourish_dashboard/child_subject/dashboard/odk_archives.html'
 
     subject_consent_cls = django_apps.get_model(
         'flourish_caregiver.subjectconsent')
@@ -290,7 +295,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             'flourish_child.childdataset')
         try:
             child_dataset = child_dataset_cls.objects.get(
-                study_child_identifier=self.caregiver_child_consent.study_child_identifier)
+                study_child_identifier=self.caregiver_child_consent
+                .study_child_identifier)
         except child_dataset_cls.DoesNotExist:
             return None
         else:
@@ -303,11 +309,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         self.get_consent_version_object_or_message(
-            screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
+            screening_identifier=self.caregiver_child_consent.subject_consent
+            .screening_identifier)
 
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=child_offstudy_cls,
@@ -333,12 +341,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             child_version=self.consent_wrapped.child_consent_version,
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
-            tb_adol_referal=self.tb_adol_referal)
+            tb_adol_referal=self.tb_adol_referal,
+            is_pf_enrolled=self.is_pf_enrolled, )
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
             context=context
-            )
+        )
         return context
 
     @property
@@ -372,8 +381,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 'flourish_calendar.participantnote')
 
             return flourish_calendar_cls.objects.filter(
-                    subject_identifier=self.subject_identifier,
-                    title='Follow Up Schedule',)
+                subject_identifier=self.subject_identifier,
+                title='Follow Up Schedule',)
 
     @property
     def maternal_hiv_status(self):
@@ -385,7 +394,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         latest_visit = maternal_visit_cls.objects.filter(
             subject_identifier=caregiver_sid, ).order_by(
-            '-report_datetime').first()
+                '-report_datetime').first()
 
         if latest_visit:
             maternal_status_helper = MaternalStatusHelper(
@@ -400,7 +409,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
@@ -449,8 +459,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 self.current_onschedule_model = onschedule_model_obj
             else:
                 model_name = f'flourish_child.{onschedule_model_obj._meta.model_name}'
-                visit_schedule, schedule = site_visit_schedules.get_by_onschedule_model_schedule_name(
-                    model_name, onschedule_model_obj.schedule_name)
+                visit_schedule, schedule = (
+                    site_visit_schedules.get_by_onschedule_model_schedule_name(
+                        model_name, onschedule_model_obj.schedule_name))
                 self.current_schedule = schedule
                 self.current_visit_schedule = visit_schedule
                 self.current_onschedule_model = onschedule_model_obj
@@ -485,3 +496,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return False
         else:
             return True
+
+    @property
+    def is_pf_enrolled(self):
+        if self.child_dataset and self.child_dataset.study_child_identifier:
+            return 'P' in self.child_dataset.study_child_identifier

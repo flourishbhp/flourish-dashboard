@@ -60,5 +60,13 @@
             </td>
         </tr>
     {% endif %}
+
+    {% if caregiver_child_consent.missed_birth_visit %}
+    <tr>
+      <td>
+        {% missed_birth_visit_button caregiver_child_consent %}
+      </td>
+    </tr>
+  {% endif %}
     </tbody>
 </table>

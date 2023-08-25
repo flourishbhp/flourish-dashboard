@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 from edc_base.utils import get_utcnow
 from edc_constants.constants import OFF_STUDY, NEW, POS
-
+from django.db.models import Q
 from edc_action_item.site_action_items import site_action_items
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 
@@ -22,9 +22,11 @@ class DashboardViewMixin:
 
         subject_identifier = self.kwargs.get('subject_identifier')
 
+        tb_study_visit_codes = ['2100T', '2200T', '2100A', '2200A']
+
         offstudy_visit_obj = visit_cls.objects.filter(
             appointment__subject_identifier=subject_identifier,
-            study_status=OFF_STUDY).exclude(visit_code='2100T').order_by(
+            study_status=OFF_STUDY).exclude(visit_code__in=tb_study_visit_codes).order_by(
                 'report_datetime').last()
 
         trigger = self.require_offstudy(offstudy_visit_obj, subject_identifier)
@@ -37,13 +39,15 @@ class DashboardViewMixin:
 
     def require_offstudy(self, offstudy_visit_obj, subject_identifier):
 
-        hiv_cls = django_apps.get_model('flourish_child.childhivrapidtestcounseling')
+        hiv_cls = django_apps.get_model(
+            'flourish_child.childhivrapidtestcounseling')
 
         hiv_obj = hiv_cls.objects.filter(
             child_visit__subject_identifier=subject_identifier,
             result=POS)
 
-        preg_test_cls = django_apps.get_model('flourish_child.childpregtesting')
+        preg_test_cls = django_apps.get_model(
+            'flourish_child.childpregtesting')
 
         preg_test_obj = preg_test_cls.objects.filter(
             child_visit__subject_identifier=subject_identifier,
@@ -57,7 +61,8 @@ class DashboardViewMixin:
             subject_identifier=subject_identifier,
             is_eligible=False)
 
-        infant_hiv_test_cls = django_apps.get_model('flourish_child.infanthivtesting')
+        infant_hiv_test_cls = django_apps.get_model(
+            'flourish_child.infanthivtesting')
 
         infant_hiv_test_obj = infant_hiv_test_cls.objects.filter(
             child_visit__subject_identifier=subject_identifier,
@@ -68,7 +73,8 @@ class DashboardViewMixin:
     def get_offstudy_message(self, offstudy_cls=None, msg=None):
 
         action_item_obj = self.get_action_item_obj(offstudy_cls)
-        msg = msg or mark_safe(f'Please complete the off-study form to take subject off-study.')
+        msg = msg or mark_safe(
+            f'Please complete the off-study form to take subject off-study.')
 
         if action_item_obj:
             messages.add_message(self.request, messages.ERROR, msg)
@@ -102,7 +108,6 @@ class DashboardViewMixin:
             subject=subject,
             subject_identifier=subject_identifier,
             defaults=defaults)
-
 
     def delete_action_item_if_new(self, action_model_cls):
         action_item_obj = self.get_action_item_obj(action_model_cls)
