@@ -7,7 +7,7 @@ from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
-
+from ..model_wrappers import FacetScreeningModelWrapper
 register = template.Library()
 
 
@@ -587,3 +587,24 @@ def pre_flourish_birth_data_button(model_wrapper):
         subject_identifier=model_wrapper.pf_birth_data.subject_identifier,
         add_pf_birth_data_href=model_wrapper.pf_birth_data.href,
         title=' '.join(title))
+
+@register.inclusion_tag('flourish_dashboard/buttons/facet_screening_button.html')
+def facet_screening_button(model_wrapper):
+
+    facet_screening_model = 'flourish_facet.facetsubjectscreening'
+
+    facet_screening_cls = django_apps.get_model(facet_screening_model)
+
+
+    facet_screening_obj = model_wrapper.facet_screening_obj or facet_screening_cls(
+        subject_identifier = model_wrapper.subject_identifier
+    )
+
+
+    title  = 'FACET Screening'
+    
+    return dict(
+        facet_screening_obj = facet_screening_obj,
+        facet_screening_wrapper = FacetScreeningModelWrapper(model_obj=facet_screening_obj),
+        title = title,
+    )
