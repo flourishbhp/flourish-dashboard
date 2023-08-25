@@ -7,7 +7,6 @@ from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
-from ..model_wrappers import FacetScreeningModelWrapper
 register = template.Library()
 
 
@@ -591,20 +590,25 @@ def pre_flourish_birth_data_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/facet_screening_button.html')
 def facet_screening_button(model_wrapper):
 
-    facet_screening_model = 'flourish_facet.facetsubjectscreening'
-
-    facet_screening_cls = django_apps.get_model(facet_screening_model)
-
-
-    facet_screening_obj = model_wrapper.facet_screening_obj or facet_screening_cls(
-        subject_identifier = model_wrapper.subject_identifier
-    )
-
 
     title  = 'FACET Screening'
+    status = 'btn-success' if model_wrapper.facet_screening_obj else 'btn-warning'
     
     return dict(
-        facet_screening_obj = facet_screening_obj,
-        facet_screening_wrapper = FacetScreeningModelWrapper(model_obj=facet_screening_obj),
+        facet_screening_obj = model_wrapper.facet_screening_obj,
+        facet_screening_wrapper = model_wrapper.facet_screening_wrapper,
         title = title,
-    )
+        status = status )
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/facet_consent_button.html')
+def facet_consent_button(model_wrapper):
+
+    title  = 'FACET Consent'
+    status = 'btn-success' if model_wrapper.facet_consent_obj else 'btn-warning'
+    
+    return dict(
+        facet_consent_obj = model_wrapper.facet_consent_obj,
+        facet_consent_wrapper = model_wrapper.facet_consent_wrapper,
+        title = title,
+        status = status)
