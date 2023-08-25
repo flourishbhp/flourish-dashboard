@@ -32,7 +32,7 @@ from .tb_adol_consent_model_wrapper_mixin import TbAdolConsentModelWrapperMixin
 from .tb_adol_screening_model_wrapper_mixin import TbAdolScreeningModelWrapperMixin
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
-
+from .facet_model_mixin import FacetModelWrapperMixin
 
 class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  CaregiverContactModelWrapperMixin,
@@ -55,6 +55,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  TbAdolConsentModelWrapperMixin,
                                  TbAdolScreeningModelWrapperMixin,
                                  TbAdolChildAssentModelWrapperMixin,
+                                 FacetModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
