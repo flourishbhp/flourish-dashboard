@@ -15,17 +15,21 @@ register = template.Library()
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+
 @register.filter
 def get_values_unique(dictionary):
     return set(list(dictionary.values()))
+
 
 @register.filter
 def get_keys(dictionary, value):
     return [k for k, v in dictionary.items() if v == value]
 
+
 @register.filter
 def readable_cohort(cohort):
     return cohort.replace('_', ' ')
+
 
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
@@ -49,6 +53,7 @@ def child_dashboard_button(model_wrapper):
     return dict(
         child_dashboard_url=child_dashboard_url,
         subject_identifier=model_wrapper.subject_identifier)
+
 
 @register.inclusion_tag(
     'pre_flourish/buttons/heu_dashboard_button.html')
@@ -162,7 +167,7 @@ def antenatal_enrollment_button(model_wrapper):
         antenatal_enrollment_model_obj=model_wrapper.antenatal_enrollment_model_obj,
         screening_identifier=model_wrapper.object.screening_identifier,
         preg_screening_obj=preg_screening_obj,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag(
@@ -174,7 +179,7 @@ def maternal_delivery_button(model_wrapper):
         add_maternal_delivery_href=model_wrapper.maternal_delivery.href,
         maternal_delivery_model_obj=model_wrapper.maternal_delivery_model_obj,
         maternal_ultrasound_initial_obj=model_wrapper.maternal_ultrasound_initial_obj,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/locator_button.html')
@@ -188,7 +193,6 @@ def locator_button(model_wrapper):
 @register.inclusion_tag(
     'flourish_dashboard/buttons/caregiver_enrolment_info_button.html')
 def caregiver_enrolment_info_button(model_wrapper):
-
     bhp_prior_screening = getattr(model_wrapper,
                                   'bhp_prior_screening_model_obj', None)
     return dict(
@@ -238,7 +242,7 @@ def caregiver_contact_button(model_wrapper):
     return dict(
         subject_identifier=model_wrapper.object.subject_identifier,
         add_caregiver_contact_href=model_wrapper.caregiver_contact.href,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag(
@@ -246,7 +250,7 @@ def caregiver_contact_button(model_wrapper):
 def tb_adol_referal_button(model_wrapper):
     return dict(
         subject_identifier=model_wrapper.object.subject_identifier,
-        href=model_wrapper.href,)
+        href=model_wrapper.href, )
 
 
 @register.inclusion_tag(
@@ -269,7 +273,7 @@ def assents_button(model_wrapper):
     return dict(
         wrapped_assents=model_wrapper.child_assents,
         unsaved=unsaved,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assents_button.html')
@@ -281,7 +285,7 @@ def tb_adol_assents_button(model_wrapper):
         model_wrapper=model_wrapper,
         wrapped_assents=model_wrapper.tb_adol_assents,
         unsaved=unsaved,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assent_button.html')
@@ -310,7 +314,7 @@ def caregiver_dashboard_button(model_wrapper):
     subject_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'subject_dashboard_url')
 
-    subject_identifier = model_wrapper.object\
+    subject_identifier = model_wrapper.object \
         .subject_consent.subject_identifier
 
     return dict(
@@ -359,7 +363,7 @@ def subject_schedule_footer_row(subject_identifier, visit_schedule, schedule,
     except SubjectScheduleHistory.DoesNotExist:
         onschedule_model_obj = schedule.onschedule_model_cls.objects.get(
             subject_identifier=subject_identifier,
-            schedule_name=schedule.name,)
+            schedule_name=schedule.name, )
         options = dict(subject_identifier=subject_identifier)
         query = unquote(urlencode(options))
         href = (
@@ -418,7 +422,7 @@ def child_birth_button(child_birth_values):
         add_child_birth_href=child_birth_values.child_birth.href,
         child_birth_model_obj=child_birth_values.child_birth_obj,
         maternal_deliv_obj=child_birth_values.maternal_delivery_model_obj,
-        title=' '.join(title),)
+        title=' '.join(title), )
 
 
 @register.inclusion_tag(
@@ -431,43 +435,41 @@ def caregiver_child_consent_button(model_wrapper):
 
 
 def is_delivery_window(subject_identifier):
+    maternal_delivery_cls = django_apps.get_model(
+        'flourish_caregiver.maternaldelivery')
 
-        maternal_delivery_cls = django_apps.get_model(
-            'flourish_caregiver.maternaldelivery')
+    preg_screen_cls = django_apps.get_model(
+        'flourish_caregiver.screeningpregwomen')
 
-        preg_screen_cls = django_apps.get_model(
-            'flourish_caregiver.screeningpregwomen')
-
+    try:
+        preg_screen_cls.objects.get(subject_identifier=subject_identifier)
+    except preg_screen_cls.DoesNotExist:
+        return False
+    else:
         try:
-            preg_screen_cls.objects.get(subject_identifier=subject_identifier)
-        except preg_screen_cls.DoesNotExist:
-            return False
+            maternal_delivery_obj = maternal_delivery_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except maternal_delivery_cls.DoesNotExist:
+            return True
         else:
-            try:
-                maternal_delivery_obj = maternal_delivery_cls.objects.get(
-                    subject_identifier=subject_identifier)
-            except maternal_delivery_cls.DoesNotExist:
-                return True
-            else:
-                return ((get_utcnow().date() -
-                         maternal_delivery_obj.delivery_datetime.date()).days <= 3)
+            return ((get_utcnow().date() -
+                     maternal_delivery_obj.delivery_datetime.date()).days <= 3)
 
 
 def requires_child_version(subject_identifier, screening_identifier):
+    caregiver_child_consent_cls = django_apps.get_model(
+        'flourish_caregiver.caregiverchildconsent')
 
-        caregiver_child_consent_cls = django_apps.get_model(
-            'flourish_caregiver.caregiverchildconsent')
-
-        consent_version_cls = django_apps.get_model(
-            'flourish_caregiver.flourishconsentversion')
-        try:
-            consent_version_obj = consent_version_cls.objects.get(
-                screening_identifier=screening_identifier)
-        except consent_version_cls.DoesNotExist:
-            return False
-        else:
-            return (is_delivery_window(subject_identifier)
-                    and not consent_version_obj.child_version)
+    consent_version_cls = django_apps.get_model(
+        'flourish_caregiver.flourishconsentversion')
+    try:
+        consent_version_obj = consent_version_cls.objects.get(
+            screening_identifier=screening_identifier)
+    except consent_version_cls.DoesNotExist:
+        return False
+    else:
+        return (is_delivery_window(subject_identifier)
+                and not consent_version_obj.child_version)
 
 
 @register.inclusion_tag(
@@ -477,8 +479,8 @@ def consent_version_button(model_wrapper):
 
     return dict(
         requires_child_version=requires_child_version(
-                                    model_wrapper.object.subject_identifier,
-                                    model_wrapper.object.screening_identifier),
+            model_wrapper.object.subject_identifier,
+            model_wrapper.object.screening_identifier),
         consent_versioned=model_wrapper.flourish_consent_version,
         screening_identifier=model_wrapper.object.screening_identifier,
         add_consent_version_href=model_wrapper.flourish_consent_version.href,
@@ -491,9 +493,16 @@ def child_off_study_button(model_wrapper):
     return dict(
         title=title,
         href=model_wrapper.child_offstudy.href,
-        subject_identifier=model_wrapper.subject_identifier
+        subject_identifier=model_wrapper.subject_identifier, )
 
-        )
+
+@register.inclusion_tag('flourish_dashboard/buttons/missed_birth_visit_button.html')
+def missed_birth_visit_button(model_wrapper):
+    title = 'Missed Birth Visit'
+    return dict(
+        title=title,
+        href=model_wrapper.missed_birth_visit.href,
+        subject_identifier=model_wrapper.subject_identifier, )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/caregiver_off_study.html')
@@ -503,7 +512,7 @@ def caregiver_off_study_button(model_wrapper):
         title=title,
         href=model_wrapper.caregiver_offstudy.href,
         subject_identifier=model_wrapper.subject_identifier
-        )
+    )
 
 
 @register.inclusion_tag(
@@ -514,7 +523,7 @@ def caregiver_death_report_button(model_wrapper):
         title=title,
         href=model_wrapper.caregiver_death_report.href,
         subject_identifier=model_wrapper.subject_identifier
-        )
+    )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/child_death_report_button.html')
@@ -524,7 +533,7 @@ def child_death_report_button(model_wrapper):
         title=title,
         href=model_wrapper.child_death_report.href,
         subject_identifier=model_wrapper.subject_identifier
-        )
+    )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_consent_button.html')
@@ -579,4 +588,14 @@ def tb_offstudy_button(model_wrapper):
         tb_offstudy=model_wrapper.tb_offstudy_model_obj,
         subject_identifier=model_wrapper.tb_offstudy.subject_identifier,
         add_offstudy_href=model_wrapper.tb_offstudy.href,
+        title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/pre_flourish_birth_data_button.html')
+def pre_flourish_birth_data_button(model_wrapper):
+    title = ['Birth Data']
+    return dict(
+        pf_birth_data=model_wrapper.pf_birth_data_model_obj,
+        subject_identifier=model_wrapper.pf_birth_data.subject_identifier,
+        add_pf_birth_data_href=model_wrapper.pf_birth_data.href,
         title=' '.join(title))

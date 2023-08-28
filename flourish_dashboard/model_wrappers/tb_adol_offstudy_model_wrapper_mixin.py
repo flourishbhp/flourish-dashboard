@@ -2,7 +2,6 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
 from .tb_adol_offstudy_model_wrapper import TbAdolOffstudyModelWrapper
-from .tb_offstudy_model_wrapper import TbOffstudyModelWrapper
 
 
 class TbAdolOffstudyModelWrapperMixin:

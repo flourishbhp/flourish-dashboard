@@ -45,8 +45,7 @@ class TbAdolConsentModelWrapperMixin:
     @property
     def child_consent_obj(self):
 
-        try:
-            
+        try:    
             consent_obj = self.child_consent_model_cls.objects.filter(
                 subject_identifier__istartswith=self.object.subject_identifier
             ).latest('consent_datetime')

@@ -1,7 +1,6 @@
 from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
 from edc_base.utils import get_utcnow, age
 
 from .tb_adol_assent_model_wrapper import TbAdolAssentModelWrapper
@@ -183,7 +182,8 @@ class TbAdolChildAssentModelWrapperMixin:
 
     def get_tb_adol_assent_model_obj(self, caregiverchildconsent):
         try:
-            return self.tb_adol_assent_model_cls.objects.get(subject_identifier=caregiverchildconsent.subject_identifier)
+            return self.tb_adol_assent_model_cls.objects.get(
+                subject_identifier=caregiverchildconsent.subject_identifier)
         except self.tb_adol_assent_model_cls.DoesNotExist:
             return None
 

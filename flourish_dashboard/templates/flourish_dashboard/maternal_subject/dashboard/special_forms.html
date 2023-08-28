@@ -43,7 +43,7 @@
             </td>
         </tr>
     {% endif %}
-    {% if tb_eligibility %}
+    {% if subject_consent.tb_consent_model_obj %}
         <tr>
             <td>
                 {% tb_consent_button subject_consent %}
@@ -51,7 +51,7 @@
         </tr>
     {% endif %}
 
-    {% if result.tb_adol_screening_model_obj or result.total_huu_limits %}
+    {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached %}
         <tr>
             <td>
                 {% tb_adol_screening_button subject_consent %}
