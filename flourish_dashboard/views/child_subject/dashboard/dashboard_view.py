@@ -57,16 +57,22 @@ class ChildBirthValues(object):
             'flourish_caregiver.flourishconsentversion')
 
     @property
-    def latest_consent_version(self):
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
+    def caregiver_subject_identifier(self):
+        try:
+            registered_subject = RegisteredSubject.objects.get(
+                subject_identifier=self.subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            raise
+        else:
+            return registered_subject.relative_identifier
 
+    @property
+    def latest_consent_version(self):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier, ).latest(
-                'consent_datetime')
+                subject_identifier=self.caregiver_subject_identifier,).latest(
+                    'consent_datetime')
         except ObjectDoesNotExist:
             return None
         else:
@@ -84,12 +90,9 @@ class ChildBirthValues(object):
     def subject_consent_obj(self):
         """Returns a child birth model instance or None.
         """
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
         try:
             return self.subject_consent_cls.objects.get(
-                subject_identifier=caregiver_subject_identifier,
+                subject_identifier=self.caregiver_subject_identifier,
                 version=self.latest_consent_version)
         except ObjectDoesNotExist:
             return None
@@ -109,13 +112,10 @@ class ChildBirthValues(object):
     def maternal_delivery_obj(self):
         """Returns a child birth model instance or None.
         """
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
         try:
 
             return self.maternal_delivery_cls.objects.get(
-                subject_identifier=caregiver_subject_identifier)
+                subject_identifier=self.caregiver_subject_identifier)
         except ObjectDoesNotExist:
             return None
 
@@ -195,10 +195,9 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 
     @property
     def caregiver_subject_identifier(self):
-        subject_identifier = self.kwargs.get('subject_identifier').split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
-        return caregiver_subject_identifier
+        subject_identifier = self.kwargs.get('subject_identifier')
+        birth_values = ChildBirthValues(subject_identifier=subject_identifier)
+        return getattr(birth_values, 'caregiver_subject_identifier', None)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -310,14 +309,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
-        # child_death_cls = None
-        # infant_death_cls = django_apps.get_model('flourish_prn.childdeathreport')
-
-        # self.update_messages(offstudy_cls=child_offstudy_cls)
-        # self.get_death_or_message(visit_cls=child_visit_cls,
-        #                           death_cls=child_death_cls)
 
         self.get_consent_version_object_or_message(
             screening_identifier=self.caregiver_child_consent.subject_consent
@@ -388,24 +382,26 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             return flourish_calendar_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
-                title='Follow Up Schedule', )
+                title='Follow Up Schedule',)
 
     @property
     def maternal_hiv_status(self):
         """Returns mother's current hiv status.
         """
-        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         subject_identifier = self.kwargs.get('subject_identifier')
+        caregiver_sid = ChildBirthValues(
+            subject_identifier=subject_identifier).caregiver_subject_identifier
+        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier[:-3], ).order_by(
-            '-report_datetime').first()
+            subject_identifier=caregiver_sid, ).order_by(
+                '-report_datetime').first()
 
         if latest_visit:
             maternal_status_helper = MaternalStatusHelper(
                 maternal_visit=latest_visit)
         else:
             maternal_status_helper = MaternalStatusHelper(
-                subject_identifier=self.kwargs.get('subject_identifier')[:-3])
+                subject_identifier=caregiver_sid)
         return maternal_status_helper.hiv_status
 
     def hiv_disclosed_or_offstudy(self):
@@ -413,7 +409,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
@@ -502,4 +499,5 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     @property
     def is_pf_enrolled(self):
-        return 'P' in getattr(self.child_dataset, 'study_child_identifier', '')
+        if self.child_dataset and self.child_dataset.study_child_identifier:
+            return 'P' in self.child_dataset.study_child_identifier
