@@ -56,7 +56,7 @@ class FacetModelWrapperMixin:
 
     @property
     def show_facet_consent(self):
-        return self.facet_screening_obj and self.facet_screening_obj.facet_participation == YES
+        return self.facet_screening_obj and self.facet_screening_obj.is_eligible
     
     @property
     def show_facet_screening(self):
