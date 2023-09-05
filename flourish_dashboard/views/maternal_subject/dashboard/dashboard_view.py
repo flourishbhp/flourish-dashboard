@@ -308,6 +308,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
 
+        del self.visit_schedules['f_mother_visit_schedule']
+
         context.update(
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
