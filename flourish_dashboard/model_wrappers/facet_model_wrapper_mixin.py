@@ -54,16 +54,10 @@ class FacetModelWrapperMixin:
             return screen_obj
 
     @property
-    def caregiver_child_consent_obj(self):
-        try:
-            caregiver_child_consent_obj = self.caregiver_child_consent_model_cls.objects.filter(
-                subject_consent__subject_identifier=self.subject_identifier)
-
-        except self.caregiver_child_consent_model_cls.DoesNotExist:
-            pass
-        else:
-            return caregiver_child_consent_obj
-
+    def caregiver_child_consent_objs(self):
+        return self.caregiver_child_consent_model_cls.objects.filter(
+                    subject_consent__subject_identifier=self.subject_identifier)
+    
     @property
     def antenatal_screening_obj(self):
         try:
@@ -92,14 +86,14 @@ class FacetModelWrapperMixin:
 
     @property
     def show_facet_consent(self):
-        return self.facet_screening_obj and self.facet_screening_obj.facet_participation == YES
+        return self.facet_screening_obj and self.facet_screening_obj.is_eligible
 
     @property
     def show_facet_screening(self):
         """
         Condition for showing screening
         """
-        for child in self.caregiver_child_consent_obj:
-            years = flourish_dashboard_utils.child_age(child.child_dob)
-        if self.antenatal_screening_obj and years <= 0.5:
-            return self.caregiver_child_consent_obj.subject_consent.future_contact==YES
+        for child_consent in self.caregiver_child_consent_objs:
+            years = flourish_dashboard_utils.child_age(child_consent.child_dob)
+            if self.antenatal_screening_obj and years <= 0.5:
+                return child_consent.subject_consent.future_contact==YES
