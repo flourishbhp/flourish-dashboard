@@ -328,6 +328,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         self.get_assent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age,
             version=self.latest_consent_version)
+        
+        del self.visit_schedules['f_child_visit_schedule']
 
         context.update(
             in_person_visits=['2000D', '2100A', '3000'],
