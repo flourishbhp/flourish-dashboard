@@ -21,4 +21,5 @@ class CaregiverContactModelWrapper(ModelWrapper):
         contact_details_cls = django_apps.get_model(
             'flourish_caregiver.caregivercontact')
 
-        return contact_details_cls.objects.filter(subject_identifier=subject_identifier).exists()
+        return contact_details_cls.objects.filter(
+            subject_identifier=subject_identifier).exists()

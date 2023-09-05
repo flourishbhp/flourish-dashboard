@@ -3,9 +3,11 @@
 # import CHILD_DEATH_REPORT_ACTION
 from dateutil import relativedelta
 from django.apps import apps as django_apps
+from django.contrib import messages
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
+from django.utils.safestring import mark_safe
 from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -20,6 +22,7 @@ from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_child.helper_classes.child_fu_onschedule_helper import \
     ChildFollowUpEnrolmentHelper
+from flourish_child.helper_classes.child_onschedule_helper import ChildOnScheduleHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
@@ -57,15 +60,22 @@ class ChildBirthValues(object):
             'flourish_caregiver.flourishconsentversion')
 
     @property
-    def latest_consent_version(self):
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
+    def caregiver_subject_identifier(self):
+        try:
+            registered_subject = RegisteredSubject.objects.get(
+                subject_identifier=self.subject_identifier)
+        except RegisteredSubject.DoesNotExist:
+            raise
+        else:
+            return registered_subject.relative_identifier
 
+    @property
+    def latest_consent_version(self):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=caregiver_subject_identifier,).latest('consent_datetime')
+                subject_identifier=self.caregiver_subject_identifier,).latest(
+                    'consent_datetime')
         except ObjectDoesNotExist:
             return None
         else:
@@ -83,12 +93,9 @@ class ChildBirthValues(object):
     def subject_consent_obj(self):
         """Returns a child birth model instance or None.
         """
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
         try:
             return self.subject_consent_cls.objects.get(
-                subject_identifier=caregiver_subject_identifier,
+                subject_identifier=self.caregiver_subject_identifier,
                 version=self.latest_consent_version)
         except ObjectDoesNotExist:
             return None
@@ -108,13 +115,10 @@ class ChildBirthValues(object):
     def maternal_delivery_obj(self):
         """Returns a child birth model instance or None.
         """
-        subject_identifier = self.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
         try:
 
             return self.maternal_delivery_cls.objects.get(
-                subject_identifier=caregiver_subject_identifier)
+                subject_identifier=self.caregiver_subject_identifier)
         except ObjectDoesNotExist:
             return None
 
@@ -174,7 +178,7 @@ class ChildBirthButtonCls(ContextMixin):
         infant_birth_values = ChildBirthValues(
             subject_identifier=self.subject_identifier)
         context.update(
-            infant_birth_values=infant_birth_values,)
+            infant_birth_values=infant_birth_values, )
         return context
 
 
@@ -194,10 +198,9 @@ class CaregiverRegisteredSubjectCls(ContextMixin):
 
     @property
     def caregiver_subject_identifier(self):
-        subject_identifier = self.kwargs.get('subject_identifier').split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
-        return caregiver_subject_identifier
+        subject_identifier = self.kwargs.get('subject_identifier')
+        birth_values = ChildBirthValues(subject_identifier=subject_identifier)
+        return getattr(birth_values, 'caregiver_subject_identifier', None)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -227,10 +230,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     mother_infant_study = True
     infant_links = False
     maternal_links = True
-    special_forms_include_value = 'flourish_dashboard/child_subject/dashboard/special_forms.html'
-    maternal_dashboard_include_value = "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
-    data_action_item_template = "flourish_dashboard/child_subject/dashboard/data_manager.html"
-    odk_archive_forms_include_value = 'flourish_dashboard/child_subject/dashboard/odk_archives.html'
+    special_forms_include_value = \
+        'flourish_dashboard/child_subject/dashboard/special_forms.html'
+    maternal_dashboard_include_value = \
+        "flourish_dashboard/child_subject/dashboard/caregiver_dashboard_links.html"
+    data_action_item_template = \
+        "flourish_dashboard/child_subject/dashboard/data_manager.html"
+    odk_archive_forms_include_value = \
+        'flourish_dashboard/child_subject/dashboard/odk_archives.html'
 
     subject_consent_cls = django_apps.get_model(
         'flourish_caregiver.subjectconsent')
@@ -291,11 +298,21 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             'flourish_child.childdataset')
         try:
             child_dataset = child_dataset_cls.objects.get(
-                study_child_identifier=self.caregiver_child_consent.study_child_identifier)
+                study_child_identifier=self.caregiver_child_consent
+                .study_child_identifier)
         except child_dataset_cls.DoesNotExist:
             return None
         else:
             return ChildDatasetModelWrapper(child_dataset)
+
+    def check_ageing_out(self):
+        ageing_out = ChildOnScheduleHelper().aging_out(
+            subject_identifier=self.subject_identifier)
+        print(ageing_out)
+        if ageing_out:
+            msg = mark_safe(
+                f'Please note, this child is aging out of cohort in {(ageing_out * 12)} months.')
+            messages.add_message(self.request, messages.INFO, msg) 
 
     def get_context_data(self, **kwargs):
         # Put on schedule before getting the context, so schedule shows onreload.
@@ -304,23 +321,21 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
-        # child_death_cls = None
-        # infant_death_cls = django_apps.get_model('flourish_prn.childdeathreport')
-
-        # self.update_messages(offstudy_cls=child_offstudy_cls)
-        # self.get_death_or_message(visit_cls=child_visit_cls,
-        #                           death_cls=child_death_cls)
 
         self.get_consent_version_object_or_message(
-            screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
+            screening_identifier=self.caregiver_child_consent.subject_consent
+            .screening_identifier)
 
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
+
+        self.check_ageing_out()
 
         self.get_continued_consent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age)
@@ -340,12 +355,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             child_version=self.consent_wrapped.child_consent_version,
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
-            tb_adol_referal=self.tb_adol_referal)
+            tb_adol_referal=self.tb_adol_referal,
+            is_pf_enrolled=self.is_pf_enrolled,)
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
             context=context
-            )
+        )
         return context
 
     @property
@@ -379,25 +395,27 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 'flourish_calendar.participantnote')
 
             return flourish_calendar_cls.objects.filter(
-                    subject_identifier=self.subject_identifier,
-                    title='Follow Up Schedule',)
+                subject_identifier=self.subject_identifier,
+                title='Follow Up Schedule',)
 
     @property
     def maternal_hiv_status(self):
         """Returns mother's current hiv status.
         """
-        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         subject_identifier = self.kwargs.get('subject_identifier')
+        caregiver_sid = ChildBirthValues(
+            subject_identifier=subject_identifier).caregiver_subject_identifier
+        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         latest_visit = maternal_visit_cls.objects.filter(
-            subject_identifier=subject_identifier[:-3],).order_by(
-            '-report_datetime').first()
+            subject_identifier=caregiver_sid, ).order_by(
+                '-report_datetime').first()
 
         if latest_visit:
             maternal_status_helper = MaternalStatusHelper(
                 maternal_visit=latest_visit)
         else:
             maternal_status_helper = MaternalStatusHelper(
-                subject_identifier=self.kwargs.get('subject_identifier')[:-3])
+                subject_identifier=caregiver_sid)
         return maternal_status_helper.hiv_status
 
     def hiv_disclosed_or_offstudy(self):
@@ -405,7 +423,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
@@ -454,8 +473,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 self.current_onschedule_model = onschedule_model_obj
             else:
                 model_name = f'flourish_child.{onschedule_model_obj._meta.model_name}'
-                visit_schedule, schedule = site_visit_schedules.get_by_onschedule_model_schedule_name(
-                    model_name, onschedule_model_obj.schedule_name)
+                visit_schedule, schedule = (
+                    site_visit_schedules.get_by_onschedule_model_schedule_name(
+                        model_name, onschedule_model_obj.schedule_name))
                 self.current_schedule = schedule
                 self.current_visit_schedule = visit_schedule
                 self.current_onschedule_model = onschedule_model_obj
@@ -490,3 +510,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return False
         else:
             return True
+
+    @property
+    def is_pf_enrolled(self):
+        if self.child_dataset and self.child_dataset.study_child_identifier:
+            return 'P' in self.child_dataset.study_child_identifier

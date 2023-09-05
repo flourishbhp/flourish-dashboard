@@ -29,6 +29,11 @@
                     </button>
                 </td>
             {% endif %}
+            {% if is_pf_enrolled %}
+                <td>
+                    {% pre_flourish_birth_data_button caregiver_child_consent %}
+                </td>
+            {% endif %}
         </tr>
     </table>
 

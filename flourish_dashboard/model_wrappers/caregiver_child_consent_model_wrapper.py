@@ -12,8 +12,11 @@ from .child_death_report_model_wrapper_mixin import ChildDeathReportModelWrapper
 from .child_offstudy_model_wrapper_mixin import ChildOffstudyModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .pre_flourish_birth_data_model_wrapper_mixin import \
+    PreFlourishBirthDataModelWrapperMixin
 from .tb_adol_assent_model_wrapper_mixin import TbAdolChildAssentModelWrapperMixin
 from .tb_adol_offstudy_model_wrapper_mixin import TbAdolOffstudyModelWrapperMixin
+from .missed_birth_visit_model_wrapper_mixin import MissedBirthVisitModelWrapperMixin
 
 
 class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
@@ -26,6 +29,8 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
                                         ChildDeathReportModelWrapperMixin,
                                         ChildOffstudyModelWrapperMixin,
                                         TbAdolOffstudyModelWrapperMixin,
+                                        PreFlourishBirthDataModelWrapperMixin,
+                                        MissedBirthVisitModelWrapperMixin,
                                         ModelWrapper):
     model = 'flourish_caregiver.caregiverchildconsent'
     querystring_attrs = ['subject_consent', 'subject_identifier']
