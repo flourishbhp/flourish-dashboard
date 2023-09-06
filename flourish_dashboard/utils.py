@@ -8,10 +8,7 @@ class FlourishDashboardUtils:
         if infant_dob:
             birth_date = infant_dob
             child_age = age(birth_date, get_utcnow())
-            months = 0
-            if child_age.years > 0:
-                months = child_age.years * 12
-            years = round((months + child_age.months) / 12, 2)
+            years = round(child_age.years + (child_age.months / 12), 2)
         return years if years else 0
 
 

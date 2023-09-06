@@ -13,12 +13,6 @@ class FacetModelWrapperMixin:
 
     caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
-    antenatal_screening_model = 'flourish_caregiver.screeningpregwomen'
-
-    @property
-    def antenatal_screening_model_cls(self):
-        return django_apps.get_model(self.antenatal_screening_model)
-
     @property
     def caregiver_child_consent_model_cls(self):
         return django_apps.get_model(self.caregiver_child_consent_model)
@@ -56,19 +50,7 @@ class FacetModelWrapperMixin:
     @property
     def caregiver_child_consent_objs(self):
         return self.caregiver_child_consent_model_cls.objects.filter(
-                    subject_consent__subject_identifier=self.subject_identifier)
-    
-    @property
-    def antenatal_screening_obj(self):
-        try:
-
-            antenatal_screening_obj = self.antenatal_screening_model_cls.objects.get(
-                screening_identifier=self.screening_identifier
-            )
-        except self.antenatal_screening_model_cls.DoesNotExist:
-            pass
-        else:
-            return antenatal_screening_obj
+            subject_consent__subject_identifier=self.subject_identifier, preg_enroll=True)
 
     @property
     def facet_consent_wrapper(self):
@@ -94,6 +76,4 @@ class FacetModelWrapperMixin:
         Condition for showing screening
         """
         for child_consent in self.caregiver_child_consent_objs:
-            years = flourish_dashboard_utils.child_age(child_consent.child_dob)
-            if self.antenatal_screening_obj and years <= 0.5:
-                return child_consent.subject_consent.future_contact==YES
+            return flourish_dashboard_utils.child_age(child_consent.child_dob) <= 0.5 and child_consent.subject_consent.future_contact == YES
