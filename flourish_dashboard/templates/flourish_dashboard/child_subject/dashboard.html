@@ -121,4 +121,17 @@
 {% block side_bar %}
     {% include 'flourish_dashboard/child_subject/dashboard/sidebar.html' %}
 
+    {% if locator_obj %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h6 class="panel-title">
+                    <i class="fa fa-info-circle fa-lg fa-fw"></i> Locator Info
+                </h6>
+            </div>
+
+            {% include "flourish_dashboard/child_subject/dashboard/locator_info.html" %}
+        </div>
+    {% endif %}
+
+
 {% endblock side_bar %}

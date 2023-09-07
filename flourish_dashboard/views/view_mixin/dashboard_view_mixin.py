@@ -7,6 +7,7 @@ from edc_constants.constants import OFF_STUDY, NEW, POS
 from django.db.models import Q
 from edc_action_item.site_action_items import site_action_items
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
+from flourish_child.action_items import CHILD_LOCATOR_ACTION
 
 
 class DashboardViewMixin:
@@ -184,6 +185,35 @@ class DashboardViewMixin:
                     f'Please complete the continued consent for child {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
+        
+
+    def get_child_locator_object_or_message(self, child_age=None,
+                                                subject_identifier=None):
+            child_locator_cls = django_apps.get_model(
+            'flourish_child.childlocator')
+
+            if child_age and child_age >= 18:
+                        
+                try:
+
+                    obj = child_locator_cls.objects.get(
+                        subject_identifier = subject_identifier
+                    )
+                except child_locator_cls.DoesNotExist:
+
+                    self.action_cls_item_creator(
+                        trigger=True,
+                        subject_identifier=subject_identifier,
+                        action_cls=child_locator_cls,
+                        action_type=CHILD_LOCATOR_ACTION)
+                    
+                    msg = mark_safe(
+                        f'Please complete the locator info. for child {subject_identifier}.')
+                    messages.add_message(self.request, messages.WARNING, msg)
+
+                else:
+                    return obj
+
 
     def is_delivery_window(self, subject_identifier):
 

@@ -1,0 +1,74 @@
+
+<div id="locator-panel" class="panel-collapse collapse in">
+    <div class="list-group">
+        <a class="list-group-item">
+        {{ contact_info }}
+    <span class="text text-default">
+    <small> 
+        <b>May Follow Up? </b>  {{child_locator_obj.may_call}}    <br> <br>
+        <b>Home Visits? </b>   {{child_locator_obj.may_visit_home}}    <br> <br>
+        
+        
+        {% if child_locator_obj.may_visit_home == YES %}
+        
+            Address:   {{child_locator_obj.physical_address}}  <br> <br>
+        {% endif %}
+        
+        {% if child_locator_obj.may_call == YES %}
+            Tel:	{{child_locator_obj.subject_cell}}	<br>
+            
+            Alt. Tel: {{child_locator_obj.subject_cell_alt}}   <br>
+            
+            Cell: {{child_locator_obj.subject_phone}}		<br>
+            
+            Alt. Cell: {{child_locator_obj.subject_phone_alt}}  
+        {% endif %}
+        
+        <br>
+        
+        <b>Call Work? </b>{{child_locator_obj.may_call_work}} <br>
+        
+        <b>Contact anyone else? </b> {{child_locator_obj.may_contact_indirectly}} 
+        <br>
+        
+        {% if child_locator_obj.may_contact_indirectly == YES %}
+            Name: {{child_locator_obj.indirect_contact_name}}<br>
+            Relation: {{child_locator_obj.indirect_contact_relation}}<br>
+            
+            Address: <br><br>
+            
+            Tel: {{child_locator_obj.indirect_contact_phone}}<br>
+            
+            Cell:	{{child_locator_obj.indirect_contact_cell}}<br>
+        {% endif %}
+        <br>
+        
+        <b>Contact next of kin? </b> {{child_locator_obj.has_alt_contact}} 
+        <br>
+        
+        {% if child_locator_obj.has_alt_contact == YES %}
+            Name: {{child_locator_obj.alt_contact_name}}<br>
+            
+            Tel:	{{child_locator_obj.alt_contact_tel}}<br>
+            
+            Cell:	{{child_locator_obj.alt_contact_cell}}<br>
+      {% endif %}
+      
+        <br>
+        
+        <b>Home Village </b> {{child_locator_obj.home_village}} <br>
+        
+        <br>
+      {% if child_locator_obj.user_modified %}
+          Updated on {{ child_locator_obj.modified|date:"SHORT_DATE_FORMAT" }} by {{ child_locator_obj.user_modified }}
+      
+      {% else %}
+          Created on {{ child_locator_obj.created|date:"SHORT_DATE_FORMAT" }} by {{ child_locator_obj.user_created }}
+      {% endif %}
+        
+        
+    </small>
+    </span>
+</a>
+</div>   
+</div>   

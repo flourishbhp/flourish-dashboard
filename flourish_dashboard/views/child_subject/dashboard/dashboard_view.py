@@ -302,6 +302,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return None
         else:
             return ChildDatasetModelWrapper(child_dataset)
+        
+    @property    
+    def child_locator_obj(self):
+        return self.get_child_locator_object_or_message(
+            child_age=self.caregiver_child_consent.child_age,
+            subject_identifier=self.subject_identifier
+        )
 
     def get_context_data(self, **kwargs):
         # Put on schedule before getting the context, so schedule shows onreload.
@@ -334,6 +341,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         self.get_assent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age,
             version=self.latest_consent_version)
+        
+        breakpoint()
 
         context.update(
             in_person_visits=['2000D', '2100A', '3000'],
@@ -348,7 +357,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
-            is_pf_enrolled=self.is_pf_enrolled, )
+            is_pf_enrolled=self.is_pf_enrolled, 
+            child_locator_obj =  self.child_locator_obj,)
+        
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
