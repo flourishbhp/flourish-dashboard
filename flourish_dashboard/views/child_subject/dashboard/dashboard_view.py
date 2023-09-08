@@ -3,9 +3,11 @@
 # import CHILD_DEATH_REPORT_ACTION
 from dateutil import relativedelta
 from django.apps import apps as django_apps
+from django.contrib import messages
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.generic.base import ContextMixin
+from django.utils.safestring import mark_safe
 from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -20,6 +22,7 @@ from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_child.helper_classes.child_fu_onschedule_helper import \
     ChildFollowUpEnrolmentHelper
+from flourish_child.helper_classes.child_onschedule_helper import ChildOnScheduleHelper
 from flourish_prn.action_items import CHILDOFF_STUDY_ACTION
 from ...view_mixin import DashboardViewMixin
 from ....model_wrappers import (ActionItemModelWrapper, CaregiverChildConsentModelWrapper,
@@ -302,6 +305,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         else:
             return ChildDatasetModelWrapper(child_dataset)
 
+    def check_ageing_out(self):
+        ageing_out = ChildOnScheduleHelper().aging_out(
+            subject_identifier=self.subject_identifier)
+        print(ageing_out)
+        if ageing_out:
+            msg = mark_safe(
+                f'Please note, this child is aging out of cohort in {(ageing_out * 12)} months.')
+            messages.add_message(self.request, messages.INFO, msg) 
+
     def get_context_data(self, **kwargs):
         # Put on schedule before getting the context, so schedule shows onreload.
         if 'fu_enrollment' in self.request.path:
@@ -323,6 +335,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
+        self.check_ageing_out()
+
         self.get_continued_consent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age)
         self.get_assent_object_or_message(
@@ -342,7 +356,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
-            is_pf_enrolled=self.is_pf_enrolled, )
+            is_pf_enrolled=self.is_pf_enrolled,)
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,

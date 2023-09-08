@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from edc_constants.constants import YES
 from .facet_consent_model_wrapper import FacetConsentModelWrapper
 from .facet_screening_model_wrapper import FacetScreeningModelWrapper
+from ..utils import flourish_dashboard_utils
 
 
 class FacetModelWrapperMixin:
@@ -9,6 +10,12 @@ class FacetModelWrapperMixin:
     facet_screening_model = 'flourish_facet.facetsubjectscreening'
 
     facet_consent_model = 'flourish_facet.facetconsent'
+
+    caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
+
+    @property
+    def caregiver_child_consent_model_cls(self):
+        return django_apps.get_model(self.caregiver_child_consent_model)
 
     @property
     def facet_screening_cls(self):
@@ -41,6 +48,11 @@ class FacetModelWrapperMixin:
             return screen_obj
 
     @property
+    def caregiver_child_consent_objs(self):
+        return self.caregiver_child_consent_model_cls.objects.filter(
+            subject_consent__subject_identifier=self.subject_identifier, preg_enroll=True)
+
+    @property
     def facet_consent_wrapper(self):
         consent_obj = self.facet_consent_obj or self.facet_consent_cls(
             subject_identifier=self.subject_identifier)
@@ -57,10 +69,11 @@ class FacetModelWrapperMixin:
     @property
     def show_facet_consent(self):
         return self.facet_screening_obj and self.facet_screening_obj.facet_participation == YES
-    
+
     @property
     def show_facet_screening(self):
         """
         Condition for showing screening
         """
-        return True
+        for child_consent in self.caregiver_child_consent_objs:
+            return flourish_dashboard_utils.child_age(child_consent.child_dob) <= 0.5 and child_consent.subject_consent.future_contact == YES
