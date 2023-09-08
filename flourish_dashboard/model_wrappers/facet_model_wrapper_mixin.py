@@ -76,4 +76,6 @@ class FacetModelWrapperMixin:
         Condition for showing screening
         """
         for child_consent in self.caregiver_child_consent_objs:
-            return flourish_dashboard_utils.child_age(child_consent.child_dob) <= 0.5 and child_consent.subject_consent.future_contact == YES
+            years = flourish_dashboard_utils.child_age(child_consent.child_dob)
+            if years <= 0.5 and child_consent.subject_consent.future_contact == YES:
+                return True
