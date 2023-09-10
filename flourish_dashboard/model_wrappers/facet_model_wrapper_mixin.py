@@ -88,5 +88,5 @@ class FacetModelWrapperMixin:
         """
         for child_consent in self.caregiver_child_consent_objs:
             years = flourish_dashboard_utils.child_age(child_consent.child_dob)
-            consent_future_contact = child_consent.subject_consent.future_contact
-            return years <= 0.5 and consent_future_contact == YES
+            if years <= 0.5 and child_consent.subject_consent.future_contact == YES:
+                return True
