@@ -50,7 +50,18 @@ class FacetModelWrapperMixin:
     @property
     def caregiver_child_consent_objs(self):
         return self.caregiver_child_consent_model_cls.objects.filter(
-            subject_consent__subject_identifier=self.subject_identifier, preg_enroll=True)
+            subject_consent__subject_identifier=self.subject_identifier,
+            preg_enroll=True)
+    
+    @property
+    def antenatal_screening_obj(self):
+        try:
+            antenatal_screening_obj = self.antenatal_screening_model_cls.objects.get(
+                screening_identifier=self.screening_identifier)
+        except self.antenatal_screening_model_cls.DoesNotExist:
+            pass
+        else:
+            return antenatal_screening_obj
 
     @property
     def facet_consent_wrapper(self):
@@ -68,7 +79,7 @@ class FacetModelWrapperMixin:
 
     @property
     def show_facet_consent(self):
-        return self.facet_screening_obj and self.facet_screening_obj.facet_participation == YES
+        return self.facet_screening_obj and self.facet_screening_obj.is_eligible
 
     @property
     def show_facet_screening(self):
