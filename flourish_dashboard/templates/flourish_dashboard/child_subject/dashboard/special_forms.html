@@ -18,6 +18,16 @@
         </td>
     </tr>
 
+
+    {% if child_locator_wrapper %}
+
+        <tr>
+            <td>
+                {% child_locator_button child_locator_wrapper %}
+            </td>
+        </tr>
+    {% endif %}
+
     <tr>
         <td>
             {% assent_button caregiver_child_consent %}

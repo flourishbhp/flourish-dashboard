@@ -16,6 +16,7 @@ from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
+from ....model_wrappers import ChildLocatorModelWrapper
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_child.helper_classes.child_fu_onschedule_helper import \
@@ -309,6 +310,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             child_age=self.caregiver_child_consent.child_age,
             subject_identifier=self.subject_identifier
         )
+    
+    @property
+    def child_locator_wrapper(self):
+        if self.child_locator_obj:
+            return ChildLocatorModelWrapper(model_obj=self.child_locator_obj)
+
 
     def get_context_data(self, **kwargs):
         # Put on schedule before getting the context, so schedule shows onreload.
@@ -358,7 +365,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
             is_pf_enrolled=self.is_pf_enrolled, 
-            child_locator_obj =  self.child_locator_obj,)
+            child_locator_wrapper =  self.child_locator_wrapper)
         
         context = self.add_url_to_context(
             new_key='dashboard_url_name',

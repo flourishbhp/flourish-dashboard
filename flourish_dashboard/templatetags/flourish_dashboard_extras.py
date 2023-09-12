@@ -523,7 +523,6 @@ def child_death_report_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier
     )
 
-
 @register.inclusion_tag('flourish_dashboard/buttons/tb_consent_button.html')
 def tb_consent_button(model_wrapper):
     title = ['TB Consent']
@@ -534,6 +533,15 @@ def tb_consent_button(model_wrapper):
         add_consent_href=model_wrapper.tb_consent.href,
         consent_version=consent_version,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/child_locator.html')
+def child_locator_button(model_wrapper):
+    title = 'Child Locator'
+    return dict(
+        wrapper = model_wrapper,
+        title = title
+    )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')

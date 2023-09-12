@@ -14,6 +14,12 @@ class DashboardViewMixin:
 
     data_action_item_model = 'edc_data_manager.dataactionitem'
 
+    child_locator_model = 'flourish_child.childlocator'
+    
+    @property
+    def child_locator_cls(self):
+        return django_apps.get_model(self.child_locator_model)
+
     @property
     def data_action_item_cls(self):
         return django_apps.get_model(self.data_action_item_model)
@@ -189,22 +195,19 @@ class DashboardViewMixin:
 
     def get_child_locator_object_or_message(self, child_age=None,
                                                 subject_identifier=None):
-            child_locator_cls = django_apps.get_model(
-            'flourish_child.childlocator')
-
             if child_age and child_age >= 18:
                         
                 try:
 
-                    obj = child_locator_cls.objects.get(
+                    obj = self.child_locator_cls.objects.get(
                         subject_identifier = subject_identifier
                     )
-                except child_locator_cls.DoesNotExist:
+                except self.child_locator_cls.DoesNotExist:
 
                     self.action_cls_item_creator(
                         trigger=True,
                         subject_identifier=subject_identifier,
-                        action_cls=child_locator_cls,
+                        action_cls=self.child_locator_cls,
                         action_type=CHILD_LOCATOR_ACTION)
                     
                     msg = mark_safe(
