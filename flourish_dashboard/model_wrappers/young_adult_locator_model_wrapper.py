@@ -3,8 +3,8 @@ from django.conf import settings
 from edc_model_wrapper import ModelWrapper
 
 
-class ChildLocatorModelWrapper(ModelWrapper):
-    model = 'flourish_child.childlocator'
+class YoungAdultLocatorModelWrapper(ModelWrapper):
+    model = 'flourish_child.youngadultlocator'
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'child_dashboard_url')
     next_url_attrs = ['subject_identifier']

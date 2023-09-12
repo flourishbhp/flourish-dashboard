@@ -535,8 +535,8 @@ def tb_consent_button(model_wrapper):
         title=' '.join(title))
 
 
-@register.inclusion_tag('flourish_dashboard/buttons/child_locator.html')
-def child_locator_button(model_wrapper):
+@register.inclusion_tag('flourish_dashboard/buttons/young_adult_locator.html')
+def young_adult_locator_button(model_wrapper):
     title = 'Young Adult Locator'
     return dict(
         wrapper = model_wrapper,

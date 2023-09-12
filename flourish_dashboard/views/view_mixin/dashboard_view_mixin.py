@@ -14,7 +14,7 @@ class DashboardViewMixin:
 
     data_action_item_model = 'edc_data_manager.dataactionitem'
 
-    child_locator_model = 'flourish_child.childlocator'
+    child_locator_model = 'flourish_child.YoungAdultLocator'
     
     @property
     def child_locator_cls(self):
