@@ -308,7 +308,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def check_ageing_out(self):
         ageing_out = ChildOnScheduleHelper().aging_out(
             subject_identifier=self.subject_identifier)
-        print(ageing_out)
+
         if ageing_out:
             msg = mark_safe(
                 f'Please note, this child is aging out of cohort in {(ageing_out * 12)} months.')
