@@ -13,6 +13,8 @@
     <th>Subject</th>
     <th>Age</th>
     <th>Assent Date</th>
+    <th>Enrollment Cohort</th>
+    <th>Current Cohort</th>
     <!-- end results header -->
 
 {% endblock listboard_table_header %}
@@ -39,5 +41,7 @@
     </td>
     <td>{{ result.child_age }} Yrs</td>
     <td>{{ result.assent_date }}</td>
+    <td>{{ result.enrol_cohort }}</td>
+    <td>{{ result.current_cohort }}</td>
 
 {% endblock listboard_table_columns %}
