@@ -7,7 +7,7 @@ from edc_constants.constants import OFF_STUDY, NEW, POS
 from django.db.models import Q
 from edc_action_item.site_action_items import site_action_items
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
-from flourish_child.action_items import CHILD_LOCATOR_ACTION
+from flourish_child.action_items import YOUNG_ADULT_LOCATOR_ACTION
 
 
 class DashboardViewMixin:
@@ -208,7 +208,7 @@ class DashboardViewMixin:
                         trigger=True,
                         subject_identifier=subject_identifier,
                         action_cls=self.child_locator_cls,
-                        action_type=CHILD_LOCATOR_ACTION)
+                        action_type=YOUNG_ADULT_LOCATOR_ACTION)
                     
                     msg = mark_safe(
                         f'Please complete the locator info. for child {subject_identifier}.')
