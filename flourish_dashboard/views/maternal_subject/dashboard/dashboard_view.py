@@ -555,8 +555,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             child_age = ChildBirthValues(
                 subject_identifier=subject_identifier).get_difference(
                 birth_date=consent.object.child_dob)
-            self.get_continued_consent_object_or_message(
-                subject_identifier=subject_identifier, child_age=child_age)
+            
             self.get_assent_object_or_message(
                 subject_identifier=subject_identifier,
                 child_age=child_age,
