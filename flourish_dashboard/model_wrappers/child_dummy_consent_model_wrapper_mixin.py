@@ -1,14 +1,26 @@
 from django.apps import apps as django_apps
 from edc_base.utils import age, get_utcnow
+from django.core.exceptions import ValidationError
+
 
 
 class ChildDummyConsentModelWrapperMixin:
 
+    cohort_model = 'flourish_caregiver.cohort'
+    
+    @property
+    def cohort_model_cls(self):
+        return django_apps.get_model(self.cohort_model)
+
+    @property
+    def registered_subject_cls(self):
+        return django_apps.get_model('edc_registration.registeredsubject')
+
     @property
     def screening_identifier(self):
         subject_consent = self.subject_consent_cls.objects.filter(
-            subject_identifier=self.caregiver_subject_identifier, )
-        return subject_consent[0].screening_identifier
+            subject_identifier=self.caregiver_subject_identifier, ).first()
+        return getattr(subject_consent, 'screening_identifier', None)
 
     @property
     def child_consent(self):
@@ -18,17 +30,22 @@ class ChildDummyConsentModelWrapperMixin:
         child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
 
-        childconsent = child_consent_cls.objects.filter(
-            subject_identifier=self.object.subject_identifier).latest('consent_datetime')
-
+        try:
+            childconsent = child_consent_cls.objects.filter(
+                subject_identifier=self.object.subject_identifier).latest('consent_datetime')
+        except child_consent_cls.DoesNotExist:
+            return None
         return childconsent
 
     @property
     def caregiver_subject_identifier(self):
-        subject_identifier = self.object.subject_identifier.split('-')
-        subject_identifier.pop()
-        caregiver_subject_identifier = '-'.join(subject_identifier)
-        return caregiver_subject_identifier
+        try:
+            registered_subject = self.registered_subject_cls.objects.get(
+                subject_identifier=self.object.subject_identifier)
+        except self.registered_subject_cls.DoesNotExist:
+            return None
+        else:
+            return getattr(registered_subject, 'relative_identifier', None)
 
     @property
     def child_name_initial(self):
@@ -83,6 +100,32 @@ class ChildDummyConsentModelWrapperMixin:
             return cohort.replace('_', ' ')
 
     @property
+    def enrol_cohort(self):
+        """Returns an enrollment cohort.
+        """
+        try:
+            cohort = self.cohort_model_cls.objects.get(
+                subject_identifier=self.object.subject_identifier,
+                enrollment_cohort=True, )
+        except self.cohort_model_cls.DoesNotExist:
+            raise ValidationError(
+                f"Enrollment Cohort is missing, {self.object.subject_identifier}")
+        else:
+            return cohort.name
+        return None
+
+    @property
+    def current_cohort(self):
+        """Returns the current cohort.
+        """
+        cohort = self.cohort_model_cls.objects.filter(
+            subject_identifier=self.object.subject_identifier)
+        if cohort.exists():
+            cohort = cohort.latest('assign_datetime')
+            return cohort.name
+        return None
+
+    @property
     def assent_date(self):
         if self.get_assent:
             return self.get_assent.consent_datetime.date()
@@ -105,8 +148,8 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def get_assent(self):
-        return getattr(self, 'assent_model_obj')
+        return getattr(self, 'assent_model_obj', None)
 
     @property
     def get_antenatal(self):
-        getattr(self, 'maternal_delivery_obj')
+        getattr(self, 'maternal_delivery_obj', None)

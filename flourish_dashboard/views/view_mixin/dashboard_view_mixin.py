@@ -257,7 +257,7 @@ class DashboardViewMixin:
         else:
             if consent_version_obj.child_version:
                 caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
-                    subject_identifier__startswith=subject_identifier,
+                    subject_consent__subject_identifier=subject_identifier,
                     version=consent_version_obj.child_version)
 
                 if not caregiver_child_consent_objs:
