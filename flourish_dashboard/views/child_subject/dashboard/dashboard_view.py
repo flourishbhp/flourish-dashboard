@@ -373,7 +373,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
-            is_pf_enrolled=self.is_pf_enrolled,
             is_pf_enrolled=self.is_pf_enrolled, 
             young_adult_locator_wrapper=self.young_adult_locator_wrapper)
 
