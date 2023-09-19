@@ -14,11 +14,11 @@ class DashboardViewMixin:
 
     data_action_item_model = 'edc_data_manager.dataactionitem'
 
-    child_locator_model = 'flourish_child.youngadultlocator'
+    young_adult_locator_model = 'flourish_child.youngadultlocator'
     
     @property
-    def child_locator_cls(self):
-        return django_apps.get_model(self.child_locator_model)
+    def young_adult_locator_cls(self):
+        return django_apps.get_model(self.young_adult_locator_model)
 
     @property
     def data_action_item_cls(self):
@@ -192,30 +192,6 @@ class DashboardViewMixin:
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
         
-
-    def get_child_locator_object_or_message(self, child_age=None,
-                                                subject_identifier=None):
-            if child_age and child_age >= 18:
-                        
-                try:
-
-                    obj = self.child_locator_cls.objects.get(
-                        subject_identifier = subject_identifier
-                    )
-                except self.child_locator_cls.DoesNotExist:
-
-                    self.action_cls_item_creator(
-                        trigger=True,
-                        subject_identifier=subject_identifier,
-                        action_cls=self.child_locator_cls,
-                        action_type=YOUNG_ADULT_LOCATOR_ACTION)
-                    
-                    msg = mark_safe(
-                        f'Please complete the locator info. for child {subject_identifier}.')
-                    messages.add_message(self.request, messages.WARNING, msg)
-
-                else:
-                    return obj
 
 
     def is_delivery_window(self, subject_identifier):

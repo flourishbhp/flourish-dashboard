@@ -303,19 +303,22 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return None
         else:
             return ChildDatasetModelWrapper(child_dataset)
-        
-    @property    
+
+    @property
     def young_adult_locator_obj(self):
-        return self.get_child_locator_object_or_message(
-            child_age=self.caregiver_child_consent.child_age,
-            subject_identifier=self.subject_identifier
-        )
-    
+        try:
+
+            obj = self.young_adult_locator_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except self.young_adult_locator_cls.DoesNotExist:
+            pass
+        else:
+            return obj
+
     @property
     def young_adult_locator_wrapper(self):
         if self.young_adult_locator_obj:
             return YoungAdultLocatorModelWrapper(model_obj=self.young_adult_locator_obj)
-
 
     def get_context_data(self, **kwargs):
         # Put on schedule before getting the context, so schedule shows onreload.
@@ -324,7 +327,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
         # child_death_cls = None
         # infant_death_cls = django_apps.get_model('flourish_prn.childdeathreport')
@@ -361,9 +365,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
-            is_pf_enrolled=self.is_pf_enrolled, 
-            young_adult_locator_wrapper =  self.young_adult_locator_wrapper)
-        
+            is_pf_enrolled=self.is_pf_enrolled,
+            young_adult_locator_wrapper=self.young_adult_locator_wrapper)
+
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
@@ -409,7 +413,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def maternal_hiv_status(self):
         """Returns mother's current hiv status.
         """
-        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
+        maternal_visit_cls = django_apps.get_model(
+            'flourish_caregiver.maternalvisit')
         subject_identifier = self.kwargs.get('subject_identifier')
         latest_visit = maternal_visit_cls.objects.filter(
             subject_identifier=subject_identifier[:-3], ).order_by(
@@ -428,7 +433,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model('flourish_prn.childoffstudy')
+        child_offstudy_cls = django_apps.get_model(
+            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
