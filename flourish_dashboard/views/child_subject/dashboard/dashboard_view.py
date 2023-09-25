@@ -305,14 +305,18 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return None
         else:
             return ChildDatasetModelWrapper(child_dataset)
-        
-    @property    
+
+    @property
     def young_adult_locator_obj(self):
-        return self.get_child_locator_object_or_message(
-            child_age=self.caregiver_child_consent.child_age,
-            subject_identifier=self.subject_identifier
-        )
-    
+        try:
+
+            obj = self.young_adult_locator_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except self.young_adult_locator_cls.DoesNotExist:
+            pass
+        else:
+            return obj
+
     @property
     def young_adult_locator_wrapper(self):
         if self.young_adult_locator_obj:
