@@ -3,11 +3,11 @@
 # import CHILD_DEATH_REPORT_ACTION
 from dateutil import relativedelta
 from django.apps import apps as django_apps
-from django.contrib import messages
 from django.conf import settings
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.views.generic.base import ContextMixin
 from django.utils.safestring import mark_safe
+from django.views.generic.base import ContextMixin
 from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
@@ -18,7 +18,6 @@ from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
 from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
-from ....model_wrappers import YoungAdultLocatorModelWrapper
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
 from flourish_child.helper_classes.child_fu_onschedule_helper import \
@@ -34,6 +33,7 @@ from ....model_wrappers import (ActionItemModelWrapper, CaregiverChildConsentMod
                                 ChildVisitModelWrapper,
                                 MaternalRegisteredSubjectModelWrapper,
                                 TbAdolReferralModelWrapper)
+from ....model_wrappers import YoungAdultLocatorModelWrapper
 
 
 class ChildBirthValues(object):
@@ -75,8 +75,8 @@ class ChildBirthValues(object):
         version = None
         try:
             consent = self.subject_consent_cls.objects.filter(
-                subject_identifier=self.caregiver_subject_identifier,).latest(
-                    'consent_datetime')
+                subject_identifier=self.caregiver_subject_identifier, ).latest(
+                'consent_datetime')
         except ObjectDoesNotExist:
             return None
         else:
@@ -322,15 +322,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         if self.young_adult_locator_obj:
             return YoungAdultLocatorModelWrapper(model_obj=self.young_adult_locator_obj)
 
-
     def check_ageing_out(self):
         ageing_out = ChildOnScheduleHelper().aging_out(
             subject_identifier=self.subject_identifier)
 
         if ageing_out:
             msg = mark_safe(
-                f'Please note, this child is aging out of cohort in {(ageing_out * 12)} months.')
-            messages.add_message(self.request, messages.INFO, msg) 
+                f'Please note, this child is aging out of cohort in {(ageing_out * 12)} '
+                f'months.')
+            messages.add_message(self.request, messages.INFO, msg)
 
     def get_context_data(self, **kwargs):
         # Put on schedule before getting the context, so schedule shows onreload.
@@ -355,6 +355,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         self.check_ageing_out()
 
+        self.caregiver_hiv_status_aware()
+
         self.get_continued_consent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age)
         self.get_assent_object_or_message(
@@ -373,7 +375,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             fu_participant_note=self.fu_participant_note,
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
-            is_pf_enrolled=self.is_pf_enrolled, 
+            is_pf_enrolled=self.is_pf_enrolled,
             young_adult_locator_wrapper=self.young_adult_locator_wrapper)
 
         context = self.add_url_to_context(
@@ -415,7 +417,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             return flourish_calendar_cls.objects.filter(
                 subject_identifier=self.subject_identifier,
-                title='Follow Up Schedule',)
+                title='Follow Up Schedule', )
 
     @property
     def maternal_hiv_status(self):
@@ -427,7 +429,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
         latest_visit = maternal_visit_cls.objects.filter(
             subject_identifier=caregiver_sid, ).order_by(
-                '-report_datetime').first()
+            '-report_datetime').first()
 
         if latest_visit:
             maternal_status_helper = MaternalStatusHelper(
@@ -459,21 +461,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             child_age = float(f'{reg_age.years}.{reg_age.months}')
 
         if self.maternal_hiv_status == POS and child_age and child_age >= 16:
-            for disclosure_cls in ['hivdisclosurestatusa',
-                                   'hivdisclosurestatusb',
-                                   'hivdisclosurestatusc']:
-
-                hiv_disclosure_cls = django_apps.get_model(
-                    f'flourish_caregiver.{disclosure_cls}')
-                try:
-                    hiv_disclosure_cls.objects.get(
-                        associated_child_identifier=self.subject_identifier,
-                        disclosed_status=YES)
-                except hiv_disclosure_cls.DoesNotExist:
-                    trigger = True
-                else:
-                    trigger = False
-                    break
+            trigger = self.caregiver_hiv_status_aware()
 
             self.get_offstudy_or_message(
                 visit_cls=child_visit_cls,
@@ -534,3 +522,27 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def is_pf_enrolled(self):
         if self.child_dataset and self.child_dataset.study_child_identifier:
             return 'P' in self.child_dataset.study_child_identifier
+
+    def caregiver_hiv_status_aware(self):
+        """Returns mother's current hiv status.
+        """
+        trigger = None
+        for disclosure_cls in ['hivdisclosurestatusa', 'hivdisclosurestatusb',
+                               'hivdisclosurestatusc']:
+
+            hiv_disclosure_cls = django_apps.get_model(
+                f'flourish_caregiver.{disclosure_cls}')
+            try:
+                hiv_disclosure_cls.objects.get(
+                    associated_child_identifier=self.subject_identifier,
+                    disclosed_status=YES)
+            except hiv_disclosure_cls.DoesNotExist:
+                trigger = True
+            else:
+                messages.info(
+                    self.request,
+                    'Please note, this child is aware of the Mother\'s HIV '
+                    'status.')
+                trigger = False
+                break
+        return trigger
