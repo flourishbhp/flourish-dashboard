@@ -224,6 +224,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         return 25 >= unexposed_adolencent
 
+    def get_facet_eligible_message(self):
+
+        if not self.subject_consent_wrapper.facet_screening_obj and \
+                self.subject_consent_wrapper.show_facet_screening:
+
+            msg = mark_safe('This participant is eligible for the FACET Study')
+
+            messages.add_message(self.request, messages.WARNING, msg)
+
     def get_tb_adol_eligible_message(self, msg=None):
 
         if self.tb_adol_huu_limit_reached:
@@ -272,6 +281,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         global offstudy_cls_model_obj
 
         self.get_tb_adol_eligible_message()
+
+        self.get_facet_eligible_message()
 
         context = super().get_context_data(**kwargs)
 
