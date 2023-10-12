@@ -31,6 +31,16 @@ def readable_cohort(cohort):
     return cohort.replace('_', ' ')
 
 
+@register.filter
+def get_schedule_names(onschedules, child_subject_identifier):
+    if child_subject_identifier:
+        schedule_names = [model.schedule_name for model in onschedules if
+                          model.child_subject_identifier == child_subject_identifier]
+    else:
+        schedule_names = [model.schedule_name for model in onschedules]
+    return schedule_names
+
+
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
     if born:

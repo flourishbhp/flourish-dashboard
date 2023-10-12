@@ -375,7 +375,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def child_names_schedule_dict(self):
         """ Return a key value pair of mother's visit schedule's corresponding
         child names for dashboard display"""
-
         if len(self.child_consents) > 1:
 
             appt_cls = django_apps.get_model('edc_appointment.appointment')
@@ -392,7 +391,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 except appt_cls.DoesNotExist:
                     continue
                 else:
-                    schedule_child_dict[appt.visit_schedule_name] = child_sidx
+                    visit_schedule_set = schedule_child_dict.get(child_sidx, set())
+                    visit_schedule_set.add(appt.visit_schedule_name)
+                    schedule_child_dict[child_sidx] = visit_schedule_set
+            
             return schedule_child_dict
 
     @property
