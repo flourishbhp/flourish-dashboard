@@ -29,11 +29,12 @@ class DashboardViewMixin:
 
         subject_identifier = self.kwargs.get('subject_identifier')
 
-        tb_study_visit_codes = ['2100T', '2200T', '2100A', '2200A']
+        sub_study_visit_codes = ['2100T', '2200T', 
+                                 '2100A', '2200A', '2600F']
 
         offstudy_visit_obj = visit_cls.objects.filter(
             appointment__subject_identifier=subject_identifier,
-            study_status=OFF_STUDY).exclude(visit_code__in=tb_study_visit_codes).order_by(
+            study_status=OFF_STUDY).exclude(visit_code__in=sub_study_visit_codes).order_by(
                 'report_datetime').last()
 
         trigger = self.require_offstudy(offstudy_visit_obj, subject_identifier)
