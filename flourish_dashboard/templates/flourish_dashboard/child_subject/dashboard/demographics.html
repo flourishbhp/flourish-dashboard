@@ -33,7 +33,7 @@
 
     <a class="list-group-item">
         <i class="fa fa-users"></i>
-        {{ consent.get_cohort|default:'?? Cohort' }}
+        {{ consent.current_cohort|default:'?? Cohort'|readable_cohort|upper }}
         <span data-toggle="tooltip" data-placement="right" title="Cohorts"
               class="text text-default">
             <sup></sup>

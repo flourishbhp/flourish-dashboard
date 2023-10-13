@@ -25,6 +25,21 @@ def get_keys(dictionary, value):
     return [k for k, v in dictionary.items() if v == value]
 
 
+@register.filter
+def readable_cohort(cohort):
+    return cohort.replace('_', ' ')
+
+
+@register.filter
+def get_schedule_names(onschedules, child_subject_identifier):
+    if child_subject_identifier:
+        schedule_names = [model.schedule_name for model in onschedules if
+                          model.child_subject_identifier == child_subject_identifier]
+    else:
+        schedule_names = [model.schedule_name for model in onschedules]
+    return schedule_names
+
+
 @register.simple_tag(takes_context=True)
 def get_age(context, born=None):
     if born:
@@ -529,7 +544,6 @@ def child_death_report_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier
     )
 
-
 @register.inclusion_tag('flourish_dashboard/buttons/tb_consent_button.html')
 def tb_consent_button(model_wrapper):
     title = ['TB Consent']
@@ -540,6 +554,15 @@ def tb_consent_button(model_wrapper):
         add_consent_href=model_wrapper.tb_consent.href,
         consent_version=consent_version,
         title=' '.join(title))
+
+
+@register.inclusion_tag('flourish_dashboard/buttons/young_adult_locator.html')
+def young_adult_locator_button(model_wrapper):
+    title = 'Young Adult Locator'
+    return dict(
+        wrapper = model_wrapper,
+        title = title
+    )
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_screening_button.html')

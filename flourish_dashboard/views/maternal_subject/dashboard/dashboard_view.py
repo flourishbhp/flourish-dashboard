@@ -64,8 +64,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     tb_adol_screening_model = 'flourish_caregiver.tbadoleligibility'
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
     tb_adol_assent_model = 'flourish_child.tbadolassent'
+    cohort_model = 'flourish_caregiver.cohort'
 
     child_dataset_model = 'flourish_child.childdataset'
+
+    @property
+    def schedule_history_cls(self):
+        return django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
 
     @property
     def child_dataset_cls(self):
@@ -374,11 +380,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def fu_participant_note(self):
-
-        schedule_history_cls = django_apps.get_model(
-            'edc_visit_schedule.subjectschedulehistory')
-
-        fu_schedule = schedule_history_cls.objects.filter(
+        fu_schedule = self.schedule_history_cls.objects.filter(
             subject_identifier=self.subject_identifier,
             schedule_name__contains='_fu')
         if not fu_schedule:
@@ -393,33 +395,31 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def child_names_schedule_dict(self):
         """ Return a key value pair of mother's visit schedule's corresponding
         child names for dashboard display"""
-
         if len(self.child_consents) > 1:
 
             appt_cls = django_apps.get_model('edc_appointment.appointment')
 
-            appointments = appt_cls.objects.filter(
-                subject_identifier=self.subject_identifier,
-                visit_code__endswith='000M')
-
             schedule_child_dict = {}
 
-            for onschedule_model in self.onschedule_models:
-                if (('sec' in onschedule_model.schedule_name
-                     and 'quart' not in onschedule_model.schedule_name)
-                        or 'enrol' in onschedule_model.schedule_name
-                        or 'antenatal' in onschedule_model.schedule_name):
+            for onschedule in self.onschedule_models:
+                child_sidx = onschedule.child_subject_identifier
+                try:
+                    appt = appt_cls.objects.filter(
+                        subject_identifier=onschedule.subject_identifier,
+                        schedule_name=onschedule.schedule_name,
+                        visit_code_sequence='0').earliest('appt_datetime')
+                except appt_cls.DoesNotExist:
+                    continue
+                else:
+                    visit_schedule_set = schedule_child_dict.get(child_sidx, set())
+                    visit_schedule_set.add(appt.visit_schedule_name)
+                    schedule_child_dict[child_sidx] = visit_schedule_set
 
-                    child_sidx = getattr(
-                        onschedule_model, 'child_subject_identifier', None)
-                    if child_sidx in self.child_consents:
-
-                        appt = appointments.get(
-                            schedule_name=onschedule_model.schedule_name,
-                            visit_code_sequence='0')
-
-                        schedule_child_dict[appt.visit_schedule_name] = child_sidx
             return schedule_child_dict
+
+    @property
+    def cohort_model_cls(self):
+        return django_apps.get_model(self.cohort_model)
 
     @property
     def child_consents(self):
@@ -437,19 +437,29 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def get_cohorts(self):
+        cohorts = {}
         subject_consent = self.subject_consent_wrapper.object
-        child_consent = subject_consent.caregiverchildconsent_set.all()
-        cohorts_query = child_consent.values_list('cohort',
-                                                  flat=True).distinct()
-        cohorts = ''
+        child_consents = subject_consent.caregiverchildconsent_set.values_list(
+            'subject_identifier', flat=True).distinct()
+        child_consents = list(set(child_consents))
 
-        for cohort in cohorts_query:
-            if cohort:
-                cohorts += ' ' + cohort.upper()
+        for child_idx in child_consents:
+            cohort = []
+            cohort_objs = self.cohort_model_cls.objects.filter(
+                subject_identifier=child_idx)
 
-        cohorts = cohorts.strip().replace(' ', '| ')
+            enrol_cohort = cohort_objs.filter(
+                enrollment_cohort=True).values_list('name', flat=True).first()
+            current_cohort = cohort_objs.exclude(enrollment_cohort=True).order_by(
+                '-assign_datetime').values_list('name', flat=True).first()
 
-        return cohorts.replace('_', ' ')
+            if enrol_cohort:
+                cohort.append(enrol_cohort.replace('_', ' '))
+            if current_cohort:
+                cohort.append(current_cohort.replace('_', ' '))
+            cohorts.update({f'{child_idx}': cohort})
+
+        return cohorts
 
     def set_current_schedule(self, onschedule_model_obj=None, schedule=None,
                              visit_schedule=None, is_onschedule=True):
@@ -560,8 +570,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             child_age = ChildBirthValues(
                 subject_identifier=subject_identifier).get_difference(
                 birth_date=consent.object.child_dob)
-            self.get_continued_consent_object_or_message(
-                subject_identifier=subject_identifier, child_age=child_age)
+            
             self.get_assent_object_or_message(
                 subject_identifier=subject_identifier,
                 child_age=child_age,

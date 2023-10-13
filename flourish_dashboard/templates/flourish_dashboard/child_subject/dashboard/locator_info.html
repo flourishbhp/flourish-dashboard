@@ -1,0 +1,76 @@
+
+<div id="locator-panel" class="panel-collapse collapse in">
+    <div class="list-group">
+        <a class="list-group-item">
+        {{ contact_info }}
+    <span class="text text-default">
+    <small> 
+        <b>First Name</b> {{ young_adult_locator_wrapper.first_name }} <br>
+        <b>Last Name</b> {{ young_adult_locator_wrapper.last_name }} <br>
+        <b>May Follow Up? </b>  {{young_adult_locator_wrapper.may_call}}    <br> <br>
+        <b>Home Visits? </b>   {{young_adult_locator_wrapper.may_visit_home}}    <br> <br>
+        
+        
+        {% if young_adult_locator_wrapper.may_visit_home == YES %}
+        
+            Address:   {{young_adult_locator_wrapper.physical_address}}  <br> <br>
+        {% endif %}
+        
+        {% if young_adult_locator_wrapper.may_call == YES %}
+            Tel:	{{young_adult_locator_wrapper.subject_cell}}	<br>
+            
+            Alt. Tel: {{young_adult_locator_wrapper.subject_cell_alt}}   <br>
+            
+            Cell: {{young_adult_locator_wrapper.subject_phone}}		<br>
+            
+            Alt. Cell: {{young_adult_locator_wrapper.subject_phone_alt}}  
+        {% endif %}
+        
+        <br>
+        
+        <b>Call Work? </b>{{young_adult_locator_wrapper.may_call_work}} <br>
+        
+        <b>Contact anyone else? </b> {{young_adult_locator_wrapper.may_contact_indirectly}} 
+        <br>
+        
+        {% if young_adult_locator_wrapper.may_contact_indirectly == YES %}
+            Name: {{young_adult_locator_wrapper.indirect_contact_name}}<br>
+            Relation: {{young_adult_locator_wrapper.indirect_contact_relation}}<br>
+            
+            Address: <br><br>
+            
+            Tel: {{young_adult_locator_wrapper.indirect_contact_phone}}<br>
+            
+            Cell:	{{young_adult_locator_wrapper.indirect_contact_cell}}<br>
+        {% endif %}
+        <br>
+        
+        <b>Contact next of kin? </b> {{young_adult_locator_wrapper.has_alt_contact}} 
+        <br>
+        
+        {% if young_adult_locator_wrapper.has_alt_contact == YES %}
+            Name: {{young_adult_locator_wrapper.alt_contact_name}}<br>
+            
+            Tel:	{{young_adult_locator_wrapper.alt_contact_tel}}<br>
+            
+            Cell:	{{young_adult_locator_wrapper.alt_contact_cell}}<br>
+      {% endif %}
+      
+        <br>
+        
+        <b>Home Village </b> {{young_adult_locator_wrapper.home_village}} <br>
+        
+        <br>
+      {% if young_adult_locator_wrapper.user_modified %}
+          Updated on {{ young_adult_locator_wrapper.modified|date:"SHORT_DATE_FORMAT" }} by {{ young_adult_locator_wrapper.user_modified }}
+      
+      {% else %}
+          Created on {{ young_adult_locator_wrapper.created|date:"SHORT_DATE_FORMAT" }} by {{ young_adult_locator_wrapper.user_created }}
+      {% endif %}
+        
+        
+    </small>
+    </span>
+</a>
+</div>   
+</div>   
