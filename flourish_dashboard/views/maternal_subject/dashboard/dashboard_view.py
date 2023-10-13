@@ -182,7 +182,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         subject_identifier = self.kwargs.get('subject_identifier')
         if len(subject_identifier.split('-')) == 4:
-            registered_subject = self.child_registered_subject(subject_identifier)
+            registered_subject = self.child_registered_subject(
+                subject_identifier)
             subject_identifier = getattr(
                 registered_subject, 'relative_identifier', None)
 
@@ -196,7 +197,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             raise NotConsentedError(
                 'No consent object found for participant with subject '
                 f'identifier {self.subject_identifier}')
-        
+
     @property
     def caregiver_child_consent_cls(self):
         return django_apps.get_model(self.caregiver_child_consent_model)
@@ -208,7 +209,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             subject_consent__subject_identifier=subject_identifier).values_list(
                 'subject_identifier', flat=True).distinct()
         return list(set(child_subject_identifiers))
-        
+
     @property
     def tb_adol_huu_limit_reached(self):
         """
@@ -216,19 +217,27 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         """
 
         subject_identifiers = self.tb_adol_assent_cls.objects.filter(
-                is_eligible=True).values_list('subject_identifier', flat=True).distinct()
-        
+            is_eligible=True).values_list('subject_identifier', flat=True).distinct()
+
         study_child_identifiers = self.caregiver_child_consent_cls.objects.filter(
             subject_identifier__in=subject_identifiers
         ).values_list('study_child_identifier', flat=True).distinct()
-        
 
         unexposed_adolencent = self.child_dataset_cls.objects.annotate(
-                    infant_hiv_exposed_lower=Lower('infant_hiv_exposed')
-                ).filter(
+            infant_hiv_exposed_lower=Lower('infant_hiv_exposed')
+        ).filter(
             infant_hiv_exposed_lower='unexposed', study_child_identifier__in=study_child_identifiers).count()
 
         return 25 >= unexposed_adolencent
+
+    def get_facet_eligible_message(self):
+
+        if not self.subject_consent_wrapper.facet_screening_obj and \
+                self.subject_consent_wrapper.show_facet_screening:
+
+            msg = mark_safe('This participant is eligible for the FACET Study')
+
+            messages.add_message(self.request, messages.WARNING, msg)
 
     def get_tb_adol_eligible_message(self, msg=None):
 
@@ -239,7 +248,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                             self.child_dataset_cls.objects.annotate(
                 infant_hiv_exposed_lower=Lower('infant_hiv_exposed')).filter(
                 study_child_identifier=consent.study_child_identifier,
-                infant_hiv_exposed_lower = 'unexposed').exists()]
+                infant_hiv_exposed_lower='unexposed').exists()]
 
             age_adol_range = False
             for child_age in children_age:
@@ -266,9 +275,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     msg = mark_safe('Subject is eligible for TB Adolescent study, kindly complete'
                                     'TB adol Screening form under special forms.')
                 elif not tb_consent_exists:
-                    msg = mark_safe('Kindly complete TB adol Consent form under special forms.')
+                    msg = mark_safe(
+                        'Kindly complete TB adol Consent form under special forms.')
                 elif not tb_assent_exists:
-                    msg = mark_safe('Kindly complete TB adol Assent form under special forms.')
+                    msg = mark_safe(
+                        'Kindly complete TB adol Assent form under special forms.')
 
             messages.add_message(self.request, messages.WARNING, msg)
 
@@ -276,6 +287,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         global offstudy_cls_model_obj
 
         self.get_tb_adol_eligible_message()
+
+        self.get_facet_eligible_message()
 
         context = super().get_context_data(**kwargs)
 
@@ -313,6 +326,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
 
+        facet_schedule = self.visit_schedules.get(
+            'f_mother_visit_schedule', None)
+
+        if facet_schedule:
+            del self.visit_schedules['f_mother_visit_schedule']
+
         context.update(
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
@@ -336,7 +355,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
             antenatal_enrolment=self.antenatal_enrolment,
-            tb_adol_huu_limit_reached = self.tb_adol_huu_limit_reached)
+            tb_adol_huu_limit_reached=self.tb_adol_huu_limit_reached)
         return context
 
     def age_adol_range(self, child_age):
@@ -349,7 +368,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def consents_wrapped(self):
         """Returns a generator of wrapped consents.
         """
-        wrapped_consents = [self.consent_model_wrapper_cls(obj) for obj in self.consents]
+        wrapped_consents = [self.consent_model_wrapper_cls(
+            obj) for obj in self.consents]
 
         current_consent = wrapped_consents[0].consent if wrapped_consents else None
 
@@ -394,7 +414,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     visit_schedule_set = schedule_child_dict.get(child_sidx, set())
                     visit_schedule_set.add(appt.visit_schedule_name)
                     schedule_child_dict[child_sidx] = visit_schedule_set
-            
+
             return schedule_child_dict
 
     @property

@@ -89,5 +89,21 @@
         </tr>
     {% endif %}
 
+    {% if subject_consent.show_facet_screening %}
+        <tr>
+            <td>
+                {% facet_screening_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
+
+    {% if subject_consent.show_facet_consent %}
+        <tr>
+            <td>
+                {% facet_consent_button subject_consent %}
+            </td>
+        </tr>
+    {% endif %}
+
     </tbody>
 </table>
