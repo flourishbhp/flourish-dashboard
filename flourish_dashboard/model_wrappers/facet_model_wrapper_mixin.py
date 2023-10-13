@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from edc_constants.constants import YES
+from edc_base.utils import get_utcnow, age
 from .facet_consent_model_wrapper import FacetConsentModelWrapper
 from .facet_screening_model_wrapper import FacetScreeningModelWrapper
 from ..utils import flourish_dashboard_utils
@@ -50,7 +51,19 @@ class FacetModelWrapperMixin:
     @property
     def caregiver_child_consent_objs(self):
         return self.caregiver_child_consent_model_cls.objects.filter(
-            subject_consent__subject_identifier=self.subject_identifier, preg_enroll=True)
+            subject_consent__subject_identifier=self.subject_identifier)
+
+    @property
+    def antenatal_screening_obj(self):
+        try:
+
+            antenatal_screening_obj = self.antenatal_screening_model_cls.objects.get(
+                screening_identifier=self.screening_identifier
+            )
+        except self.antenatal_screening_model_cls.DoesNotExist:
+            pass
+        else:
+            return antenatal_screening_obj
 
     @property
     def facet_consent_wrapper(self):
@@ -76,6 +89,13 @@ class FacetModelWrapperMixin:
         Condition for showing screening
         """
         for child_consent in self.caregiver_child_consent_objs:
-            years = flourish_dashboard_utils.child_age(child_consent.child_dob)
-            if years <= 0.5 and child_consent.subject_consent.future_contact == YES:
-                return True
+            child_age = age(child_consent.child_dob, get_utcnow().date())
+            age_is_within = False
+
+            if child_age.years == 0:
+                if child_age.months < 6:
+                    age_is_within = True
+                elif child_age.months == 6 and child_age.days <= 10:
+                    age_is_within = True
+            if self.antenatal_screening_obj and age_is_within:
+                return child_consent.subject_consent.future_contact == YES
