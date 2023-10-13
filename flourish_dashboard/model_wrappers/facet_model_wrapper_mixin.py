@@ -14,12 +14,6 @@ class FacetModelWrapperMixin:
 
     caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
-    antenatal_screening_model = 'flourish_caregiver.screeningpregwomen'
-
-    @property
-    def antenatal_screening_model_cls(self):
-        return django_apps.get_model(self.antenatal_screening_model)
-
     @property
     def caregiver_child_consent_model_cls(self):
         return django_apps.get_model(self.caregiver_child_consent_model)
@@ -57,15 +51,14 @@ class FacetModelWrapperMixin:
     @property
     def caregiver_child_consent_objs(self):
         return self.caregiver_child_consent_model_cls.objects.filter(
-            subject_consent__subject_identifier=self.subject_identifier)
-
+            subject_consent__subject_identifier=self.subject_identifier,
+            preg_enroll=True)
+    
     @property
     def antenatal_screening_obj(self):
         try:
-
             antenatal_screening_obj = self.antenatal_screening_model_cls.objects.get(
-                screening_identifier=self.screening_identifier
-            )
+                screening_identifier=self.screening_identifier)
         except self.antenatal_screening_model_cls.DoesNotExist:
             pass
         else:
