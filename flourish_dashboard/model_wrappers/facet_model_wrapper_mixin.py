@@ -98,12 +98,10 @@ class FacetModelWrapperMixin:
         """
         for child_consent in self.caregiver_child_consent_objs:
 
-            child_age = relativedelta(year=0, month=0)
+            child_age = relativedelta(years=0, months=0, days=0)
 
             if child_consent.child_dob:
                 child_age = age(child_consent.child_dob, get_utcnow().date())
-            else:
-                child_age = relativedelta(years=0, months=0, days=0)
 
             age_is_within = False
 
