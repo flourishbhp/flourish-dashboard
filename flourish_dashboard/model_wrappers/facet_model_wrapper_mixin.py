@@ -95,7 +95,6 @@ class FacetModelWrapperMixin:
         Condition for showing screening
         """
         for child_consent in self.caregiver_child_consent_objs:
-
             child_age = relativedelta(years=0, months=0, days=0)
 
             if child_consent.child_dob:
