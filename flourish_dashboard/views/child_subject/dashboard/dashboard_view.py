@@ -343,6 +343,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             subject_identifier=self.subject_identifier, child_age=child_age,
             version=self.latest_consent_version)
 
+        facet_schedule = self.visit_schedules.get(
+            'f_child_visit_schedule', None)
+
+        if facet_schedule:
+            del self.visit_schedules['f_child_visit_schedule']
+
         context.update(
             in_person_visits=['2000D', '2100A', '3000'],
             caregiver_child_consent=self.caregiver_child_consent,
@@ -405,7 +411,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         subject_identifier = self.kwargs.get('subject_identifier')
         caregiver_sid = ChildBirthValues(
             subject_identifier=subject_identifier).caregiver_subject_identifier
-        maternal_visit_cls = django_apps.get_model('flourish_caregiver.maternalvisit')
+        maternal_visit_cls = django_apps.get_model(
+            'flourish_caregiver.maternalvisit')
         latest_visit = maternal_visit_cls.objects.filter(
             subject_identifier=caregiver_sid, ).order_by(
                 '-report_datetime').first()
