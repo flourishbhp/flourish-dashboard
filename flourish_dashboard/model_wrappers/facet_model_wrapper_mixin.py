@@ -1,3 +1,4 @@
+from edc_base.utils import relativedelta
 from django.apps import apps as django_apps
 from edc_constants.constants import YES
 from edc_base.utils import get_utcnow, age
@@ -14,9 +15,15 @@ class FacetModelWrapperMixin:
 
     caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
+    antenatal_screening_model = 'flourish_caregiver.screeningpregwomen'
+
     @property
     def caregiver_child_consent_model_cls(self):
         return django_apps.get_model(self.caregiver_child_consent_model)
+
+    @property
+    def antenatal_screening_model_cls(self):
+        return django_apps.get_model(self.antenatal_screening_model)
 
     @property
     def facet_screening_cls(self):
@@ -51,7 +58,8 @@ class FacetModelWrapperMixin:
     @property
     def caregiver_child_consent_objs(self):
         return self.caregiver_child_consent_model_cls.objects.filter(
-            subject_consent__subject_identifier=self.subject_identifier)
+            subject_consent__subject_identifier=self.subject_identifier,
+            preg_enroll=True)
 
     @property
     def antenatal_screening_obj(self):
@@ -89,7 +97,12 @@ class FacetModelWrapperMixin:
         Condition for showing screening
         """
         for child_consent in self.caregiver_child_consent_objs:
-            child_age = age(child_consent.child_dob, get_utcnow().date())
+
+            child_age = relativedelta(years=0, months=0, days=0)
+
+            if child_consent.child_dob:
+                child_age = age(child_consent.child_dob, get_utcnow().date())
+
             age_is_within = False
 
             if child_age.years == 0:
