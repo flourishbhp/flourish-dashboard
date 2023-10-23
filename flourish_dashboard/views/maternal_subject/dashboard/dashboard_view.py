@@ -69,6 +69,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     child_dataset_model = 'flourish_child.childdataset'
 
     @property
+    def schedule_history_cls(self):
+        return django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
+
+    @property
     def child_dataset_cls(self):
         return django_apps.get_model(self.child_dataset_model)
 
@@ -375,11 +380,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
     @property
     def fu_participant_note(self):
-
-        schedule_history_cls = django_apps.get_model(
-            'edc_visit_schedule.subjectschedulehistory')
-
-        fu_schedule = schedule_history_cls.objects.filter(
+        fu_schedule = self.schedule_history_cls.objects.filter(
             subject_identifier=self.subject_identifier,
             schedule_name__contains='_fu')
         if not fu_schedule:
@@ -394,32 +395,26 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     def child_names_schedule_dict(self):
         """ Return a key value pair of mother's visit schedule's corresponding
         child names for dashboard display"""
-
         if len(self.child_consents) > 1:
 
             appt_cls = django_apps.get_model('edc_appointment.appointment')
 
-            appointments = appt_cls.objects.filter(
-                subject_identifier=self.subject_identifier,
-                visit_code__endswith='000M')
-
             schedule_child_dict = {}
 
-            for onschedule_model in self.onschedule_models:
-                if (('sec' in onschedule_model.schedule_name
-                     and 'quart' not in onschedule_model.schedule_name)
-                        or 'enrol' in onschedule_model.schedule_name
-                        or 'antenatal' in onschedule_model.schedule_name):
+            for onschedule in self.onschedule_models:
+                child_sidx = onschedule.child_subject_identifier
+                try:
+                    appt = appt_cls.objects.filter(
+                        subject_identifier=onschedule.subject_identifier,
+                        schedule_name=onschedule.schedule_name,
+                        visit_code_sequence='0').earliest('appt_datetime')
+                except appt_cls.DoesNotExist:
+                    continue
+                else:
+                    visit_schedule_set = schedule_child_dict.get(child_sidx, set())
+                    visit_schedule_set.add(appt.visit_schedule_name)
+                    schedule_child_dict[child_sidx] = visit_schedule_set
 
-                    child_sidx = getattr(
-                        onschedule_model, 'child_subject_identifier', None)
-                    if child_sidx in self.child_consents:
-
-                        appt = appointments.get(
-                            schedule_name=onschedule_model.schedule_name,
-                            visit_code_sequence='0')
-
-                        schedule_child_dict[appt.visit_schedule_name] = child_sidx
             return schedule_child_dict
 
     @property
@@ -575,8 +570,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             child_age = ChildBirthValues(
                 subject_identifier=subject_identifier).get_difference(
                 birth_date=consent.object.child_dob)
-            self.get_continued_consent_object_or_message(
-                subject_identifier=subject_identifier, child_age=child_age)
+            
             self.get_assent_object_or_message(
                 subject_identifier=subject_identifier,
                 child_age=child_age,

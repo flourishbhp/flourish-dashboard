@@ -7,11 +7,18 @@ from edc_constants.constants import OFF_STUDY, NEW, POS
 from django.db.models import Q
 from edc_action_item.site_action_items import site_action_items
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
+from flourish_child.action_items import YOUNG_ADULT_LOCATOR_ACTION
 
 
 class DashboardViewMixin:
 
     data_action_item_model = 'edc_data_manager.dataactionitem'
+
+    young_adult_locator_model = 'flourish_child.youngadultlocator'
+    
+    @property
+    def young_adult_locator_cls(self):
+        return django_apps.get_model(self.young_adult_locator_model)
 
     @property
     def data_action_item_cls(self):
@@ -185,6 +192,8 @@ class DashboardViewMixin:
                     f'Please complete the continued consent for child {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
+        
+
 
     def is_delivery_window(self, subject_identifier):
 

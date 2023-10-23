@@ -64,10 +64,8 @@ class FacetModelWrapperMixin:
     @property
     def antenatal_screening_obj(self):
         try:
-
             antenatal_screening_obj = self.antenatal_screening_model_cls.objects.get(
-                screening_identifier=self.screening_identifier
-            )
+                screening_identifier=self.screening_identifier)
         except self.antenatal_screening_model_cls.DoesNotExist:
             pass
         else:
@@ -97,7 +95,6 @@ class FacetModelWrapperMixin:
         Condition for showing screening
         """
         for child_consent in self.caregiver_child_consent_objs:
-
             child_age = relativedelta(years=0, months=0, days=0)
 
             if child_consent.child_dob:

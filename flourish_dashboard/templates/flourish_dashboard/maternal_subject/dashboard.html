@@ -29,7 +29,8 @@
     <br />
     {% if child_names and child_names|length > 1 %}
         <ul class="nav nav-tabs">
-            {% for child_subject_id in child_names|get_values_unique %}
+
+            {% for child_subject_id in child_names.keys %}
                 <li  {% if forloop.counter == 1 %} class="active" {% endif %}>
                     <a data-toggle="tab" href="#id_{{ child_subject_id }}">
                         {{ child_subject_id }}</a>
@@ -37,11 +38,11 @@
             {% endfor %}
         </ul>
         <div class="tab-content">
-	        {% for child_subject_id in child_names|get_values_unique %}
+	        {% for child_subject_id, visit_schedule_names in child_names.items %}
 	            <div id="id_{{ child_subject_id }}"
 	            	class="tab-pane fade in {% if forloop.counter == 1 %} active {% endif %}">
 	                {% for visit_schedule in visit_schedules.values %}
-	                	{% if visit_schedule.name in child_names|get_keys:child_subject_id %}
+	                	{% if visit_schedule.name in visit_schedule_names %}
 	                		{% include "flourish_dashboard/maternal_subject/dashboard/schedules.html" %}
 	                	{% endif %}
 	                {% endfor %}
@@ -49,9 +50,11 @@
 	        {% endfor %}
 	    </div>
 	{% else %}
-		{% for visit_schedule in visit_schedules.values %}
-			{% include "flourish_dashboard/maternal_subject/dashboard/schedules.html" %}
-		{% endfor %}
+		{% with None as child_subject_id %}
+			{% for visit_schedule in visit_schedules.values %}
+				{% include "flourish_dashboard/maternal_subject/dashboard/schedules.html" %}
+			{% endfor %}
+		{% endwith %}
     {% endif %}
 
 {% endblock visit_schedules_panel %}
