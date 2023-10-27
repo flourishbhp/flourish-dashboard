@@ -108,5 +108,6 @@ class FacetModelWrapperMixin:
                     age_is_within = True
                 elif child_age.months == 6 and child_age.days <= 10:
                     age_is_within = True
-            if self.antenatal_screening_obj and age_is_within:
+
+            if self.facet_screening_obj or (self.antenatal_screening_obj and age_is_within):
                 return child_consent.subject_consent.future_contact == YES
