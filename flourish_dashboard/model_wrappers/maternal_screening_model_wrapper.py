@@ -14,8 +14,7 @@ from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .subject_consent_model_wrapper import SubjectConsentModelWrapper
 
 
-class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
-                                    CaregiverLocatorModelWrapperMixin,
+class MaternalScreeningModelWrapper(CaregiverLocatorModelWrapperMixin,
                                     ConsentModelWrapperMixin,
                                     ChildAssentModelWrapperMixin,
                                     BHPPriorScreeningModelWrapperMixin,
@@ -25,7 +24,7 @@ class MaternalScreeningModelWrapper(AntenatalEnrollmentModelWrapperMixin,
     querystring_attrs = ['screening_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'maternal_screening_listboard_url')
-    next_url_attrs = ['screening_identifier', 'subject_identifier', ]
+    next_url_attrs = ['screening_identifier', ]
 
     @property
     def consent_version_cls(self):

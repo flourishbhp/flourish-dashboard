@@ -119,7 +119,7 @@ class ChildBirthValues(object):
         try:
 
             return self.maternal_delivery_cls.objects.get(
-                subject_identifier=self.caregiver_subject_identifier)
+                child_subject_identifier=self.subject_identifier)
         except ObjectDoesNotExist:
             return None
 

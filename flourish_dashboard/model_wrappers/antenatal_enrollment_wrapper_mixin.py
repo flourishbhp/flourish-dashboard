@@ -5,7 +5,6 @@ from .antenatal_enrollment_model_wrapper import AntenatalEnrollmentModelWrapper
 
 
 class AntenatalEnrollmentModelWrapperMixin:
-
     antenatal_enrollment_model_wrapper_cls = AntenatalEnrollmentModelWrapper
 
     @property
@@ -27,6 +26,22 @@ class AntenatalEnrollmentModelWrapperMixin:
         return self.antenatal_enrollment_model_wrapper_cls(model_obj=model_obj)
 
     @property
+    def antenatal_enrollments(self):
+        wrapped_entries = []
+        if hasattr(self, 'consent_model_obj'):
+            caregiver_child_consents = (
+                self.consent_model_obj.caregiverchildconsent_set.all())
+
+            for caregiver_child_consent in caregiver_child_consents:
+                model_obj = self.antenatal_enrollments_model_obj(
+                    caregiver_child_consent) or self.antenatal_enrollment_cls(
+                    **self.create_antenatal_enrollments_options(
+                        caregiver_child_consent))
+                wrapped_entries.append(AntenatalEnrollmentModelWrapper(model_obj))
+
+        return wrapped_entries
+
+    @property
     def antenatal_enrollment_cls(self):
         return django_apps.get_model('flourish_caregiver.antenatalenrollment')
 
@@ -37,8 +52,8 @@ class AntenatalEnrollmentModelWrapperMixin:
         """
         options = dict(
             subject_identifier=self.consent.subject_identifier,
-#             screening_identifier=self.consent.screening_identifier
-            )
+            # screening_identifier=self.consent.screening_identifier
+        )
         return options
 
     @property
@@ -53,3 +68,18 @@ class AntenatalEnrollmentModelWrapperMixin:
     @property
     def show_dashboard(self):
         return True
+
+    def antenatal_enrollments_model_obj(self, caregiver_child_consent):
+        try:
+            return self.antenatal_enrollment_cls.objects.get(
+                child_subject_identifier=caregiver_child_consent.subject_identifier,
+                subject_identifier=self.consent.subject_identifier)
+        except ObjectDoesNotExist:
+            return None
+
+    def create_antenatal_enrollments_options(self, caregiver_child_consent):
+        options = dict(
+            child_subject_identifier=caregiver_child_consent.subject_identifier,
+            subject_identifier=self.consent.subject_identifier
+        )
+        return options
