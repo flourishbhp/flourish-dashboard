@@ -5,7 +5,8 @@ from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError,\
+    MultipleObjectsReturned
 from django.utils.safestring import mark_safe
 from django.views.generic.base import ContextMixin
 from edc_base.utils import age
@@ -546,6 +547,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                     disclosed_status=YES)
             except hiv_disclosure_cls.DoesNotExist:
                 trigger = True
+            except MultipleObjectsReturned:
+                messages.info(
+                    self.request,
+                    'Please note, this child is aware of the Mother\'s HIV '
+                    'status.')
+                trigger = False
             else:
                 messages.info(
                     self.request,
