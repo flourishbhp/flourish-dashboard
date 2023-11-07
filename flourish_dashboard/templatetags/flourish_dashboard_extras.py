@@ -57,8 +57,7 @@ def get_age(context, born=None):
         return age_str
 
 
-@register.inclusion_tag(
-    'flourish_dashboard/buttons/child_dashboard_button.html')
+@register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
 def child_dashboard_button(model_wrapper):
     child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'child_dashboard_url')
@@ -67,8 +66,7 @@ def child_dashboard_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier)
 
 
-@register.inclusion_tag(
-    'pre_flourish/buttons/heu_dashboard_button.html')
+@register.inclusion_tag('pre_flourish/buttons/heu_dashboard_button.html')
 def huu_match_child_dashboard_button(subject_identifier):
     child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'pre_flourish_child_dashboard_url')
