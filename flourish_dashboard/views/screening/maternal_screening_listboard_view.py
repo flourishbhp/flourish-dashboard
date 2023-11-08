@@ -53,6 +53,13 @@ class MaternalScreeningListBoardView(NavbarViewMixin, EdcBaseViewMixin,
 
         return options
 
+    def get_wrapped_queryset(self, queryset):
+        qs = super().get_wrapped_queryset(queryset)
+        for obj in qs:
+            obj.is_eligible = obj.object.screeningpregwomeninline_set.filter(
+                is_eligible=True).exists()
+        return qs
+
     def extra_search_options(self, search_term):
         q = Q()
         if re.match('^[A-Z]+$', search_term):

@@ -58,6 +58,6 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
         """
         try:
             return self.maternal_delivery_cls.objects.get(
-                subject_identifier=self.object.subject_consent.subject_identifier)
+                child_subject_identifier=self.object.subject_identifier)
         except ObjectDoesNotExist:
             return None

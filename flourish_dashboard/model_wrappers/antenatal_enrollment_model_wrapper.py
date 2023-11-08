@@ -9,4 +9,4 @@ class AntenatalEnrollmentModelWrapper(ModelWrapper):
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'maternal_screening_listboard_url')
     next_url_attrs = ['screening_identifier']
-    querystring_attrs = ['subject_identifier', 'screening_identifier']
+    querystring_attrs = ['subject_identifier', 'child_subject_identifier']

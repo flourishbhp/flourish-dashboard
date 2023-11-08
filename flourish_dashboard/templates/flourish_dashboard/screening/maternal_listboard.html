@@ -4,7 +4,8 @@
 {% load flourish_dashboard_extras %}
 
 {% block listboard_panel %}
-    <a id="maternal_screening_add" title="add screening" class="btn btn-sm btn-default" role="button"
+    <a id="maternal_screening_add" title="add screening" class="btn btn-sm btn-default"
+       role="button"
        href="{{ maternal_screening_add_url }}?next={{ maternal_screening_listboard_url }}">
         <i class="fa fa-plus fa-sm"></i>Add Antenatal Screening
     </a>
@@ -31,21 +32,10 @@
                 {% consent_button result True %}
                 {% if result.consent_model_obj %}
                     {% if result.consent.is_eligible %}
-
-                        {% if result.antenatal_enrollment_model_obj %}
-                            {% if result.antenatal_enrollment_model_obj.is_eligible %}
-                                {% locator_button result %}
-                                {% if result.locator_model_obj %}
-                                    {% dashboard_button result %}
-                                {% endif %}
-                            {% else %}
-                                {% eligibility_button result.antenatal_enrollment %}
-                            {% endif %}
-                        {% else %}
-                            {% antenatal_enrollment_button result %}
+                        {% locator_button result %}
+                        {% if result.locator_model_obj %}
+                            {% dashboard_button result %}
                         {% endif %}
-                    {% else %}
-                        {% eligibility_button result.consent %}
                     {% endif %}
                 {% endif %}
             {% else %}
@@ -61,7 +51,8 @@
 
     <td>{{ result.screening_identifier }} </td>
     <td>{{ result.consent.subject_identifier }}</td>
-    <td nowrap>{% age_in_years result.consent_model_obj.dob %}yrs {{ result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}</td>
+    <td nowrap>{% age_in_years result.consent_model_obj.dob %}yrs
+        {{ result.consent_model_obj.dob|date:"SHORT_DATE_FORMAT" }}</td>
     <td nowrap>{{ result.user_created }}</td>
     <td nowrap>{{ result.object.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
 
