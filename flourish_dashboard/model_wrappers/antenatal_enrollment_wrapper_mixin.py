@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
 from .antenatal_enrollment_model_wrapper import AntenatalEnrollmentModelWrapper
+from ..utils import flourish_dashboard_utils
 
 
 class AntenatalEnrollmentModelWrapperMixin:
@@ -33,11 +34,14 @@ class AntenatalEnrollmentModelWrapperMixin:
                 self.consent_model_obj.caregiverchildconsent_set.all())
 
             for caregiver_child_consent in caregiver_child_consents:
-                model_obj = self.antenatal_enrollments_model_obj(
-                    caregiver_child_consent) or self.antenatal_enrollment_cls(
-                    **self.create_antenatal_enrollments_options(
-                        caregiver_child_consent))
-                wrapped_entries.append(AntenatalEnrollmentModelWrapper(model_obj))
+                if flourish_dashboard_utils.screening_object_by_child_pid(
+                        self.consent.screening_identifier,
+                        caregiver_child_consent.subject_identifier):
+                    model_obj = self.antenatal_enrollments_model_obj(
+                        caregiver_child_consent) or self.antenatal_enrollment_cls(
+                        **self.create_antenatal_enrollments_options(
+                            caregiver_child_consent))
+                    wrapped_entries.append(AntenatalEnrollmentModelWrapper(model_obj))
 
         return wrapped_entries
 

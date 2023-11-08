@@ -54,5 +54,18 @@ class FlourishDashboardUtils:
             return (self.is_delivery_window(subject_identifier)
                     and not consent_version_obj.child_version)
 
+    def screening_object_by_child_pid(self, screening_identifier,
+                                      child_subject_identifier):
+        screening_model_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomen')
+        try:
+            screening_obj = screening_model_cls.objects.get(
+                screening_identifier=screening_identifier)
+        except screening_model_cls.DoesNotExist:
+            return None
+        else:
+            return screening_obj.screeningpregwomeninline_set.filter(
+                child_subject_identifier=child_subject_identifier)
+
 
 flourish_dashboard_utils = FlourishDashboardUtils()

@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 
 from .maternal_delivery_model_wrapper import MaternalDeliveryModelWrapper
+from ..utils import flourish_dashboard_utils
 
 
 class MaternalDeliveryModelWrapperMixin:
@@ -22,11 +23,16 @@ class MaternalDeliveryModelWrapperMixin:
         """
         wrapped_entries = []
         for maternal_delivery in self.maternal_ultrasound_initial_obj:
-            model_obj = self.maternal_delivery_model_obj(
-                maternal_delivery.child_subject_identifier) or self.maternal_delivery_cls(
-                **self.create_maternal_delivery_options(
-                    maternal_delivery.child_subject_identifier))
-            wrapped_entries.append(self.maternal_delivery_model_wrapper_cls(model_obj))
+            if flourish_dashboard_utils.screening_object_by_child_pid(
+                    self.consent.screening_identifier,
+                    maternal_delivery.child_subject_identifier):
+                model_obj = (self.maternal_delivery_model_obj(
+                    maternal_delivery.child_subject_identifier) or
+                             self.maternal_delivery_cls(
+                                 **self.create_maternal_delivery_options(
+                                     maternal_delivery.child_subject_identifier)))
+                wrapped_entries.append(
+                    self.maternal_delivery_model_wrapper_cls(model_obj))
         return wrapped_entries
 
     @property
