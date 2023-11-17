@@ -33,14 +33,15 @@ class AntenatalEnrollmentModelWrapperMixin:
             caregiver_child_consents = (
                 self.consent_model_obj.caregiverchildconsent_set.all())
 
-            for caregiver_child_consent in caregiver_child_consents:
+            for child_subject_identifier in list(set(caregiver_child_consents.values_list(
+                    'subject_identifier', flat=True))):
                 if flourish_dashboard_utils.screening_object_by_child_pid(
                         self.consent.screening_identifier,
-                        caregiver_child_consent.subject_identifier):
+                        child_subject_identifier):
                     model_obj = self.antenatal_enrollments_model_obj(
-                        caregiver_child_consent) or self.antenatal_enrollment_cls(
+                        child_subject_identifier) or self.antenatal_enrollment_cls(
                         **self.create_antenatal_enrollments_options(
-                            caregiver_child_consent))
+                            child_subject_identifier))
                     wrapped_entries.append(AntenatalEnrollmentModelWrapper(model_obj))
 
         return wrapped_entries
@@ -73,17 +74,17 @@ class AntenatalEnrollmentModelWrapperMixin:
     def show_dashboard(self):
         return True
 
-    def antenatal_enrollments_model_obj(self, caregiver_child_consent):
+    def antenatal_enrollments_model_obj(self, child_subject_identifier):
         try:
             return self.antenatal_enrollment_cls.objects.get(
-                child_subject_identifier=caregiver_child_consent.subject_identifier,
+                child_subject_identifier=child_subject_identifier,
                 subject_identifier=self.consent.subject_identifier)
         except ObjectDoesNotExist:
             return None
 
-    def create_antenatal_enrollments_options(self, caregiver_child_consent):
+    def create_antenatal_enrollments_options(self, child_subject_identifier):
         options = dict(
-            child_subject_identifier=caregiver_child_consent.subject_identifier,
+            child_subject_identifier=child_subject_identifier,
             subject_identifier=self.consent.subject_identifier
         )
         return options
