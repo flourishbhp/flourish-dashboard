@@ -14,8 +14,6 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
-from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
-    AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 from ...child_subject.dashboard.dashboard_view import ChildBirthValues
 from ...view_mixin import DashboardViewMixin
@@ -116,7 +114,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         except screening_cls.DoesNotExist:
             return None
         else:
-            return MaternalScreeningModelWrapper(subject_screening)
+            consent_version = self.subject_consent_wrapper.consent_version
+
+            if int(consent_version) > 2:
+                return MaternalScreeningModelWrapper(subject_screening)
 
     @property
     def maternal_dataset(self):
