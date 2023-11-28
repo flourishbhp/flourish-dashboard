@@ -221,9 +221,12 @@ def caregiver_enrolment_info_button(model_wrapper):
 def consent_button(model_wrapper, antenatal=None):
     title = ['Consent subject to participate.']
     subject_screening_obj = model_wrapper.object
-    non_complete_screening_objs = (
-        subject_screening_obj.screeningpregwomeninline_set).filter(
-        child_subject_identifier__isnull=True).exists()
+    screening_obj_inlines = getattr(
+        subject_screening_obj, 'screeningpregwomeninline_set', None)
+    non_complete_screening_objs = False
+    if screening_obj_inlines:
+        non_complete_screening_objs = screening_obj_inlines.filter(
+            child_subject_identifier__isnull=True).exists()
 
     return dict(
         consent_model_obj=model_wrapper.consent_model_obj,
