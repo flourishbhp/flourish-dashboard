@@ -86,14 +86,14 @@ class ChildAssentModelWrapperMixin:
             """
 
             # set was used, to get care giver child consent in v1 or v2
-            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
+            caregiver_child_consents = self.consent_model_obj.caregiverchildconsent_set \
                 .only('child_age_at_enrollment', 'is_eligible') \
                 .filter(is_eligible=True, child_age_at_enrollment__gte=7)
 
-            for caregiverchildconsent in caregiverchildconsents:
-                model_obj = self.child_assent_model_obj(caregiverchildconsent) or \
+            for caregiver_child_consent in caregiver_child_consents:
+                model_obj = self.child_assent_model_obj(caregiver_child_consent) or \
                             self.assent_model_cls(
-                                **self.create_child_assent_options(caregiverchildconsent))
+                                **self.create_child_assent_options(caregiver_child_consent))
                 # create options based on caregiverchildconsent, which is either
                 # version 1 or version 2
 
@@ -105,15 +105,15 @@ class ChildAssentModelWrapperMixin:
         exists_conditions = list()
 
         if getattr(self, 'consent_model_obj', None):
-            caregiverchildconsents = self.consent_model_obj.caregiverchildconsent_set \
+            caregiver_child_consents = self.consent_model_obj.caregiverchildconsent_set \
                 .only('child_age_at_enrollment', 'is_eligible') \
                 .filter(is_eligible=True,
                         child_age_at_enrollment__gte=7,
                         child_age_at_enrollment__lt=18)
 
-            for caregiver_childconsent in caregiverchildconsents:
+            for caregiver_child_consent in caregiver_child_consents:
                 model_objs = ChildAssent.objects.filter(
-                    subject_identifier=caregiver_childconsent.subject_identifier).exists()
+                    subject_identifier=caregiver_child_consent.subject_identifier).exists()
                 exists_conditions.append(model_objs)
 
             return all(exists_conditions)
