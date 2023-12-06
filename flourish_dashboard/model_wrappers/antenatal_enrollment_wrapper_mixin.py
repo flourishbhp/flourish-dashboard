@@ -29,7 +29,7 @@ class AntenatalEnrollmentModelWrapperMixin:
     @property
     def antenatal_enrollments(self):
         wrapped_entries = []
-        if hasattr(self, 'consent_model_obj'):
+        if getattr(self, 'consent_model_obj', None):
             caregiver_child_consents = (
                 self.consent_model_obj.caregiverchildconsent_set.all())
 
