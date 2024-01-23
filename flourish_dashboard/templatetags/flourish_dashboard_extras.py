@@ -451,7 +451,7 @@ def caregiver_child_consent_button(model_wrapper):
 
 @register.inclusion_tag(
     'flourish_dashboard/buttons/consent_version_button.html')
-def consent_version_button(model_wrapper):
+def consent_version_button(model_wrapper, is_latest_consent_version):
     title = ['Add Consent Version.']
 
     return dict(
@@ -461,6 +461,7 @@ def consent_version_button(model_wrapper):
         consent_versioned=model_wrapper.flourish_consent_version,
         screening_identifier=model_wrapper.object.screening_identifier,
         add_consent_version_href=model_wrapper.flourish_consent_version.href,
+        is_latest_consent_version=is_latest_consent_version,
         title=' '.join(title))
 
 

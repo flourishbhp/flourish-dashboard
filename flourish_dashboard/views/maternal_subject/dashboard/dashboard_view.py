@@ -312,6 +312,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         self.get_consent_from_version_form_or_message(
             self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
 
+        is_latest_consent_version = self.is_latest_consent_version(
+            self.subject_consent_wrapper.screening_identifier)
+
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
         if not self.tb_take_off_study:
             msg = 'Please complete the TB Off study form to take the subject Off study'
@@ -355,6 +358,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
+            is_latest_consent_version = is_latest_consent_version,
             tb_adol_huu_limit_reached=self.tb_adol_huu_limit_reached)
         return context
 

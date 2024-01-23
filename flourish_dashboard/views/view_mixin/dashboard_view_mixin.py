@@ -3,11 +3,12 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 from edc_action_item.site_action_items import site_action_items
-from edc_base.utils import get_utcnow
 from edc_constants.constants import NEW, OFF_STUDY, POS
 
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 from flourish_dashboard.utils import flourish_dashboard_utils
+
+caregiver_config = django_apps.get_app_config('flourish_caregiver')
 
 
 class DashboardViewMixin:
@@ -202,29 +203,37 @@ class DashboardViewMixin:
         caregiver_child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
 
+        consent_version_obj = self.consent_version_obj(screening_identifier)
+        if consent_version_obj.child_version:
+            caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
+                subject_consent__subject_identifier=subject_identifier,
+                version=consent_version_obj.child_version)
+
+            if not caregiver_child_consent_objs:
+                msg = mark_safe(
+                    f'Please complete the v{consent_version_obj.child_version} '
+                    f'consent '
+                    f'on behalf of child {subject_identifier}.')
+                messages.add_message(self.request, messages.WARNING, msg)
+        if (flourish_dashboard_utils.is_delivery_window(subject_identifier)
+                and not consent_version_obj.child_version):
+            msg = mark_safe(
+                'Please complete the consent version for consent on behalf of child'
+                f' {subject_identifier}.')
+            messages.add_message(self.request, messages.WARNING, msg)
+
+    def consent_version_obj(self, screening_identifier=None):
         consent_version_cls = django_apps.get_model(
             'flourish_caregiver.flourishconsentversion')
-
         try:
             consent_version_obj = consent_version_cls.objects.get(
                 screening_identifier=screening_identifier)
         except consent_version_cls.DoesNotExist:
-            pass
+            return None
         else:
-            if consent_version_obj.child_version:
-                caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
-                    subject_consent__subject_identifier=subject_identifier,
-                    version=consent_version_obj.child_version)
+            return consent_version_obj
 
-                if not caregiver_child_consent_objs:
-                    msg = mark_safe(
-                        f'Please complete the v{consent_version_obj.child_version} '
-                        f'consent '
-                        f'on behalf of child {subject_identifier}.')
-                    messages.add_message(self.request, messages.WARNING, msg)
-            if (flourish_dashboard_utils.is_delivery_window(subject_identifier)
-                    and not consent_version_obj.child_version):
-                msg = mark_safe(
-                    'Please complete the consent version for consent on behalf of child'
-                    f' {subject_identifier}.')
-                messages.add_message(self.request, messages.WARNING, msg)
+    def is_latest_consent_version(self, screening_identifier=None):
+        consent_version_obj = self.consent_version_obj(screening_identifier)
+        return str(consent_version_obj.child_version) == str(
+            caregiver_config.consent_version)
