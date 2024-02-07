@@ -66,15 +66,6 @@ def child_dashboard_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier)
 
 
-@register.inclusion_tag('pre_flourish/buttons/heu_dashboard_button.html')
-def huu_match_child_dashboard_button(subject_identifier):
-    child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
-        'pre_flourish_child_dashboard_url')
-    return dict(
-        child_dashboard_url=child_dashboard_url,
-        subject_identifier=subject_identifier)
-
-
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
 def eligibility_button(model_wrapper):
     comment = []
@@ -451,7 +442,7 @@ def caregiver_child_consent_button(model_wrapper):
 
 @register.inclusion_tag(
     'flourish_dashboard/buttons/consent_version_button.html')
-def consent_version_button(model_wrapper):
+def consent_version_button(model_wrapper, is_latest_consent_version):
     title = ['Add Consent Version.']
 
     return dict(
@@ -461,6 +452,7 @@ def consent_version_button(model_wrapper):
         consent_versioned=model_wrapper.flourish_consent_version,
         screening_identifier=model_wrapper.object.screening_identifier,
         add_consent_version_href=model_wrapper.flourish_consent_version.href,
+        is_latest_consent_version=is_latest_consent_version,
         title=' '.join(title))
 
 
