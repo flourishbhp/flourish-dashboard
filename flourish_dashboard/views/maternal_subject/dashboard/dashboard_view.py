@@ -14,8 +14,6 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
-from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
-    AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 from ...child_subject.dashboard.dashboard_view import ChildBirthValues
 from ...view_mixin import DashboardViewMixin
@@ -29,6 +27,7 @@ from ....model_wrappers import CaregiverRequisitionModelWrapper, \
     MaternalDatasetModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
+from ....utils import flourish_dashboard_utils
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -312,7 +311,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         self.get_consent_from_version_form_or_message(
             self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
 
-        is_latest_consent_version = self.is_latest_consent_version(
+        is_latest_consent_version = flourish_dashboard_utils.is_latest_consent_version(
             self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
@@ -358,7 +357,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
-            is_latest_consent_version = is_latest_consent_version,
+            is_latest_consent_version=is_latest_consent_version,
             tb_adol_huu_limit_reached=self.tb_adol_huu_limit_reached)
         return context
 

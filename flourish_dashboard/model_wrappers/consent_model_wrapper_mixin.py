@@ -13,8 +13,6 @@ class ConsentModelWrapperMixin:
     def screening_identifier(self):
         if self.object:
             return self.object.screening_identifier
-        elif self.consent_older_version_model_obj:
-            return self.consent_older_version_model_obj.screening_identifier
         return None
 
     @property
@@ -94,22 +92,6 @@ class ConsentModelWrapperMixin:
             consent_identifier=get_uuid(),
             version=self.consent_version
         )
-        if self.consent_older_version_model_obj:
-            consent_version_older = self.consent_older_version_model_obj.__dict__
-            exclude_options = ['_state', 'consent_datetime', 'report_datetime',
-                               'consent_identifier', 'version', 'id',
-                               'subject_identifier_as_pk', 'created', 'modified',
-                               'site_id', 'device_created', 'device_modified',
-                               'hostname_modified', 'hostname_created', 'user_created',
-                               'screening_identifier', '_django_version'
-                               ]
-            for option in exclude_options:
-                try:
-                    del consent_version_older[option]
-                except KeyError:
-                    continue
-
-            options.update(**consent_version_older)
 
         if getattr(self, 'bhp_prior_screening_model_obj'):
             bhp_prior_screening = self.bhp_prior_screening_model_obj
@@ -219,14 +201,6 @@ class ConsentModelWrapperMixin:
             return self.child_consents.filter(is_eligible=False)
         return []
 
-    @property
-    def consent_older_version_model_obj(self):
-        """Returns a consent version 1 model instance or None.
-        """
-        consents = self.subject_consent_cls.objects.filter(
-            screening_identifier=self.object.screening_identifier)
-        if consents:
-            return consents.latest('consent_datetime')
 
     @property
     def pre_flourish_consent_cls(self):
