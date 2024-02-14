@@ -340,8 +340,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model(
-            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         self.get_consent_version_object_or_message(
@@ -349,7 +347,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             .screening_identifier)
 
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
-                                     offstudy_cls=child_offstudy_cls,
+                                     offstudy_cls=self.child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
@@ -453,8 +451,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model(
-            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
@@ -474,7 +470,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             self.get_offstudy_or_message(
                 visit_cls=child_visit_cls,
-                offstudy_cls=child_offstudy_cls,
+                offstudy_cls=self.child_offstudy_cls,
                 offstudy_action=CHILDOFF_STUDY_ACTION,
                 trigger=trigger)
 
