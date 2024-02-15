@@ -1,52 +1,78 @@
 {% load edc_base_extras %}
 {% load flourish_dashboard_extras %}
 
-<div class="list-group" >
-<a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
-{% if dob %}
-{{ dob|date:"Y-m-d" }}
-{% get_age dob %} 
-{% endif %}
+<div class="list-group">
+    <a class="list-group-item"><i class="fa fa-birthday-cake fa-fw"></i>
+        {% if dob %}
+            {{ dob|date:"Y-m-d" }}
+            {% get_age dob %}
+        {% endif %}
 
- {% if hiv_status == 'POS' %}
- 	<span data-toggle="tooltip" data-placement="right" title="Biological Mother's HIV Status" > <i class="fa  fa-plus-circle  fa-fw"></i> </span>
- {% else %}
- 	{% if hiv_status == 'NEG' %}
- 		<span data-toggle="tooltip" data-placement="right" title="Biological Mother's HIV Status"> <i  class="fa  fa-minus-circle  fa-fw"></i> </span>
-	 	{% else %}
-	 		<span data-toggle="tooltip" data-placement="right" title="Biological Mother's HIV Status" > <i class="fa  fa-question-circle  fa-fw"></i> </span>
-	 	{% endif %}
- {% endif %}
-</a>
-<a class="list-group-item"><i class="far fa-address-card fa-fw"></i>
-{{ identity|default:'?? identity' }} <span data-toggle="tooltip" data-placement="right" title="{{ firstname }} {{ lastname }}" class="text text-default">{{ initials }}<sup><i class="fa fa-asterisk fa-fw"></i></sup></span>
-</a>
+        {% if hiv_status == 'POS' %}
+            <span data-toggle="tooltip" data-placement="right"
+                  title="Biological Mother's HIV Status"> <i
+                    class="fa  fa-plus-circle  fa-fw"></i> </span>
+        {% else %}
+            {% if hiv_status == 'NEG' %}
+                <span data-toggle="tooltip" data-placement="right"
+                      title="Biological Mother's HIV Status"> <i
+                        class="fa  fa-minus-circle  fa-fw"></i> </span>
+            {% else %}
+                <span data-toggle="tooltip" data-placement="right"
+                      title="Biological Mother's HIV Status"> <i
+                        class="fa  fa-question-circle  fa-fw"></i> </span>
+            {% endif %}
+        {% endif %}
+    </a>
+    <a class="list-group-item"><i class="far fa-address-card fa-fw"></i>
+        {{ identity|default:'?? identity' }} <span data-toggle="tooltip"
+                                                   data-placement="right"
+                                                   title="{{ firstname }} {{ lastname }}"
+                                                   class="text text-default">{{ initials }}<sup><i
+                class="fa fa-asterisk fa-fw"></i></sup></span>
+    </a>
 
-<a class="list-group-item">
-	<i class="fa fa-users"></i>
-	<span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default">
+    <a class="list-group-item">
+        <i class="fa fa-users"></i>
+        <span data-toggle="tooltip" data-placement="right" title="Cohorts"
+              class="text text-default">
 		Cohort(s) Assigned
 	</span>
-	{% for sid, cohort_list in cohorts.items %}
-	<li class="list-group-item">
-		<b>{{sid|upper|slice:"-9:"}}</b> <i class="fa fa-ellipsis-v"></i>
-		{% for cohort in cohort_list %}
-			{{ cohort|upper }} {% if cohort_list|length > 1 and cohort_list|last != cohort %} <i class="fa fa-arrow-right"></i> {% endif %} 
-		{% endfor %}
-	</li>
-	{% endfor %}
-</a>
+        {% for sid, cohort_list in cohorts.items %}
+            <li class="list-group-item">
+                <b>{{ sid|upper|slice:"-9:"}}</b> <i class="fa fa-ellipsis-v"></i>
+                {% for cohort in cohort_list %}
+                    {{ cohort|upper }}
+                    {% if cohort_list|length > 1 and cohort_list|last != cohort %}
+                        <i class="fa fa-arrow-right"></i> {% endif %}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </a>
 
-<a class="list-group-item"><i class="fa fa-clone"></i>
-<span data-toggle="tooltip" data-placement="right" title="Cohorts" class="text text-default">Consent Version {{version}}</span>
-</a>
+    <a class="list-group-item"><i class="fa fa-clone"></i>
+        <span data-toggle="tooltip" data-placement="right" title="Cohorts"
+              class="text text-default">Consent Version {{ version }}</span>
+    </a>
 
-    {% if antenatal_enrolment and antenatal_enrolment.object.real_time_ga %}
-
-		<a class="list-group-item"><i class="fa fa-calendar"></i>
-		<span data-toggle="tooltip" data-placement="right" title="GA" class="text text-default"> GA : {{ antenatal_enrolment.object.real_time_ga }} weeks</span>
-		</a>
-
-    {% endif %}    
+    {% if subject_consent.antenatal_enrollments %}
+        <a class="list-group-item">
+            <i class="fa fa-users"></i>
+            <span data-toggle="tooltip" data-placement="right" title="Cohorts"
+                  class="text text-default">
+		GA
+	</span>
+            {% for antenatal_enrollment  in subject_consent.antenatal_enrollments %}
+                {% if antenatal_enrollment.id %}
+                    <li class="list-group-item">
+                        <b>
+                            {{ antenatal_enrollment.child_subject_identifier|upper|slice:"-9:"}}</b>
+                        <i class="fa fa-ellipsis-v"></i>
+                        {{ antenatal_enrollment.object.real_time_ga }} weeks
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </a>
+    {% endif %}
 
 </div>

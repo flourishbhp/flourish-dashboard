@@ -1,4 +1,4 @@
-from urllib.parse import urlencode, unquote
+from urllib.parse import unquote, urlencode
 
 from django import template
 from django.apps import apps as django_apps
@@ -7,6 +7,9 @@ from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
+
+from flourish_dashboard.utils import flourish_dashboard_utils
+
 register = template.Library()
 
 
@@ -54,8 +57,7 @@ def get_age(context, born=None):
         return age_str
 
 
-@register.inclusion_tag(
-    'flourish_dashboard/buttons/child_dashboard_button.html')
+@register.inclusion_tag('flourish_dashboard/buttons/child_dashboard_button.html')
 def child_dashboard_button(model_wrapper):
     child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'child_dashboard_url')
@@ -64,8 +66,7 @@ def child_dashboard_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier)
 
 
-@register.inclusion_tag(
-    'pre_flourish/buttons/heu_dashboard_button.html')
+@register.inclusion_tag('pre_flourish/buttons/heu_dashboard_button.html')
 def huu_match_child_dashboard_button(subject_identifier):
     child_dashboard_url = settings.DASHBOARD_URL_NAMES.get(
         'pre_flourish_child_dashboard_url')
@@ -77,14 +78,17 @@ def huu_match_child_dashboard_button(subject_identifier):
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
 def eligibility_button(model_wrapper):
     comment = []
-    obj = model_wrapper.object
+    eligible = []
+    objs = model_wrapper.object.screeningpregwomeninline_set.all()
     tooltip = None
-    if obj.ineligibility:
-        comment = obj.ineligibility[1:-1].split(',')
-        comment = list(set(comment))
-        comment.sort()
-    return dict(eligible=obj.is_eligible, comment=comment,
-                tooltip=tooltip, obj=obj)
+    for obj in objs:
+        if not obj.is_eligible:
+            comment = obj.ineligibility[1:-1].split(',')
+            comment = list(set(comment))
+            comment.sort()
+        eligible.append(obj.is_eligible)
+    return dict(eligible=any(eligible), comment=comment,
+                tooltip=tooltip, obj=objs)
 
 
 @register.inclusion_tag(
@@ -141,11 +145,21 @@ def edit_maternal_dataset_button(model_wrapper):
 
 @register.inclusion_tag('flourish_dashboard/buttons/screening_button.html')
 def screening_button(model_wrapper):
-    return dict(
-        add_screening_href=model_wrapper.maternal_screening.href,
-        screening_identifier=model_wrapper.object.screening_identifier,
-        maternal_screening_obj=model_wrapper.screening_model_obj,
-        caregiver_locator_obj=model_wrapper.locator_model_obj)
+    options = {}
+    if hasattr(model_wrapper, 'maternal_screening'):
+        options = dict(
+            add_screening_href=model_wrapper.maternal_screening.href,
+            screening_identifier=model_wrapper.object.screening_identifier,
+            maternal_screening_obj=model_wrapper.screening_model_obj,
+            caregiver_locator_obj=model_wrapper.locator_model_obj)
+    else:
+        options = dict(
+            add_screening_href=model_wrapper.href,
+            screening_identifier=model_wrapper.object.screening_identifier,
+            maternal_screening_obj=model_wrapper.object,
+            caregiver_locator_obj=model_wrapper.locator_model_obj)
+
+    return options
 
 
 @register.inclusion_tag(
@@ -161,33 +175,25 @@ def bhp_prior_screening_button(model_wrapper):
 @register.inclusion_tag(
     'flourish_dashboard/buttons/antenatal_enrollment_button.html')
 def antenatal_enrollment_button(model_wrapper):
-    title = ['subject antenatal enrollment.']
-    preg_screening_cls = django_apps.get_model(
-        'flourish_caregiver.screeningpregwomen')
-    try:
-        preg_screening_obj = preg_screening_cls.objects.get(
-            screening_identifier=model_wrapper.consent.screening_identifier)
-    except preg_screening_cls.DoesNotExist:
-        preg_screening_obj = None
-
+    title = ['Child Antenatal Enrollment(s)']
+    unsaved = any(
+        instance.id is None for instance in model_wrapper.antenatal_enrollments)
     return dict(
-        subject_identifier=model_wrapper.consent.subject_identifier,
-        add_anternatal_enrollment_href=model_wrapper.antenatal_enrollment.href,
-        antenatal_enrollment_model_obj=model_wrapper.antenatal_enrollment_model_obj,
-        screening_identifier=model_wrapper.object.screening_identifier,
-        preg_screening_obj=preg_screening_obj,
+        wrapped_antenatal_enrollments=model_wrapper.antenatal_enrollments,
+        unsaved=unsaved,
         title=' '.join(title), )
 
 
 @register.inclusion_tag(
     'flourish_dashboard/buttons/maternal_delivery_button.html')
 def maternal_delivery_button(model_wrapper):
-    title = ['subject maternal delivery.']
+    title = ['subject maternal deliveries.']
+    unsaved = any(
+        instance.id is None for instance in model_wrapper.maternal_deliveries)
+
     return dict(
-        subject_identifier=model_wrapper.object.subject_identifier,
-        add_maternal_delivery_href=model_wrapper.maternal_delivery.href,
-        maternal_delivery_model_obj=model_wrapper.maternal_delivery_model_obj,
-        maternal_ultrasound_initial_obj=model_wrapper.maternal_ultrasound_initial_obj,
+        wrapped_maternal_deliveries=model_wrapper.maternal_deliveries,
+        unsaved=unsaved,
         title=' '.join(title), )
 
 
@@ -214,11 +220,20 @@ def caregiver_enrolment_info_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/consent_button.html')
 def consent_button(model_wrapper, antenatal=None):
     title = ['Consent subject to participate.']
+    subject_screening_obj = model_wrapper.object
+    screening_obj_inlines = getattr(
+        subject_screening_obj, 'screeningpregwomeninline_set', None)
+    non_complete_screening_objs = False
+    if screening_obj_inlines:
+        non_complete_screening_objs = screening_obj_inlines.filter(
+            child_subject_identifier__isnull=True).exists()
+
     return dict(
         consent_model_obj=model_wrapper.consent_model_obj,
-        subject_screening_obj=model_wrapper.object,
+        subject_screening_obj=subject_screening_obj,
         add_consent_href=model_wrapper.consent.href,
         consent_version=model_wrapper.consent_version,
+        non_complete_screening_objs=non_complete_screening_objs,
         antenatal=antenatal,
         title=' '.join(title))
 
@@ -443,51 +458,13 @@ def caregiver_child_consent_button(model_wrapper):
         title=' '.join(title))
 
 
-def is_delivery_window(subject_identifier):
-    maternal_delivery_cls = django_apps.get_model(
-        'flourish_caregiver.maternaldelivery')
-
-    preg_screen_cls = django_apps.get_model(
-        'flourish_caregiver.screeningpregwomen')
-
-    try:
-        preg_screen_cls.objects.get(subject_identifier=subject_identifier)
-    except preg_screen_cls.DoesNotExist:
-        return False
-    else:
-        try:
-            maternal_delivery_obj = maternal_delivery_cls.objects.get(
-                subject_identifier=subject_identifier)
-        except maternal_delivery_cls.DoesNotExist:
-            return True
-        else:
-            return ((get_utcnow().date() -
-                     maternal_delivery_obj.delivery_datetime.date()).days <= 3)
-
-
-def requires_child_version(subject_identifier, screening_identifier):
-    caregiver_child_consent_cls = django_apps.get_model(
-        'flourish_caregiver.caregiverchildconsent')
-
-    consent_version_cls = django_apps.get_model(
-        'flourish_caregiver.flourishconsentversion')
-    try:
-        consent_version_obj = consent_version_cls.objects.get(
-            screening_identifier=screening_identifier)
-    except consent_version_cls.DoesNotExist:
-        return False
-    else:
-        return (is_delivery_window(subject_identifier)
-                and not consent_version_obj.child_version)
-
-
 @register.inclusion_tag(
     'flourish_dashboard/buttons/consent_version_button.html')
 def consent_version_button(model_wrapper):
     title = ['Add Consent Version.']
 
     return dict(
-        requires_child_version=requires_child_version(
+        requires_child_version=flourish_dashboard_utils.requires_child_version(
             model_wrapper.object.subject_identifier,
             model_wrapper.object.screening_identifier),
         consent_versioned=model_wrapper.flourish_consent_version,
@@ -544,6 +521,7 @@ def child_death_report_button(model_wrapper):
         subject_identifier=model_wrapper.subject_identifier
     )
 
+
 @register.inclusion_tag('flourish_dashboard/buttons/tb_consent_button.html')
 def tb_consent_button(model_wrapper):
     title = ['TB Consent']
@@ -560,8 +538,8 @@ def tb_consent_button(model_wrapper):
 def young_adult_locator_button(model_wrapper):
     title = 'Young Adult Locator'
     return dict(
-        wrapper = model_wrapper,
-        title = title
+        wrapper=model_wrapper,
+        title=title
     )
 
 
@@ -617,28 +595,26 @@ def pre_flourish_birth_data_button(model_wrapper):
         add_pf_birth_data_href=model_wrapper.pf_birth_data.href,
         title=' '.join(title))
 
+
 @register.inclusion_tag('flourish_dashboard/buttons/facet_screening_button.html')
 def facet_screening_button(model_wrapper):
-
-
-    title  = 'FACET Screening'
+    title = 'FACET Screening'
     status = 'btn-success' if model_wrapper.facet_screening_obj else 'btn-warning'
-    
+
     return dict(
-        facet_screening_obj = model_wrapper.facet_screening_obj,
-        facet_screening_wrapper = model_wrapper.facet_screening_wrapper,
-        title = title,
-        status = status )
+        facet_screening_obj=model_wrapper.facet_screening_obj,
+        facet_screening_wrapper=model_wrapper.facet_screening_wrapper,
+        title=title,
+        status=status)
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/facet_consent_button.html')
 def facet_consent_button(model_wrapper):
-
-    title  = 'FACET Consent'
+    title = 'FACET Consent'
     status = 'btn-success' if model_wrapper.facet_consent_obj else 'btn-warning'
-    
+
     return dict(
-        facet_consent_obj = model_wrapper.facet_consent_obj,
-        facet_consent_wrapper = model_wrapper.facet_consent_wrapper,
-        title = title,
-        status = status)
+        facet_consent_obj=model_wrapper.facet_consent_obj,
+        facet_consent_wrapper=model_wrapper.facet_consent_wrapper,
+        title=title,
+        status=status)

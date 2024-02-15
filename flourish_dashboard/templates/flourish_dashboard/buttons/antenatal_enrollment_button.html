@@ -1,14 +1,28 @@
- {% if preg_screening_obj %}
- <a id="antenatalenrollment_add_{{ subject_identifier }}" 
- 	title="{{ title }}"
+{% if wrapped_antenatal_enrollments %}
+    <div class="btn-group">
 
- 	{% if antenatal_enrollment_model_obj%}
-            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
-            href="{{ add_anternatal_enrollment_href }}">
-        {% else %}
-            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-        	href="{{ add_anternatal_enrollment_href }}">
-        {% endif %}
-     	Antenatal Enroll
- </a>
- {% endif %}
+        <button title="{{ title|default:'Antenatal Enrollments' }}" type="button"
+                class="btn {% if unsaved %} btn-warning {% else %} btn-success {% endif %} btn-sm dropdown-toggle"
+                data-toggle="dropdown">
+            {{ wrapped_antenatal_enrollments|length }} Child Antenatal Enrollment(s) <i class=""></i>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li class="dropdown-header">{{ title|default:'Antenatal Enrollments' }}</li>
+            {% for antenatal_enrollment in wrapped_antenatal_enrollments %}
+                <li>
+                    <a href="{{ antenatal_enrollment.get_absolute_url }}?next={{ antenatal_enrollment.next_url }}&{{ antenatal_enrollment.querystring }}">
+              			{% if antenatal_enrollment.id %}
+              				<small><i class="fa fa-check-circle" aria-hidden="true" style='color:green'></i></small>
+              			{% else %}
+              				<small><i class="fa fa-times-circle" aria-hidden="true" style='color:red'></i></small>
+              			{%endif%}
+                        <small>{{ antenatal_enrollment.child_subject_identifier }}</small>
+                    </a>
+
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <br>
+{% endif %}

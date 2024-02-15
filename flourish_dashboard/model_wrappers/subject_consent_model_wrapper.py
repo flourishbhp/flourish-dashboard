@@ -3,10 +3,9 @@ from itertools import chain
 from django.apps import apps as django_apps
 from django.conf import settings
 from edc_model_wrapper import ModelWrapper
-
-from edc_odk.model_wrappers import LabResultsModelWrapperMixin, \
-    OmangCopiesModelWrapperMixin, NoteToFileModelWrapperMixin, \
-    AdultMainConsentModelWrapperMixin, ParentalConsentModelWrapperMixin
+from edc_odk.model_wrappers import AdultMainConsentModelWrapperMixin, \
+    LabResultsModelWrapperMixin, NoteToFileModelWrapperMixin, \
+    OmangCopiesModelWrapperMixin, ParentalConsentModelWrapperMixin
 
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
@@ -23,16 +22,17 @@ from .caregiver_locator_model_wrapper_mixin import \
 from .caregiver_offstudy_model_wrapper_mixin import \
     CaregiverOffstudyModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
-from .tb_adol_assent_model_wrapper_mixin import TbAdolChildAssentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
+from .facet_model_wrapper_mixin import FacetModelWrapperMixin
 from .flourish_consent_version_model_wrapper_mixin import \
     FlourishConsentVersionModelWrapperMixin
 from .maternal_delivery_wrapper_mixin import MaternalDeliveryModelWrapperMixin
+from .tb_adol_assent_model_wrapper_mixin import TbAdolChildAssentModelWrapperMixin
 from .tb_adol_consent_model_wrapper_mixin import TbAdolConsentModelWrapperMixin
 from .tb_adol_screening_model_wrapper_mixin import TbAdolScreeningModelWrapperMixin
 from .tb_informed_consent_model_wrapper_mixin import TbInformedConsentModelWrapperMixin
 from .tb_offstudy_model_wrapper_mixin import TbOffstudyModelWrapperMixin
-from .facet_model_wrapper_mixin import FacetModelWrapperMixin
+
 
 class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  CaregiverContactModelWrapperMixin,
@@ -89,11 +89,12 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
         unpersisted caregiver locator model instance.
         """
         options = dict(
-            screening_identifier=self.object.screening_identifier,)
+            screening_identifier=self.object.screening_identifier, )
         if self.assent_model_obj:
             options.update(
                 {
-                    'study_maternal_identifier': self.assent_model_obj.study_maternal_identifier
+                    'study_maternal_identifier':
+                        self.assent_model_obj.study_maternal_identifier
                 })
         else:
             options.update(
@@ -108,7 +109,8 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
     def consent(self):
         """Returns a wrapped saved or unsaved consent.
 
-        Overriden from consent_mixin because it was used in numerous mixins but in this instance
+        Overriden from consent_mixin because it was used in numerous mixins, but in this
+        instance
         SubjectConsentModelWrapper is what is needed
         """
         model_obj = self.consent_model_obj or self.subject_consent_cls(
@@ -120,23 +122,18 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
         return list(chain(self.assents_ineligible, self.children_ineligible))
 
     def is_pregnant(self):
-        screening_preg_cls = django_apps.get_model(
-            'flourish_caregiver.screeningpregwomen')
+        screening_preg_inline_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomeninline')
+        maternal_delivery_cls = django_apps.get_model(
+            'flourish_caregiver.maternaldelivery')
 
         if self.consent_model_obj:
-            try:
-                screening_preg_cls.objects.get(
-                    screening_identifier=self.consent_model_obj.screening_identifier)
-            except screening_preg_cls.DoesNotExist:
-                return False
-            else:
-                delivery_cls = django_apps.get_model(
-                    'flourish_caregiver.maternaldelivery')
-                try:
-                    delivery_cls.objects.get(
-                        subject_identifier=self.consent_model_obj.subject_identifier)
-                except delivery_cls.DoesNotExist:
-                    return True
-                else:
-                    return False
-            return True
+            preg_screenings = screening_preg_inline_cls.objects.filter(
+                mother_screening__screening_identifier=self.consent_model_obj.screening_identifier).values_list(
+                    'child_subject_identifier', flat=True)
+
+            deliveries = maternal_delivery_cls.objects.filter(
+                subject_identifier=self.consent_model_obj.subject_identifier).values_list(
+                    'child_subject_identifier', flat=True)
+
+            return bool(set(preg_screenings) - set(deliveries))

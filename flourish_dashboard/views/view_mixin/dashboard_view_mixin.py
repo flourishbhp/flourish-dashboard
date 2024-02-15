@@ -2,20 +2,24 @@ from django.apps import apps as django_apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
-from edc_base.utils import get_utcnow
-from edc_constants.constants import OFF_STUDY, NEW, POS
-from django.db.models import Q
 from edc_action_item.site_action_items import site_action_items
+from edc_constants.constants import NEW, OFF_STUDY, POS, OPEN
+
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
-from flourish_child.action_items import YOUNG_ADULT_LOCATOR_ACTION
+from flourish_dashboard.utils import flourish_dashboard_utils
 
 
 class DashboardViewMixin:
-
     data_action_item_model = 'edc_data_manager.dataactionitem'
 
     young_adult_locator_model = 'flourish_child.youngadultlocator'
-    
+
+    child_offstudy_model = 'flourish_prn.childoffstudy'
+
+    @property
+    def child_offstudy_cls(self):
+        return django_apps.get_model(self.child_offstudy_model)
+
     @property
     def young_adult_locator_cls(self):
         return django_apps.get_model(self.young_adult_locator_model)
@@ -29,13 +33,14 @@ class DashboardViewMixin:
 
         subject_identifier = self.kwargs.get('subject_identifier')
 
-        sub_study_visit_codes = ['2100T', '2200T', 
+        sub_study_visit_codes = ['2100T', '2200T',
                                  '2100A', '2200A', '2600F']
 
         offstudy_visit_obj = visit_cls.objects.filter(
             appointment__subject_identifier=subject_identifier,
-            study_status=OFF_STUDY).exclude(visit_code__in=sub_study_visit_codes).order_by(
-                'report_datetime').last()
+            study_status=OFF_STUDY).exclude(
+            visit_code__in=sub_study_visit_codes).order_by(
+            'report_datetime').last()
 
         trigger = self.require_offstudy(offstudy_visit_obj, subject_identifier)
 
@@ -76,7 +81,8 @@ class DashboardViewMixin:
             child_visit__subject_identifier=subject_identifier,
             hiv_test_result=POS)
 
-        return hiv_obj or preg_test_obj or offstudy_visit_obj or child_continued_consent_obj or infant_hiv_test_obj
+        return (hiv_obj or preg_test_obj or offstudy_visit_obj or
+                child_continued_consent_obj or infant_hiv_test_obj)
 
     def get_offstudy_message(self, offstudy_cls=None, msg=None):
 
@@ -104,7 +110,6 @@ class DashboardViewMixin:
                 action_item_cls(
                     subject_identifier=subject_identifier)
         else:
-
             self.delete_action_item_if_new(action_cls)
 
     def data_action_item_creator(self, subject_identifier=None, subject=None,
@@ -118,11 +123,11 @@ class DashboardViewMixin:
             defaults=defaults)
 
     def delete_action_item_if_new(self, action_model_cls):
-        action_item_obj = self.get_action_item_obj(action_model_cls)
+        action_item_obj = self.get_action_item_obj(action_model_cls, [NEW, OPEN])
         if action_item_obj:
             action_item_obj.delete()
 
-    def get_action_item_obj(self, model_cls):
+    def get_action_item_obj(self, model_cls, action_status=[NEW, ]):
         subject_identifier = self.kwargs.get('subject_identifier')
         action_cls = site_action_items.get(
             model_cls.action_name)
@@ -132,7 +137,7 @@ class DashboardViewMixin:
             action_item_obj = action_item_model_cls.objects.get(
                 subject_identifier=subject_identifier,
                 action_type__name=model_cls.action_name,
-                status=NEW)
+                status__in=action_status)
         except action_item_model_cls.DoesNotExist:
             return None
         return action_item_obj
@@ -149,7 +154,8 @@ class DashboardViewMixin:
             except assent_cls.DoesNotExist:
                 if version:
                     msg = mark_safe(
-                        f'Please complete the v{version} assent for child {subject_identifier}')
+                        f'Please complete the v{version} assent fo'
+                        f'r child {subject_identifier}')
                 else:
                     msg = mark_safe(
                         f'Please complete assent for child {subject_identifier}')
@@ -189,33 +195,10 @@ class DashboardViewMixin:
                     action_cls=child_continued_consent_cls,
                     action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)
                 msg = mark_safe(
-                    f'Please complete the continued consent for child {subject_identifier}.')
+                    f'Please complete the continued consent for child '
+                    f'{subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
             return obj
-        
-
-
-    def is_delivery_window(self, subject_identifier):
-
-        maternal_delivery_cls = django_apps.get_model(
-            'flourish_caregiver.maternaldelivery')
-
-        preg_screen_cls = django_apps.get_model(
-            'flourish_caregiver.screeningpregwomen')
-
-        try:
-            preg_screen_cls.objects.get(subject_identifier=subject_identifier)
-        except preg_screen_cls.DoesNotExist:
-            return False
-        else:
-            try:
-                maternal_delivery_obj = maternal_delivery_cls.objects.get(
-                    subject_identifier=subject_identifier)
-            except maternal_delivery_cls.DoesNotExist:
-                return True
-            else:
-                return ((get_utcnow().date() -
-                         maternal_delivery_obj.delivery_datetime.date()).days <= 3)
 
     def get_consent_from_version_form_or_message(self, subject_identifier,
                                                  screening_identifier):
@@ -239,10 +222,11 @@ class DashboardViewMixin:
 
                 if not caregiver_child_consent_objs:
                     msg = mark_safe(
-                        f'Please complete the v{consent_version_obj.child_version} consent '
+                        f'Please complete the v{consent_version_obj.child_version} '
+                        f'consent '
                         f'on behalf of child {subject_identifier}.')
                     messages.add_message(self.request, messages.WARNING, msg)
-            if (self.is_delivery_window(subject_identifier)
+            if (flourish_dashboard_utils.is_delivery_window(subject_identifier)
                     and not consent_version_obj.child_version):
                 msg = mark_safe(
                     'Please complete the consent version for consent on behalf of child'

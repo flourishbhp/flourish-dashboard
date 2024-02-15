@@ -5,7 +5,8 @@ from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError,\
+    MultipleObjectsReturned
 from django.utils.safestring import mark_safe
 from django.views.generic.base import ContextMixin
 from edc_base.utils import age
@@ -119,7 +120,7 @@ class ChildBirthValues(object):
         try:
 
             return self.maternal_delivery_cls.objects.get(
-                subject_identifier=self.caregiver_subject_identifier)
+                child_subject_identifier=self.subject_identifier)
         except ObjectDoesNotExist:
             return None
 
@@ -339,8 +340,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
-        child_offstudy_cls = django_apps.get_model(
-            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         self.get_consent_version_object_or_message(
@@ -348,7 +347,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             .screening_identifier)
 
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
-                                     offstudy_cls=child_offstudy_cls,
+                                     offstudy_cls=self.child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION)
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
@@ -452,8 +451,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
-        child_offstudy_cls = django_apps.get_model(
-            'flourish_prn.childoffstudy')
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         try:
@@ -473,7 +470,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             self.get_offstudy_or_message(
                 visit_cls=child_visit_cls,
-                offstudy_cls=child_offstudy_cls,
+                offstudy_cls=self.child_offstudy_cls,
                 offstudy_action=CHILDOFF_STUDY_ACTION,
                 trigger=trigger)
 
@@ -546,6 +543,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                     disclosed_status=YES)
             except hiv_disclosure_cls.DoesNotExist:
                 trigger = True
+            except MultipleObjectsReturned:
+                messages.info(
+                    self.request,
+                    'Please note, this child is aware of the Mother\'s HIV '
+                    'status.')
+                trigger = False
             else:
                 messages.info(
                     self.request,

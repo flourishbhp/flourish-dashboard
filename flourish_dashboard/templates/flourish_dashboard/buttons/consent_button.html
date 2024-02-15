@@ -1,17 +1,18 @@
- <a id="subjectconsent_add_{{ screening_identifier }}" 
- 	title="{{ title }}"
- 	
- 	{% if subject_screening_obj %}
- 		{% if not consent_model_obj %}
-	    	class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-	        href="{{ add_consent_href }}&antenatal={{antenatal}}">
-		{% else %}
-		     class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
-	        href="{{ add_consent_href }}&antenatal={{antenatal}}">
-	    {% endif %}
-	 {% endif %}
-    Consent (v{{ consent_version }})
- </a>
+<a id="subjectconsent_add_{{ screening_identifier }}"
+   title="{{ title }}"
+
+        {% if subject_screening_obj %}
+            {% if not consent_model_obj or non_complete_screening_objs %}
+   class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+   href="{{ add_consent_href }}&antenatal={{ antenatal }}">
+            {% else %}
+                class="btn btn-success btn-sm" data-toggle="tooltip"
+                data-placement="right"
+                href="{{ add_consent_href }}&antenatal={{ antenatal }}">
+            {% endif %}
+        {% endif %}
+Consent (v{{ consent_version }})
+</a>
 
 <!-- <div class="btn-group">
 <a type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">

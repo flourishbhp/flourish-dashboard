@@ -1,13 +1,28 @@
-<a id="maternaldelivery_add_{{ subject_identifier }}" 
- 	title="{{ title }}"
- 	{% if maternal_ultrasound_initial_obj %}
-	 	{% if maternal_delivery_model_obj %}
-	            class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
-	            href="{{ add_maternal_delivery_href }}">
-	        {% else %}
-	            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
-	        href="{{ add_maternal_delivery_href }}">
-	        {% endif %}
-	     	Maternal Delivery
-	{% endif %}
- </a>
+{% if wrapped_maternal_deliveries %}
+    <div class="btn-group">
+
+        <button title="{{ title|default:'Maternal Deliveries' }}" type="button"
+                class="btn {% if unsaved %} btn-warning {% else %} btn-success {% endif %} btn-sm dropdown-toggle"
+                data-toggle="dropdown">
+            {{ wrapped_maternal_deliveries|length }} Maternal Deliveries <i class=""></i>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li class="dropdown-header">{{ title|default:'Maternal Deliveries' }}</li>
+            {% for maternal_delivery in wrapped_maternal_deliveries %}
+                <li>
+                    <a href="{{ maternal_delivery.get_absolute_url }}?next={{ maternal_delivery.next_url }}&{{ maternal_delivery.querystring }}">
+              			{% if maternal_delivery.id %}
+              				<small><i class="fa fa-check-circle" aria-hidden="true" style='color:green'></i></small>
+              			{% else %}
+              				<small><i class="fa fa-times-circle" aria-hidden="true" style='color:red'></i></small>
+              			{%endif%}
+                        <small>{{ maternal_delivery.child_subject_identifier }}</small>
+                    </a>
+
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <br>
+{% endif %}

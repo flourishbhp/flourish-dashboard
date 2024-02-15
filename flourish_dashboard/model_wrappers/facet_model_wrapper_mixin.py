@@ -90,6 +90,10 @@ class FacetModelWrapperMixin(EligibleFacetParticipantsMixin):
         Condition for showing screening
         """
 
+        for child_consent in self.caregiver_child_consent_objs:
+            child_age = relativedelta(years=0, months=0, days=0)
+
+
         consent_cls = getattr(self, 'model_cls', None)
         subject_identifier = getattr(self, 'subject_identifier', None)
 

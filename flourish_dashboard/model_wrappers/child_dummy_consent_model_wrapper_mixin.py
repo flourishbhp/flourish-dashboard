@@ -49,12 +49,12 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def child_name_initial(self):
+        childconsent = self.child_consent
         if self.get_assent:
             name = self.get_assent.first_name
             initials = self.get_assent.initials
             return f'{name} {initials}'
-        else:
-            childconsent = self.child_consent
+        elif childconsent:
             first_name = childconsent.first_name
             last_name = childconsent.last_name
             if first_name and last_name:
@@ -63,12 +63,12 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def child_age(self):
+        childconsent = self.child_consent
         if self.get_assent:
             birth_date = self.get_assent.dob
             years = age(birth_date, get_utcnow()).years
             return years
-        else:
-            childconsent = self.child_consent
+        elif childconsent:
             birth_date = childconsent.child_dob
             if birth_date:
                 years = age(birth_date, get_utcnow()).years
@@ -76,19 +76,19 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def gender(self):
+        childconsent = self.child_consent
         if self.get_assent:
             return self.get_assent.gender
-        else:
-            childconsent = self.child_consent
+        elif childconsent:
             return childconsent.gender
 
     @property
     def child_dob(self):
+        childconsent = self.child_consent
         if self.get_assent:
             birth_date = self.get_assent.dob
             return birth_date
-        else:
-            childconsent = self.child_consent
+        elif childconsent:
             birth_date = childconsent.child_dob
             return birth_date
 
@@ -112,7 +112,6 @@ class ChildDummyConsentModelWrapperMixin:
                 f"Enrollment Cohort is missing, {self.object.subject_identifier}")
         else:
             return cohort.name
-        return None
 
     @property
     def current_cohort(self):
@@ -127,10 +126,10 @@ class ChildDummyConsentModelWrapperMixin:
 
     @property
     def assent_date(self):
+        childconsent = self.child_consent
         if self.get_assent:
             return self.get_assent.consent_datetime.date()
-        else:
-            childconsent = self.child_consent
+        elif childconsent:
             consent_date = childconsent.consent_datetime.date()
             return consent_date
 
