@@ -5,21 +5,22 @@ from edc_base.utils import get_utcnow, age
 from .facet_consent_model_wrapper import FacetConsentModelWrapper
 from .facet_screening_model_wrapper import FacetScreeningModelWrapper
 from ..utils import flourish_dashboard_utils
+from flourish_facet.views.eligible_facet_participants_mixin import EligibleFacetParticipantsMixin
 
 
-class FacetModelWrapperMixin:
+class FacetModelWrapperMixin(EligibleFacetParticipantsMixin):
 
     facet_screening_model = 'flourish_facet.facetsubjectscreening'
 
     facet_consent_model = 'flourish_facet.facetconsent'
 
-    caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
+    # caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
     antenatal_screening_model = 'flourish_caregiver.screeningpregwomen'
 
-    @property
-    def caregiver_child_consent_model_cls(self):
-        return django_apps.get_model(self.caregiver_child_consent_model)
+    # @property
+    # def caregiver_child_consent_model_cls(self):
+    #     return django_apps.get_model(self.caregiver_child_consent_model)
 
     @property
     def antenatal_screening_model_cls(self):
@@ -57,7 +58,7 @@ class FacetModelWrapperMixin:
 
     @property
     def caregiver_child_consent_objs(self):
-        return self.caregiver_child_consent_model_cls.objects.filter(
+        return self.flourish_child_consent_cls.objects.filter(
             subject_consent__subject_identifier=self.subject_identifier,
             preg_enroll=True)
 
@@ -94,20 +95,14 @@ class FacetModelWrapperMixin:
         """
         Condition for showing screening
         """
-        for child_consent in self.caregiver_child_consent_objs:
 
-            child_age = relativedelta(years=0, months=0, days=0)
+        consent_cls = getattr(self, 'model_cls', None)
+        subject_identifier = getattr(self, 'subject_identifier', None)
 
-            if child_consent.child_dob:
-                child_age = age(child_consent.child_dob, get_utcnow().date())
+        if consent_cls and subject_identifier:
 
-            age_is_within = False
+            # centralised elegibility critierial and it accepts a queryset
+            is_eligible = self.eligible_participants(
+                consent_cls.objects.filter(subject_identifier=subject_identifier)).exists()
 
-            if child_age.years == 0:
-                if child_age.months < 6:
-                    age_is_within = True
-                elif child_age.months == 6 and child_age.days <= 10:
-                    age_is_within = True
-
-            if self.facet_screening_obj or (self.antenatal_screening_obj and age_is_within):
-                return child_consent.subject_consent.future_contact == YES
+            return is_eligible
