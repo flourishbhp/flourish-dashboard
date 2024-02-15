@@ -14,13 +14,7 @@ class FacetModelWrapperMixin(EligibleFacetParticipantsMixin):
 
     facet_consent_model = 'flourish_facet.facetconsent'
 
-    # caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
-
     antenatal_screening_model = 'flourish_caregiver.screeningpregwomen'
-
-    # @property
-    # def caregiver_child_consent_model_cls(self):
-    #     return django_apps.get_model(self.caregiver_child_consent_model)
 
     @property
     def antenatal_screening_model_cls(self):
