@@ -122,22 +122,18 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
         return list(chain(self.assents_ineligible, self.children_ineligible))
 
     def is_pregnant(self):
-        screening_preg_cls = django_apps.get_model(
-            'flourish_caregiver.screeningpregwomen')
+        screening_preg_inline_cls = django_apps.get_model(
+            'flourish_caregiver.screeningpregwomeninline')
+        maternal_delivery_cls = django_apps.get_model(
+            'flourish_caregiver.maternaldelivery')
 
         if self.consent_model_obj:
-            try:
-                screening_preg_cls.objects.get(
-                    screening_identifier=self.consent_model_obj.screening_identifier)
-            except screening_preg_cls.DoesNotExist:
-                return False
-            else:
-                delivery_cls = django_apps.get_model(
-                    'flourish_caregiver.maternaldelivery')
-                try:
-                    delivery_cls.objects.get(
-                        subject_identifier=self.consent_model_obj.subject_identifier)
-                except delivery_cls.DoesNotExist:
-                    return True
-                else:
-                    return False
+            preg_screenings = screening_preg_inline_cls.objects.filter(
+                mother_screening__screening_identifier=self.consent_model_obj.screening_identifier).values_list(
+                    'child_subject_identifier', flat=True)
+
+            deliveries = maternal_delivery_cls.objects.filter(
+                subject_identifier=self.consent_model_obj.subject_identifier).values_list(
+                    'child_subject_identifier', flat=True)
+
+            return bool(set(preg_screenings) - set(deliveries))
