@@ -414,10 +414,18 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         schedule_history_cls = django_apps.get_model(
             'edc_visit_schedule.subjectschedulehistory')
 
-        fu_schedule = schedule_history_cls.objects.filter(
-            subject_identifier=self.subject_identifier,
-            schedule_name__contains='_fu')
-        if not fu_schedule:
+        schedules = schedule_history_cls.objects.filter(
+            subject_identifier=self.subject_identifier, )
+        fu_schedule = schedules.filter(schedule_name__contains='_fu').exists()
+        primary_cohort = True
+        try:
+            latest_schedule = schedules.latest('onschedule_datetime', 'created')
+        except schedule_history_cls.DoesNotExist:
+            pass
+        else:
+            primary_cohort = not ('sec' in latest_schedule.schedule_name)
+
+        if not fu_schedule and primary_cohort:
             flourish_calendar_cls = django_apps.get_model(
                 'flourish_calendar.participantnote')
 
