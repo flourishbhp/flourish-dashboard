@@ -6,6 +6,7 @@ from edc_model_wrapper import ModelWrapper
 from edc_odk.model_wrappers import AdultMainConsentModelWrapperMixin, \
     LabResultsModelWrapperMixin, NoteToFileModelWrapperMixin, \
     OmangCopiesModelWrapperMixin, ParentalConsentModelWrapperMixin
+from flourish_facet.views.eligible_facet_participants_mixin import EligibleFacetParticipantsMixin
 
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
@@ -55,6 +56,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  TbAdolConsentModelWrapperMixin,
                                  TbAdolScreeningModelWrapperMixin,
                                  TbAdolChildAssentModelWrapperMixin,
+                                 EligibleFacetParticipantsMixin,
                                  FacetModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'

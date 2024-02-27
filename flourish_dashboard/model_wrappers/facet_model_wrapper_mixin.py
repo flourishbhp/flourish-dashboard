@@ -1,14 +1,9 @@
-from edc_base.utils import relativedelta
 from django.apps import apps as django_apps
-from edc_constants.constants import YES
-from edc_base.utils import get_utcnow, age
 from .facet_consent_model_wrapper import FacetConsentModelWrapper
 from .facet_screening_model_wrapper import FacetScreeningModelWrapper
-from ..utils import flourish_dashboard_utils
-from flourish_facet.views.eligible_facet_participants_mixin import EligibleFacetParticipantsMixin
 
 
-class FacetModelWrapperMixin(EligibleFacetParticipantsMixin):
+class FacetModelWrapperMixin:
 
     facet_screening_model = 'flourish_facet.facetsubjectscreening'
 
@@ -89,11 +84,6 @@ class FacetModelWrapperMixin(EligibleFacetParticipantsMixin):
         """
         Condition for showing screening
         """
-
-        for child_consent in self.caregiver_child_consent_objs:
-            child_age = relativedelta(years=0, months=0, days=0)
-
-
         consent_cls = getattr(self, 'model_cls', None)
         subject_identifier = getattr(self, 'subject_identifier', None)
 
