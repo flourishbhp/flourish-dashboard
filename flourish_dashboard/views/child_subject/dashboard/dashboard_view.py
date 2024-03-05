@@ -579,4 +579,4 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def is_brain_ultrasound_enrolled(self):
         """Returns True if the child is enrolled on the brain ultrasound schedule."""
         return (self.brain_ultrasound_helper.is_enrolled_brain_ultrasound() and
-                'brain_ultrasound' not in self.visit_schedules)
+                not self.brain_ultrasound_helper.is_onschedule)
