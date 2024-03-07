@@ -36,7 +36,8 @@ class CaregiverContactModelWrapperMixin:
         unpersisted caregiver contact model instance.
         """
         options = dict(
-            subject_identifier=self.object.subject_identifier)
+            subject_identifier=self.object.subject_identifier,
+            study_name='flourish')
         return options
 
     @property
