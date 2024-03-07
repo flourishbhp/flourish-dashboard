@@ -7,10 +7,15 @@
 {% block extra-scripts %}
     <script>
 
-        function confirm_fu_enrollment() {
-            let confirmAction = confirm("Are you sure  you want to enroll participant in the follow up schedule?");
-            if (confirmAction) {
+        function confirm_fu_enrollment(schedule_name) {
+            let text = schedule_name.replace(/_/g, " ");
+            text = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+            let confirmAction = confirm(
+                "Are you sure you want to enroll participant in the " + text + " schedule?");
+            if (confirmAction && schedule_name === "follow_up") {
                 window.location.href = "{% url child_dashboard_url subject_identifier %}fu_enrollment";
+            } else if (confirmAction && schedule_name === "brain_ultrasound") {
+                window.location.href = "{% url child_dashboard_url subject_identifier %}brain_ultrasound";
             } else {
                 alert("Action cancelled");
             }
@@ -24,7 +29,9 @@
         <tr>
             {% if fu_participant_note %}
                 <td>
-                    <button class="btn btn-sm btn-info" onclick="confirm_fu_enrollment()">
+                    <button class="btn btn-sm btn-info" onclick="confirm_fu_enrollment(
+                        'follow_up'
+                    )">
                         Follow Up Enrol
                     </button>
                 </td>
@@ -32,6 +39,16 @@
             {% if is_pf_enrolled %}
                 <td>
                     {% pre_flourish_birth_data_button caregiver_child_consent %}
+                </td>
+            {% endif %}
+
+            {% if is_brain_ultrasound_enrolled %}
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="confirm_fu_enrollment(
+                    'brain_ultrasound'
+                )">
+                        Enrol Brain Ultrasound
+                    </button>
                 </td>
             {% endif %}
         </tr>

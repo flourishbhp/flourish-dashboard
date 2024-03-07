@@ -8,8 +8,6 @@ from edc_constants.constants import NEW, OFF_STUDY, POS
 from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 from flourish_dashboard.utils import flourish_dashboard_utils
 
-caregiver_config = django_apps.get_app_config('flourish_caregiver')
-
 
 class DashboardViewMixin:
     data_action_item_model = 'edc_data_manager.dataactionitem'
@@ -203,7 +201,8 @@ class DashboardViewMixin:
         caregiver_child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
 
-        consent_version_obj = self.consent_version_obj(screening_identifier)
+        consent_version_obj = flourish_dashboard_utils.consent_version_obj(
+            screening_identifier)
         if consent_version_obj.child_version:
             caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
                 subject_consent__subject_identifier=subject_identifier,
@@ -221,19 +220,3 @@ class DashboardViewMixin:
                 'Please complete the consent version for consent on behalf of child'
                 f' {subject_identifier}.')
             messages.add_message(self.request, messages.WARNING, msg)
-
-    def consent_version_obj(self, screening_identifier=None):
-        consent_version_cls = django_apps.get_model(
-            'flourish_caregiver.flourishconsentversion')
-        try:
-            consent_version_obj = consent_version_cls.objects.get(
-                screening_identifier=screening_identifier)
-        except consent_version_cls.DoesNotExist:
-            return None
-        else:
-            return consent_version_obj
-
-    def is_latest_consent_version(self, screening_identifier=None):
-        consent_version_obj = self.consent_version_obj(screening_identifier)
-        return str(consent_version_obj.child_version) == str(
-            caregiver_config.consent_version)

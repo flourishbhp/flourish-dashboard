@@ -10,6 +10,8 @@ from edc_navbar import NavbarViewMixin
 from ....model_wrappers import SubjectConsentModelWrapper
 
 
+caregiver_config = django_apps.get_app_config('flourish_caregiver')
+
 class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     ListboardView):
@@ -42,7 +44,7 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         return django_apps.get_model('flourish_caregiver.flourishconsentversion')
 
     def consent_version(self, screening_identifier):
-        version = '1'
+        version = caregiver_config.consent_version
         try:
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=screening_identifier)
