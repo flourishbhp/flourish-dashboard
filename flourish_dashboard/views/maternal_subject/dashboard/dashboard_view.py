@@ -14,8 +14,6 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
-from flourish_dashboard.model_wrappers.antenatal_enrollment_model_wrapper import \
-    AntenatalEnrollmentModelWrapper
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 from ...child_subject.dashboard.dashboard_view import ChildBirthValues
 from ...view_mixin import DashboardViewMixin
@@ -116,7 +114,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         except screening_cls.DoesNotExist:
             return None
         else:
-            return MaternalScreeningModelWrapper(subject_screening)
+            consent_version = self.subject_consent_wrapper.consent_version
+
+            if int(consent_version) > 2:
+                return MaternalScreeningModelWrapper(subject_screening)
 
     @property
     def maternal_dataset(self):
@@ -541,21 +542,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return obj
 
     @property
-    def delivery_cls(self):
-        return django_apps.get_model('flourish_caregiver.maternaldelivery')
-
-    @property
-    def delivery_obj(self):
-        subject_identifier = self.kwargs.get('subject_identifier')
-        try:
-            delivery_obj = self.delivery_cls.objects.get(
-                subject_identifier=subject_identifier)
-        except self.delivery_cls.DoesNotExist:
-            return None
-        else:
-            return delivery_obj
-
-    @property
     def screening_preg_obj(self):
         if self.consent_wrapped:
             try:
@@ -567,7 +553,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     @property
     def is_pregnant(self):
         if self.consent_wrapped:
-            return False if self.delivery_obj and self.screening_preg_obj else True
+            return getattr(self.consent_wrapped, 'is_pregnant', None)
 
     def get_assent_continued_consent_obj_or_msg(self):
         child_consents = self.caregiver_child_consents
