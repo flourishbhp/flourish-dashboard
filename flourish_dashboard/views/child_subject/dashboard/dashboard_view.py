@@ -410,9 +410,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
     @property
     def fu_participant_note(self):
-
         schedule_history_cls = django_apps.get_model(
             'edc_visit_schedule.subjectschedulehistory')
+
+        not_sq_enrol = (self.consent_wrapped.current_cohort == self.consent_wrapped.enrol_cohort)
 
         schedules = schedule_history_cls.objects.filter(
             subject_identifier=self.subject_identifier, )
@@ -425,7 +426,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         else:
             primary_cohort = not ('sec' in latest_schedule.schedule_name)
 
-        if not fu_schedule and primary_cohort:
+        if not fu_schedule and primary_cohort and not_sq_enrol:
             flourish_calendar_cls = django_apps.get_model(
                 'flourish_calendar.participantnote')
 
