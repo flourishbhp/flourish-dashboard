@@ -10,6 +10,8 @@ from edc_navbar import NavbarViewMixin
 from ....model_wrappers import SubjectConsentModelWrapper
 
 
+caregiver_config = django_apps.get_app_config('flourish_caregiver')
+
 class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     ListboardView):

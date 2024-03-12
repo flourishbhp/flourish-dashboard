@@ -27,6 +27,7 @@ from ....model_wrappers import CaregiverRequisitionModelWrapper, \
     MaternalDatasetModelWrapper
 from ....model_wrappers import MaternalCrfModelWrapper, \
     MaternalScreeningModelWrapper
+from ....utils import flourish_dashboard_utils
 
 
 class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
@@ -285,14 +286,24 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             messages.add_message(self.request, messages.WARNING, msg)
 
+    def require_offstudy(self,  offstudy_visit_obj, subject_identifier):
+        """ Require caregiver off study if all children enrolled with are off study
+            else just take off schedule for all child schedules.
+        """
+        child_subject_identifiers = self.child_subject_identifiers
+        offstudy_sidx = self.child_offstudy_cls.objects.filter(
+            subject_identifier__in=child_subject_identifiers).values_list(
+                'subject_identifier', flat=True)
+        offstudy_diff = set(child_subject_identifiers) - set(offstudy_sidx)
+
+        return not bool(offstudy_diff)
+
     def get_context_data(self, **kwargs):
         global offstudy_cls_model_obj
 
         self.get_tb_adol_eligible_message()
 
         self.get_facet_eligible_message()
-
-        context = super().get_context_data(**kwargs)
 
         caregiver_offstudy_cls = django_apps.get_model(
             'flourish_prn.caregiveroffstudy')
@@ -307,11 +318,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             offstudy_cls=caregiver_offstudy_cls,
             offstudy_action=CAREGIVEROFF_STUDY_ACTION)
 
+        context = super().get_context_data(**kwargs)
+
         self.get_consent_version_object_or_message(
             self.subject_consent_wrapper.screening_identifier)
 
         self.get_consent_from_version_form_or_message(
             self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
+
+        is_latest_consent_version = flourish_dashboard_utils.is_latest_consent_version(
+            self.subject_consent_wrapper.screening_identifier)
 
         self.get_offstudy_message(offstudy_cls=caregiver_offstudy_cls)
         if not self.tb_take_off_study:
@@ -356,6 +372,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             tb_adol_age=self.age_adol_range(self.consent_wrapped.child_age),
             tb_adol_eligibility=tb_adol_eligibility,
             tb_take_off_study=self.tb_take_off_study,
+            is_latest_consent_version=is_latest_consent_version,
             tb_adol_huu_limit_reached=self.tb_adol_huu_limit_reached)
         return context
 
