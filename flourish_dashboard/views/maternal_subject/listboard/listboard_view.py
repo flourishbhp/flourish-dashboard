@@ -44,7 +44,7 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         return django_apps.get_model('flourish_caregiver.flourishconsentversion')
 
     def consent_version(self, screening_identifier):
-        version = caregiver_config.consent_version
+        version = '1'
         try:
             consent_version_obj = self.consent_version_cls.objects.get(
                 screening_identifier=screening_identifier)
