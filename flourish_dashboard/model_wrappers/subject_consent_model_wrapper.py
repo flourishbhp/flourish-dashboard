@@ -81,9 +81,8 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
     @property
     def subject_identifier(self):
-        if self.consent_older_version_model_obj:
-            return self.consent_older_version_model_obj.subject_identifier
-        return None
+        return self.consent_model_obj.subject_identifier if self.consent_model_obj else\
+            None
 
     @property
     def create_caregiver_locator_options(self):

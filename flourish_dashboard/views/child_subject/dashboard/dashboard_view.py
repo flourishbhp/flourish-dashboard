@@ -5,8 +5,8 @@ from dateutil import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist, ValidationError,\
-    MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist, \
+    ValidationError
 from django.utils.safestring import mark_safe
 from django.views.generic.base import ContextMixin
 from edc_base.utils import age
@@ -21,6 +21,7 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_child.helper_classes.brain_ultrasound_helper import BrainUltrasoundHelper
 from flourish_child.helper_classes.child_fu_onschedule_helper import \
     ChildFollowUpEnrolmentHelper
 from flourish_child.helper_classes.child_onschedule_helper import ChildOnScheduleHelper
@@ -248,6 +249,14 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         'flourish_prn.tbreferaladol')
 
     @property
+    def brain_ultrasound_helper(self):
+        """Returns a brain ultrasound helper."""
+        subject_identifier = self.kwargs.get('subject_identifier')
+        return BrainUltrasoundHelper(
+            child_subject_identifier=subject_identifier,
+            caregiver_subject_identifier=self.caregiver_subject_identifier)
+
+    @property
     def data_action_item(self):
         """Returns a wrapped saved or unsaved consent version.
         """
@@ -338,6 +347,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         if 'fu_enrollment' in self.request.path:
             self.enrol_subject()
 
+        if 'brain_ultrasound' in self.request.path:
+            self.brain_ultrasound_helper.brain_ultrasound_enrolment()
+
         context = super().get_context_data(**kwargs)
 
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
@@ -382,6 +394,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             is_tb_off_study=self.is_tb_off_study,
             tb_adol_referal=self.tb_adol_referal,
             is_pf_enrolled=self.is_pf_enrolled,
+            is_brain_ultrasound_enrolled=self.is_brain_ultrasound_enrolled,
             young_adult_locator_wrapper=self.young_adult_locator_wrapper)
 
         context = self.add_url_to_context(
@@ -566,3 +579,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 trigger = False
                 break
         return trigger
+
+    @property
+    def is_brain_ultrasound_enrolled(self):
+        """Returns True if the child is enrolled on the brain ultrasound schedule."""
+        return (self.brain_ultrasound_helper.is_enrolled_brain_ultrasound() and
+                not self.brain_ultrasound_helper.is_onschedule)
