@@ -550,21 +550,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         return obj
 
     @property
-    def delivery_cls(self):
-        return django_apps.get_model('flourish_caregiver.maternaldelivery')
-
-    @property
-    def delivery_obj(self):
-        subject_identifier = self.kwargs.get('subject_identifier')
-        try:
-            delivery_obj = self.delivery_cls.objects.get(
-                subject_identifier=subject_identifier)
-        except self.delivery_cls.DoesNotExist:
-            return None
-        else:
-            return delivery_obj
-
-    @property
     def screening_preg_obj(self):
         if self.consent_wrapped:
             try:
@@ -576,7 +561,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
     @property
     def is_pregnant(self):
         if self.consent_wrapped:
-            return False if self.delivery_obj and self.screening_preg_obj else True
+            return getattr(self.consent_wrapped, 'is_pregnant', None)
 
     def get_assent_continued_consent_obj_or_msg(self):
         child_consents = self.caregiver_child_consents
