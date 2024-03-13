@@ -280,6 +280,20 @@ def childcontinuedconsent_button(model_wrapper):
         title=' '.join(title))
 
 
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/childcontinuedconsents_button.html')
+def childcontinuedconsents_button(model_wrapper):
+    title = 'Child Continued Consents(s)'
+    child_continued_consents = list(model_wrapper.child_continued_consents)
+    unsaved = any(instance.id is None for instance in child_continued_consents)
+
+    return {
+        'wrapped_continued_consents': child_continued_consents,
+        'unsaved': unsaved,
+        'title': title
+    }
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
 def assents_button(model_wrapper):
     title = ['Child Assent(s)']
