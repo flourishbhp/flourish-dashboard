@@ -182,8 +182,8 @@ class DashboardViewMixin:
             'flourish_child.childcontinuedconsent')
         if child_age and (child_age / 12) >= 18:
             try:
-                obj = child_continued_consent_cls.objects.get(
-                    subject_identifier=subject_identifier)
+                obj = child_continued_consent_cls.objects.filter(
+                    subject_identifier=subject_identifier).latest('consent_datetime')
             except ObjectDoesNotExist:
                 self.action_cls_item_creator(
                     trigger=True,
