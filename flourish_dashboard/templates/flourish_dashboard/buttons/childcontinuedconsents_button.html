@@ -1,0 +1,30 @@
+{% if wrapped_continued_consents %}
+    <div class="btn-group">
+        <button title="{{ title|default:'Continued Consents' }}" type="button"
+                class="btn {% if unsaved %} btn-warning {% else %} btn-success {% endif %} btn-sm dropdown-toggle"
+                data-toggle="dropdown">
+            {{ wrapped_continued_consents|length }} Child Continued Consents(s) <i class=""></i>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li class="dropdown-header">{{ title|default:'Continued Consents' }}</li>
+            {% for continued_consents in wrapped_continued_consents %}
+                <li>
+                    <a href="{{ continued_consents.get_absolute_url }}?next={{ continued_consents.next_url }}&{{ continued_consents.querystring }}">
+              			{% if continued_consents.id %}
+              				<small><i class="fa fa-check-circle" aria-hidden="true" style='color:green'></i></small>
+              			{% else %}
+              				<small><i class="fa fa-times-circle" aria-hidden="true" style='color:red'></i></small>
+              			{%endif%}
+                        <small>{{ continued_consents.subject_identifier }},
+                            ID: {{ continued_consents.identity }} (v{{continued_consents.version}})</small>
+                        {% if not continued_consents.is_eligible %}
+                        	<small>{{ continued_consents.ineligibility }}</small>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <br>
+{% endif %}

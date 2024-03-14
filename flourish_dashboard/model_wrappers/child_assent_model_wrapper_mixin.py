@@ -116,7 +116,7 @@ class ChildAssentModelWrapperMixin:
                     subject_identifier=caregiver_child_consent.subject_identifier).exists()
                 exists_conditions.append(model_objs)
 
-            return all(exists_conditions)
+        return all(exists_conditions)
 
     def create_child_assent_options(self, caregiverchildconsent):
 
