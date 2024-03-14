@@ -16,8 +16,8 @@ class ChildContinuedConsentModelWrapperMixin:
         """Returns a child continued consent model instance or None.
         """
         try:
-            return self.child_continued_consent_cls.objects.get(
-                **self.child_continued_consent_options)
+            return self.child_continued_consent_cls.objects.filter(
+                **self.child_continued_consent_options).latest('consent_datetime')
         except ObjectDoesNotExist:
             return None
 
