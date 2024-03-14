@@ -305,13 +305,16 @@ def childcontinuedconsents_button(model_wrapper):
 
 @register.inclusion_tag('flourish_dashboard/buttons/assents_button.html')
 def assents_button(model_wrapper):
-    title = ['Child Assent(s)']
-    unsaved = any(
-        instance.id is None for instance in model_wrapper.child_assents)
-    return dict(
-        wrapped_assents=model_wrapper.child_assents,
-        unsaved=unsaved,
-        title=' '.join(title), )
+    title = 'Child Assent(s)'
+    assents = list(model_wrapper.child_assents)
+    unsaved = any(instance.id is None for instance in assents)
+    wrapped_assents = flourish_dashboard_utils.get_minor_assents(assents)
+
+    return {
+        'wrapped_assents': wrapped_assents,
+        'unsaved': unsaved,
+        'title': title
+    }
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/tb_adol_assents_button.html')
