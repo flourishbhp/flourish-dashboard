@@ -84,8 +84,11 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
     @property
     def subject_identifier(self):
-        return self.consent_model_obj.subject_identifier if self.consent_model_obj else \
-            None
+        """ Returns the subject_identifier from the latest subject consent
+            instance.
+        """
+        return getattr(
+            self.latest_consent_model_obj, 'subject_identifier', None)
 
     @property
     def create_caregiver_locator_options(self):
