@@ -43,7 +43,7 @@ class ChildContinuedConsentModelWrapperMixin:
         if getattr(self, 'consent_model_obj', None):
             caregiver_child_consents = self.consent_model_obj.caregiverchildconsent_set \
                 .only('child_age_at_enrollment', 'is_eligible') \
-                .filter(is_eligible=True, child_age_at_enrollment__gte=7)
+                .filter(is_eligible=True, child_age_at_enrollment__gte=18)
 
             for caregiver_child_consent in caregiver_child_consents:
                 model_obj = self.get_model_obj_by_version(
