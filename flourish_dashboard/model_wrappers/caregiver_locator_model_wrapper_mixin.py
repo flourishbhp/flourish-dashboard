@@ -50,3 +50,14 @@ class CaregiverLocatorModelWrapperMixin:
         options = dict(
             screening_identifier=self.object.screening_identifier, )
         return options
+
+    @property
+    def contacts(self):
+        if self.locator_model_obj:
+            contacts = [
+                self.locator_model_obj.subject_cell or '',
+                self.locator_model_obj.subject_cell_alt or '',
+                self.locator_model_obj.subject_phone or '',
+                self.locator_model_obj.subject_phone_alt or '']
+            return ', '.join(list(filter(None, contacts)))
+        return None

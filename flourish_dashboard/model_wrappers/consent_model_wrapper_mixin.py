@@ -11,8 +11,14 @@ class ConsentModelWrapperMixin:
 
     @property
     def screening_identifier(self):
+        """ Returns screening identifier from the wrapped model object,
+            or queries the latest consent instance for the screening_identifier.
+        """
         if self.object:
             return self.object.screening_identifier
+        else:
+            return getattr(
+                self.latest_consent_model_obj, 'screening_identifier', None)
         return None
 
     @property
@@ -216,3 +222,12 @@ class ConsentModelWrapperMixin:
             ).latest('consent_datetime')
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def latest_consent_model_obj(self):
+        """Returns the latest consent instance by consent_datetime.
+        """
+        consents = self.subject_consent_cls.objects.filter(
+            screening_identifier=self.object.screening_identifier)
+        if consents:
+            return consents.latest('consent_datetime')
