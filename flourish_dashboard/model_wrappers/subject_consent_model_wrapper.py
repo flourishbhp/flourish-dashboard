@@ -23,6 +23,8 @@ from .caregiver_locator_model_wrapper_mixin import \
 from .caregiver_offstudy_model_wrapper_mixin import \
     CaregiverOffstudyModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
+from .child_continued_consent_model_wrapper_mixin import \
+    ChildContinuedConsentModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 from .facet_model_wrapper_mixin import FacetModelWrapperMixin
 from .flourish_consent_version_model_wrapper_mixin import \
@@ -58,6 +60,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  TbAdolChildAssentModelWrapperMixin,
                                  EligibleFacetParticipantsMixin,
                                  FacetModelWrapperMixin,
+                                 ChildContinuedConsentModelWrapperMixin,
                                  ModelWrapper):
     model = 'flourish_caregiver.subjectconsent'
     next_url_name = settings.DASHBOARD_URL_NAMES.get('subject_listboard_url')
@@ -133,11 +136,12 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
         if self.consent_model_obj:
             preg_screenings = screening_preg_inline_cls.objects.filter(
-                mother_screening__screening_identifier=self.consent_model_obj.screening_identifier).values_list(
-                    'child_subject_identifier', flat=True)
+                mother_screening__screening_identifier=self.consent_model_obj
+                .screening_identifier).values_list(
+                'child_subject_identifier', flat=True)
 
             deliveries = maternal_delivery_cls.objects.filter(
                 subject_identifier=self.consent_model_obj.subject_identifier).values_list(
-                    'child_subject_identifier', flat=True)
+                'child_subject_identifier', flat=True)
 
             return bool(set(preg_screenings) - set(deliveries))
