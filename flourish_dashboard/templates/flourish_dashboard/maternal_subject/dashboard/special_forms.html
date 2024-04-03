@@ -12,7 +12,7 @@
         <td>{% caregiver_contact_button subject_consent %}</td>
     </tr>
     <tr>
-        <td>{% consent_version_button subject_consent %}</td>
+        <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
     </tr>
     {% if screening_preg_women %}
         <tr>

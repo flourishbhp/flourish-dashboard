@@ -1,11 +1,11 @@
  <a id="flourishconsentversion_add_{{ screening_identifier }}" 
  	title="{{ title }}"
  	
- 	{% if consent_versioned and not requires_child_version %}
+ 	{% if consent_versioned and not requires_child_version and is_latest_consent_version %}
             class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
             href="{{ add_consent_version_href }}">
         {% else %}
-            class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
+            class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="right"
         href="{{ add_consent_version_href }}">
         {% endif %}
      	Consent Version
