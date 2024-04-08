@@ -6,6 +6,7 @@ from edc_model_wrapper import ModelWrapper
 from edc_odk.model_wrappers import AdultMainConsentModelWrapperMixin, \
     LabResultsModelWrapperMixin, NoteToFileModelWrapperMixin, \
     OmangCopiesModelWrapperMixin, ParentalConsentModelWrapperMixin
+from flourish_facet.views.eligible_facet_participants_mixin import EligibleFacetParticipantsMixin
 
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
@@ -57,6 +58,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  TbAdolConsentModelWrapperMixin,
                                  TbAdolScreeningModelWrapperMixin,
                                  TbAdolChildAssentModelWrapperMixin,
+                                 EligibleFacetParticipantsMixin,
                                  FacetModelWrapperMixin,
                                  ChildContinuedConsentModelWrapperMixin,
                                  ModelWrapper):
@@ -82,8 +84,11 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
     @property
     def subject_identifier(self):
-        return self.consent_model_obj.subject_identifier if self.consent_model_obj else \
-            None
+        """ Returns the subject_identifier from the latest subject consent
+            instance.
+        """
+        return getattr(
+            self.latest_consent_model_obj, 'subject_identifier', None)
 
     @property
     def create_caregiver_locator_options(self):
