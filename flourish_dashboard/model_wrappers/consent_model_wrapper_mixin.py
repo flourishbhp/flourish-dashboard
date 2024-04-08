@@ -11,8 +11,14 @@ class ConsentModelWrapperMixin:
 
     @property
     def screening_identifier(self):
+        """ Returns screening identifier from the wrapped model object,
+            or queries the latest consent instance for the screening_identifier.
+        """
         if self.object:
             return self.object.screening_identifier
+        else:
+            return getattr(
+                self.latest_consent_model_obj, 'screening_identifier', None)
         return None
 
     @property
@@ -92,51 +98,6 @@ class ConsentModelWrapperMixin:
             consent_identifier=get_uuid(),
             version=self.consent_version
         )
-
-        if getattr(self, 'bhp_prior_screening_model_obj'):
-            bhp_prior_screening = self.bhp_prior_screening_model_obj
-            flourish_participation = bhp_prior_screening.flourish_participation
-            locator_obj = getattr(self, 'locator_model_obj', None)
-
-            if flourish_participation == 'interested' and locator_obj:
-                first_name = locator_obj.first_name.upper() if locator_obj.first_name \
-                    else None
-                last_name = locator_obj.last_name.upper() if locator_obj.last_name else \
-                    None
-                initials = self.set_initials(first_name, last_name)
-                options.update(
-                    {
-                        'first_name': first_name,
-                        'last_name': last_name,
-                        'initials': initials,
-                        'gender': FEMALE,
-                        'language': getattr(self.pre_flourish_consent_model_obj,
-                                            'language', None),
-                        'dob': getattr(self.pre_flourish_consent_model_obj, 'dob', None),
-                        'citizen': getattr(self.pre_flourish_consent_model_obj, 'citizen',
-                                           None),
-                        'identity': getattr(self.pre_flourish_consent_model_obj,
-                                            'identity', None),
-                        'identity_type': getattr(self.pre_flourish_consent_model_obj,
-                                                 'identity_type', None),
-                        'confirm_identity': getattr(self.pre_flourish_consent_model_obj,
-                                                    'confirm_identity', None),
-                        'biological_caregiver': getattr(
-                            self.pre_flourish_consent_model_obj,
-                            'biological_caregiver', None),
-                        'recruit_source': getattr(self.pre_flourish_consent_model_obj,
-                                                  'recruit_source', None),
-                        'recruit_source_other': getattr(
-                            self.pre_flourish_consent_model_obj,
-                            'recruit_source_other', None),
-                        'recruitment_clinic': getattr(self.pre_flourish_consent_model_obj,
-                                                      'recruitment_clinic', None),
-                        'recruitment_clinic_other': getattr(
-                            self.pre_flourish_consent_model_obj,
-                            'recruitment_clinic_other', None),
-                        'is_literate': getattr(self.pre_flourish_consent_model_obj,
-                                               'is_literate', None),
-                    })
         return options
 
     @property
@@ -154,28 +115,6 @@ class ConsentModelWrapperMixin:
         if self.consent_model_obj:
             return self.consent_model_obj.caregiverchildconsent_set.all()
         return []
-
-    #     @property
-    #     def show_dashboard(self):
-    #         show_dashboard = False
-    #         child_consents = self.child_consents.filter(is_eligible=True)
-    #         for child_consent in child_consents:
-    #             child_age = child_consent.child_age_at_enrollment
-    #             if child_age < 7:
-    #                 show_dashboard = True
-    #                 break
-    #
-    #             assent_obj = getattr(self, 'child_assent_obj', None)
-    #             if assent_obj:
-    #                 child_assent = assent_obj(
-    #                     subject_identifier=child_consent.subject_identifier,
-    #                     is_eligible=True)
-    #                 show_dashboard = True if child_assent else False
-    #                 break
-    #         ae_model_obj = getattr(self, 'antenatal_enrollment_model_obj', None)
-    #         if ae_model_obj and ae_model_obj.is_eligible:
-    #             show_dashboard = True
-    #         return show_dashboard
 
     def set_initials(self, first_name=None, last_name=None):
         initials = ''
@@ -202,18 +141,11 @@ class ConsentModelWrapperMixin:
             return self.child_consents.filter(is_eligible=False)
         return []
 
-
     @property
-    def pre_flourish_consent_cls(self):
-        return django_apps.get_model('pre_flourish.preflourishconsent')
-
-    @property
-    def pre_flourish_consent_model_obj(self):
-        """Returns a pre flourish consent model instance or None.
+    def latest_consent_model_obj(self):
+        """Returns the latest consent instance by consent_datetime.
         """
-        try:
-            return self.pre_flourish_consent_cls.objects.filter(
-                screening_identifier=self.object.screening_identifier
-            ).latest('consent_datetime')
-        except ObjectDoesNotExist:
-            return None
+        consents = self.subject_consent_cls.objects.filter(
+            screening_identifier=self.object.screening_identifier)
+        if consents:
+            return consents.latest('consent_datetime')
