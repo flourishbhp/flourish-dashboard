@@ -348,8 +348,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             self.enrol_subject()
 
         if 'brain_ultrasound' in self.request.path:
-            self.brain_ultrasound_helper.is_enrolled_brain_ultrasound()
-            self.brain_ultrasound_helper.brain_ultrasound_enrolment()
+            if self.brain_ultrasound_helper.is_enrolled_brain_ultrasound():
+                self.brain_ultrasound_helper.brain_ultrasound_enrolment()
+            msg = mark_safe(
+                f'Please enrol this participant in the Redcap brainultrasound.')
+            messages.add_message(self.request, messages.INFO, msg)
 
         context = super().get_context_data(**kwargs)
 
