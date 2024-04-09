@@ -68,18 +68,32 @@ def child_dashboard_button(model_wrapper):
 
 @register.inclusion_tag('flourish_dashboard/buttons/eligibility_button.html')
 def eligibility_button(model_wrapper):
+    try:
+        objs = model_wrapper.object.screeningpregwomeninline_set.all()
+    except AttributeError:
+        objs = [model_wrapper.object]
+
+    eligible, comment = process_objs(objs)
+    tooltip = None
+
+    return dict(
+        eligible=any(eligible),
+        comment=comment,
+        tooltip=tooltip,
+        obj=objs,
+    )
+
+
+def process_objs(objs):
     comment = []
     eligible = []
-    objs = model_wrapper.object.screeningpregwomeninline_set.all()
-    tooltip = None
     for obj in objs:
         if not obj.is_eligible:
             comment = obj.ineligibility[1:-1].split(',')
             comment = list(set(comment))
             comment.sort()
         eligible.append(obj.is_eligible)
-    return dict(eligible=any(eligible), comment=comment,
-                tooltip=tooltip, obj=objs)
+    return eligible, comment
 
 
 @register.inclusion_tag(
