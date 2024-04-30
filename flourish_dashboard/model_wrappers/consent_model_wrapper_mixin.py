@@ -97,7 +97,7 @@ class ConsentModelWrapperMixin:
             bhp_prior_screening = self.bhp_prior_screening_model_obj
             flourish_participation = bhp_prior_screening.flourish_participation
             locator_obj = getattr(self, 'locator_model_obj', None)
-            breakpoint()
+
             if flourish_participation == 'interested' and locator_obj:
                 first_name = locator_obj.first_name.upper() if locator_obj.first_name \
                     else None
