@@ -6,6 +6,7 @@ from edc_model_wrapper import ModelWrapper
 from edc_odk.model_wrappers import AdultMainConsentModelWrapperMixin, \
     LabResultsModelWrapperMixin, NoteToFileModelWrapperMixin, \
     OmangCopiesModelWrapperMixin, ParentalConsentModelWrapperMixin
+from flourish_facet.views.eligible_facet_participants_mixin import EligibleFacetParticipantsMixin
 
 from .antenatal_enrollment_wrapper_mixin import \
     AntenatalEnrollmentModelWrapperMixin
@@ -57,6 +58,7 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
                                  TbAdolConsentModelWrapperMixin,
                                  TbAdolScreeningModelWrapperMixin,
                                  TbAdolChildAssentModelWrapperMixin,
+                                 EligibleFacetParticipantsMixin,
                                  FacetModelWrapperMixin,
                                  ChildContinuedConsentModelWrapperMixin,
                                  ModelWrapper):
@@ -82,8 +84,11 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
     @property
     def subject_identifier(self):
-        return self.consent_model_obj.subject_identifier if self.consent_model_obj else \
-            None
+        """ Returns the subject_identifier from the latest subject consent
+            instance.
+        """
+        return getattr(
+            self.latest_consent_model_obj, 'subject_identifier', None)
 
     @property
     def create_caregiver_locator_options(self):
@@ -131,12 +136,11 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
         if self.consent_model_obj:
             preg_screenings = screening_preg_inline_cls.objects.filter(
-                mother_screening__screening_identifier=self.consent_model_obj
-                .screening_identifier).values_list(
-                'child_subject_identifier', flat=True)
+                mother_screening__screening_identifier=self.consent_model_obj.screening_identifier).values_list(
+                    'child_subject_identifier', flat=True)
 
             deliveries = maternal_delivery_cls.objects.filter(
                 subject_identifier=self.consent_model_obj.subject_identifier).values_list(
-                'child_subject_identifier', flat=True)
+                    'child_subject_identifier', flat=True)
 
             return bool(set(preg_screenings) - set(deliveries))

@@ -106,21 +106,5 @@ class FlourishDashboardUtils(ModelUtils, ChildUtils):
         return [child_assent for child_assent in assents if
                 child_assent.dob and self.is_minor(child_assent.dob)]
 
-    def consent_version_obj(self, screening_identifier=None):
-        consent_version_cls = django_apps.get_model(
-            'flourish_caregiver.flourishconsentversion')
-        try:
-            consent_version_obj = consent_version_cls.objects.get(
-                screening_identifier=screening_identifier)
-        except consent_version_cls.DoesNotExist:
-            return None
-        else:
-            return consent_version_obj
-
-    def is_latest_consent_version(self, screening_identifier=None):
-        consent_version_obj = self.consent_version_obj(screening_identifier)
-        return str(consent_version_obj.child_version) == str(
-            caregiver_config.consent_version)
-
 
 flourish_dashboard_utils = FlourishDashboardUtils()
