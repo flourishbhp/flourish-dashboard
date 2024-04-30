@@ -131,12 +131,11 @@ class SubjectConsentModelWrapper(TbInformedConsentModelWrapperMixin,
 
         if self.consent_model_obj:
             preg_screenings = screening_preg_inline_cls.objects.filter(
-                mother_screening__screening_identifier=self.consent_model_obj
-                .screening_identifier).values_list(
-                'child_subject_identifier', flat=True)
+                mother_screening__screening_identifier=self.consent_model_obj.screening_identifier).values_list(
+                    'child_subject_identifier', flat=True)
 
             deliveries = maternal_delivery_cls.objects.filter(
                 subject_identifier=self.consent_model_obj.subject_identifier).values_list(
-                'child_subject_identifier', flat=True)
+                    'child_subject_identifier', flat=True)
 
             return bool(set(preg_screenings) - set(deliveries))
