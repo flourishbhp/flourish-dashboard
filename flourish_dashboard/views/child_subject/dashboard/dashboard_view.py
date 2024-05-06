@@ -248,6 +248,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     tb_adol_referal_cls = django_apps.get_model(
         'flourish_prn.tbreferaladol')
 
+    birth_data_cls = django_apps.get_model(
+        'flourish_child.preflourishbirthdata')
+
     @property
     def brain_ultrasound_helper(self):
         """Returns a brain ultrasound helper."""
@@ -401,13 +404,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             is_pf_enrolled=self.is_pf_enrolled,
             is_brain_ultrasound_enrolled=self.is_brain_ultrasound_enrolled,
             show_brain_ultrasound_button=self.brain_ultrasound_helper.show_brain_ultrasound_button(),
-            young_adult_locator_wrapper=self.young_adult_locator_wrapper)
+            young_adult_locator_wrapper=self.young_adult_locator_wrapper,
+            is_pf_birth_data=self.is_pf_birth_data())
 
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
             existing_key=self.dashboard_url,
             context=context
         )
+        print(self.is_pf_birth_data)
         return context
 
     @property
@@ -557,6 +562,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def is_pf_enrolled(self):
         if self.child_dataset and self.child_dataset.study_child_identifier:
             return 'P' in self.child_dataset.study_child_identifier
+
+    def is_pf_birth_data(self):
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            self.birth_data_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except self.birth_data_cls.DoesNotExist:
+            return False
+        else:
+            return True
 
     def caregiver_hiv_status_aware(self):
         """Returns mother's current hiv status.
