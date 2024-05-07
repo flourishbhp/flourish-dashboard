@@ -34,7 +34,7 @@ class LocatorLogReportView(
         """Returns stats of logs of all users who captured locators.
         """
         log_stats = []
-        
+
         user_created_list = LocatorLogEntry.objects.values_list('user_created', flat=True).all().distinct()
         user_created_list = list(set(user_created_list))
         for username in user_created_list:
@@ -56,7 +56,7 @@ class LocatorLogReportView(
         """Returns stats of logs of all users who captured locators.
         """
         log_stats = []
-        
+
         user_created_list = CaregiverLocator.objects.values_list('user_created', flat=True).all().distinct()
         user_created_list = list(set(user_created_list))
         for username in user_created_list:

@@ -3,7 +3,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from edc_base.utils import get_uuid
 
 from edc_consent.site_consents import site_consents
-from edc_constants.constants import FEMALE
 
 
 class ConsentModelWrapperMixin:

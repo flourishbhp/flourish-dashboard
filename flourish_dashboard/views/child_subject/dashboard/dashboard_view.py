@@ -412,7 +412,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             existing_key=self.dashboard_url,
             context=context
         )
-        print(self.is_pf_birth_data)
         return context
 
     @property

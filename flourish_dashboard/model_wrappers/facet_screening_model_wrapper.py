@@ -6,8 +6,8 @@ from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 
 
 class FacetScreeningModelWrapper(ConsentModelWrapperMixin,
-                                         ChildAssentModelWrapperMixin,
-                                         ModelWrapper):
+                                 ChildAssentModelWrapperMixin,
+                                 ModelWrapper):
 
     model = 'flourish_facet.facetsubjectscreening'
     querystring_attrs = ['subject_identifier']

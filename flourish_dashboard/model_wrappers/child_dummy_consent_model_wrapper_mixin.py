@@ -3,11 +3,10 @@ from edc_base.utils import age, get_utcnow
 from django.core.exceptions import ValidationError
 
 
-
 class ChildDummyConsentModelWrapperMixin:
 
     cohort_model = 'flourish_caregiver.cohort'
-    
+
     @property
     def cohort_model_cls(self):
         return django_apps.get_model(self.cohort_model)
