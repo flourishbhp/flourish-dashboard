@@ -8,7 +8,6 @@ class TbAdolScreeningModelWrapperMixin:
 
     adol_screening_model_wrapper_cls = TbAdolScreeningModelWrapper
 
-
     tb_adol_assent_model = 'flourish_child.tbadolassent'
 
     tb_adol_consent_model = 'flourish_caregiver.tbadolconsent'
@@ -27,7 +26,7 @@ class TbAdolScreeningModelWrapperMixin:
     @property
     def caregiver_child_consent_cls(self):
         return django_apps.get_model(self.caregiver_child_consent_model)
-    
+
     @property
     def tb_adol_screening_model_obj(self):
         """Returns a tb adolescent screening model instance or None.
@@ -49,7 +48,7 @@ class TbAdolScreeningModelWrapperMixin:
     @property
     def tb_adol_screening_cls(self):
         return django_apps.get_model('flourish_caregiver.tbadoleligibility')
-    
+
     @property
     def tb_adol_consent_cls(self):
         return django_apps.get_model(self.tb_adol_consent_model)
@@ -58,8 +57,6 @@ class TbAdolScreeningModelWrapperMixin:
     def tb_adol_eligibility(self):
         if self.tb_adol_screening_model_obj:
             return self.tb_adol_screening_model_obj.tb_adol_participation == YES
-        
-
 
     @property
     def create_tb_adol_screening_options(self):

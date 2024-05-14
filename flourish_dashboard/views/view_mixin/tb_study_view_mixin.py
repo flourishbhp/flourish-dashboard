@@ -1,6 +1,5 @@
 from django.apps import apps as django_apps
 from django.contrib import messages
-from edc_constants.constants import YES
 
 
 class TBStudyViewMixin:
@@ -9,7 +8,6 @@ class TBStudyViewMixin:
     @property
     def tb_consent_model_cls(self):
         return django_apps.get_model(self.tb_consent_model)
-
 
     def get_tb_enroll_msg(self):
         if self.is_tb_enroll and not self.tb_take_off_study:

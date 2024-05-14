@@ -1,6 +1,7 @@
 from django.conf import settings
 from edc_visit_schedule.model_wrappers import RequisitionModelWrapper
 
+
 class ChildRequisitionModelWrapper(RequisitionModelWrapper):
 
     visit_model_attr = 'child_visit'

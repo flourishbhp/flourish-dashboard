@@ -248,6 +248,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     tb_adol_referal_cls = django_apps.get_model(
         'flourish_prn.tbreferaladol')
 
+    birth_data_cls = django_apps.get_model(
+        'flourish_child.preflourishbirthdata')
+
     @property
     def brain_ultrasound_helper(self):
         """Returns a brain ultrasound helper."""
@@ -348,7 +351,12 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             self.enrol_subject()
 
         if 'brain_ultrasound' in self.request.path:
-            self.brain_ultrasound_helper.brain_ultrasound_enrolment()
+            if self.brain_ultrasound_helper.is_enrolled_brain_ultrasound():
+                self.brain_ultrasound_helper.brain_ultrasound_enrolment()
+            else:
+                msg = mark_safe(
+                    f'Please enrol this participant in the Redcap brainultrasound.')
+                messages.add_message(self.request, messages.INFO, msg)
 
         context = super().get_context_data(**kwargs)
 
@@ -395,7 +403,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             tb_adol_referal=self.tb_adol_referal,
             is_pf_enrolled=self.is_pf_enrolled,
             is_brain_ultrasound_enrolled=self.is_brain_ultrasound_enrolled,
-            young_adult_locator_wrapper=self.young_adult_locator_wrapper)
+            show_brain_ultrasound_button=self.brain_ultrasound_helper.show_brain_ultrasound_button(),
+            young_adult_locator_wrapper=self.young_adult_locator_wrapper,
+            is_pf_birth_data=self.is_pf_birth_data())
 
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
@@ -426,14 +436,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         schedule_history_cls = django_apps.get_model(
             'edc_visit_schedule.subjectschedulehistory')
 
-        not_sq_enrol = (self.consent_wrapped.current_cohort == self.consent_wrapped.enrol_cohort)
+        not_sq_enrol = (self.consent_wrapped.current_cohort ==
+                        self.consent_wrapped.enrol_cohort)
 
         schedules = schedule_history_cls.objects.filter(
             subject_identifier=self.subject_identifier, )
         fu_schedule = schedules.filter(schedule_name__contains='_fu').exists()
         primary_cohort = True
         try:
-            latest_schedule = schedules.latest('onschedule_datetime', 'created')
+            latest_schedule = schedules.latest(
+                'onschedule_datetime', 'created')
         except schedule_history_cls.DoesNotExist:
             pass
         else:
@@ -549,6 +561,16 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
     def is_pf_enrolled(self):
         if self.child_dataset and self.child_dataset.study_child_identifier:
             return 'P' in self.child_dataset.study_child_identifier
+
+    def is_pf_birth_data(self):
+        subject_identifier = self.kwargs.get('subject_identifier')
+        try:
+            self.birth_data_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except self.birth_data_cls.DoesNotExist:
+            return False
+        else:
+            return True
 
     def caregiver_hiv_status_aware(self):
         """Returns mother's current hiv status.

@@ -13,9 +13,9 @@ from .tb_adol_consent_model_wrapper import TbAdolConsentModelWrapper
 class TbAdolConsentModelWrapperMixin:
 
     adol_consent_model_wrapper_cls = TbAdolConsentModelWrapper
-    
+
     child_consent_model = 'flourish_caregiver.caregiverchildconsent'
-    
+
     @property
     def child_consent_model_cls(self):
         return django_apps.get_model(self.child_consent_model)
@@ -41,28 +41,25 @@ class TbAdolConsentModelWrapperMixin:
     @property
     def tb_adol_consent_cls(self):
         return django_apps.get_model('flourish_caregiver.tbadolconsent')
-    
+
     @property
     def child_consent_obj(self):
 
-        try:    
+        try:
             consent_obj = self.child_consent_model_cls.objects.filter(
                 subject_identifier__istartswith=self.object.subject_identifier
             ).latest('consent_datetime')
-            
+
         except self.child_consent_model_cls.DoesNotExist:
             pass
         else:
-            return consent_obj 
-    
+            return consent_obj
 
     @property
     def create_tb_adol_consent_options(self):
         """Returns a dictionary of options to create a new
         unpersisted tb adolescent consent model instance.
         """
-    
-                
         options = dict(
             subject_identifier=self.object.subject_identifier,
             version=self.tb_consent_version,
@@ -77,8 +74,8 @@ class TbAdolConsentModelWrapperMixin:
             witness_name=self.object.witness_name,
             is_dob_estimated=self.object.is_dob_estimated,
             confirm_identity=self.object.confirm_identity,
-            citizen = self.object.citizen,)
-        
+            citizen=self.object.citizen,)
+
         return options
 
     @property

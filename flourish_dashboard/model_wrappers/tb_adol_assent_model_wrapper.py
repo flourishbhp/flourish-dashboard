@@ -13,7 +13,3 @@ class TbAdolAssentModelWrapper(ModelWrapper):
     next_url_attrs = ['screening_identifier', 'subject_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'subject_listboard_url')
-    
-    
-    
-    
