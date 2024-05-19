@@ -14,6 +14,7 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_caregiver.constants import MAX_GA_LMP_ENROL_WEEKS, MIN_GA_LMP_ENROL_WEEKS
 from flourish_prn.action_items import CAREGIVEROFF_STUDY_ACTION
 from ...child_subject.dashboard.dashboard_view import ChildBirthValues
 from ...view_mixin import DashboardViewMixin
@@ -286,9 +287,22 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             messages.add_message(self.request, messages.WARNING, msg)
 
+    def check_ga_outside_range(self):
+        subject_identifier = self.kwargs.get('subject_identifier', None)
+        ultrasound_cls = django_apps.get_model('flourish_caregiver.ultrasound')
+        ultrasound_objs = ultrasound_cls.objects.filter(
+            subject_identifier=subject_identifier,)
+        for ultrasound_obj in ultrasound_objs:
+            if (ultrasound_obj.ga_confirmed_after < MIN_GA_LMP_ENROL_WEEKS
+                    or ultrasound_obj.ga_confirmed_after > MAX_GA_LMP_ENROL_WEEKS):
+                return True
+        return False
+
     def require_offstudy(self,  offstudy_visit_obj, subject_identifier):
         """ Require caregiver off study if all children enrolled with are off study
             else just take off schedule for all child schedules.
+            If ANC enrollment with only 1 child, and GA confirmed is outside of the
+            eligible range, triggers offstudy.
         """
         child_subject_identifiers = self.child_subject_identifiers
         offstudy_sidx = self.child_offstudy_cls.objects.filter(
@@ -296,7 +310,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 'subject_identifier', flat=True)
         offstudy_diff = set(child_subject_identifiers) - set(offstudy_sidx)
 
-        return not bool(offstudy_diff)
+        ultrasound_offstudy = len(child_subject_identifiers) == 1 and self.check_ga_outside_range()
+
+        return not bool(offstudy_diff) or ultrasound_offstudy
 
     def get_context_data(self, **kwargs):
         global offstudy_cls_model_obj
