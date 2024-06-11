@@ -312,7 +312,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         ultrasound_offstudy = len(child_subject_identifiers) == 1 and self.check_ga_outside_range()
 
-        return not bool(offstudy_diff) or ultrasound_offstudy
+        return not bool(offstudy_diff) or ultrasound_offstudy or offstudy_visit_obj
 
     def get_context_data(self, **kwargs):
         global offstudy_cls_model_obj
