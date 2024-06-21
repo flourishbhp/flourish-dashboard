@@ -21,7 +21,13 @@
 {% endblock unscheduled_appt %}
 
 {% block appointment_actions %}
-    {% if wrapped.appt_status == IN_PROGRESS_APPT %}
+    {% if 'PI/Coordinator' in group_names and wrapped.appt_status != NEW_APPT %}
+        <a id="review_btn_{{ wrapped.visit_code }}_{{ wrapped.visit_code_sequence }}"
+           role="button" class="btn btn-sm btn-default"
+           href="{{ wrapped.forms_url }}?edc_readonly=1">
+            <i class="fa fa-pencil-alt fa-sm" aria-hidden="true"></i> Review
+        </a>
+    {% elif wrapped.appt_status == IN_PROGRESS_APPT %}
         {% with wrapped.wrapped_visit as visit %}
             {% if visit.id %}
                 <a id="visit_report_btn_{{ wrapped.visit_code }}_{{ wrapped.visit_code_sequence }}"
@@ -93,7 +99,7 @@
 <!--end unscheduled appointment -->
 
 {% block complete_appt %}
-    {% if wrapped.appt_status == COMPLETE_APPT %}
+    {% if wrapped.appt_status == COMPLETE_APPT and 'PI/Coordinator' not in group_names %}
         <a id="review_btn_{{ wrapped.visit_code }}_{{ wrapped.visit_code_sequence }}"
            role="button" class="btn btn-sm btn-default"
            href="{{ wrapped.forms_url }}?edc_readonly=1">

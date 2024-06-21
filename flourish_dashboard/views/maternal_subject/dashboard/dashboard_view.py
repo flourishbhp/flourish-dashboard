@@ -366,12 +366,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         if facet_schedule:
             del self.visit_schedules['f_mother_visit_schedule']
 
+        group_names = self.request.user.groups.values_list('name', flat=True)
+
         context.update(
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
             in_person_visits=['1000M', '2000D', '3000M'],
             cohorts=self.get_cohorts,
+            group_names=group_names,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,
