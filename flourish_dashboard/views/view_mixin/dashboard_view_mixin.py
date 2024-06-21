@@ -208,7 +208,7 @@ class DashboardViewMixin:
 
         consent_version_obj = flourish_dashboard_utils.consent_version_obj(
             screening_identifier)
-        if consent_version_obj.child_version:
+        if getattr(consent_version_obj, 'child_version', None):
             caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
                 subject_consent__subject_identifier=subject_identifier,
                 version=consent_version_obj.child_version)

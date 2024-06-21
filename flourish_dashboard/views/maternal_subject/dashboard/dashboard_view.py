@@ -303,6 +303,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             else just take off schedule for all child schedules.
             If ANC enrollment with only 1 child, and GA confirmed is outside of the
             eligible range, triggers offstudy.
+            ADD: account for offstudy visit for only 1 child.
         """
         child_subject_identifiers = self.child_subject_identifiers
         offstudy_sidx = self.child_offstudy_cls.objects.filter(
