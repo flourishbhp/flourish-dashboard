@@ -15,3 +15,13 @@
 	{% endif %}
 {% endblock unscheduled_appt %}
 <!--end unscheduled appointment -->
+
+{% block complete_appt %}
+    {% if wrapped.appt_status == COMPLETE_APPT %}
+        <a id="review_btn_{{ wrapped.visit_code }}_{{ wrapped.visit_code_sequence }}"
+           role="button" class="btn btn-sm btn-default"
+           href="{{ wrapped.forms_url }}?edc_readonly=1">
+            <i class="fa fa-pencil-alt fa-sm" aria-hidden="true"></i> Review
+        </a>
+    {% endif %}
+{% endblock %}
