@@ -220,7 +220,7 @@ class DashboardViewMixin:
                     f'on behalf of child {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
         if (flourish_dashboard_utils.is_delivery_window(subject_identifier)
-                and not consent_version_obj.child_version):
+                and not getattr(consent_version_obj, 'child_version', None)):
             msg = mark_safe(
                 'Please complete the consent version for consent on behalf of child'
                 f' {subject_identifier}.')
