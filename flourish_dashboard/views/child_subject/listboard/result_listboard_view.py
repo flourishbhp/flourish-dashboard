@@ -9,6 +9,7 @@ class ResultListboardView(ResultRefreshViewMixin, ListboardView):
     listboard_url = 'child_result_listboard_url'
 
     model = 'flourish_child.childrequisitionresult'
+    requisition_model = 'flourish_child.childrequisition'
     model_wrapper_cls = ChildResultModelWrapper
 
     def get(self, request, *args, **kwargs):

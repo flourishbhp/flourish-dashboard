@@ -8,14 +8,17 @@ from django.core.management.base import CommandError
 class ResultRefreshViewMixin:
 
     def refresh_context_data(self, app_label=''):
+        """ Refresh requisition result information, exclude requisition that
+            are not yet connected to the LIMS.
+        """
         result_model_cls = django_apps.get_model(self.model)
-        sample_ids = result_model_cls.objects.values_list('sample_id', flat=True)
+        # sample_ids = result_model_cls.objects.values_list('sample_id', flat=True)
 
         requisition_model = result_model_cls.requisition_model
         requisition_model_cls = django_apps.get_model(requisition_model)
 
         pending_samples = requisition_model_cls.objects.exclude(
-            Q(sample_id__in=sample_ids) | Q(sample_id='')).values_list('sample_id', flat=True)
+            sample_id='').values_list('sample_id', flat=True)
 
         pending_ids = ', '.join(pending_samples)
         try:
