@@ -312,7 +312,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         ultrasound_offstudy = len(child_subject_identifiers) == 1 and self.check_ga_outside_range()
 
-        return not bool(offstudy_diff) or ultrasound_offstudy
+        return not bool(offstudy_diff) or ultrasound_offstudy or offstudy_visit_obj
 
     def get_context_data(self, **kwargs):
         global offstudy_cls_model_obj
@@ -366,12 +366,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         if facet_schedule:
             del self.visit_schedules['f_mother_visit_schedule']
 
+        group_names = self.request.user.groups.values_list('name', flat=True)
+
         context.update(
             locator_obj=locator_obj,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
             in_person_visits=['1000M', '2000D', '3000M'],
             cohorts=self.get_cohorts,
+            group_names=group_names,
             subject_consent=self.subject_consent_wrapper,
             gender=self.consent_wrapped.gender,
             screening_preg_women=self.screening_pregnant_women,

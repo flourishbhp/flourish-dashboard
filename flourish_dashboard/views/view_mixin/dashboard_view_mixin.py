@@ -208,7 +208,7 @@ class DashboardViewMixin:
 
         consent_version_obj = flourish_dashboard_utils.consent_version_obj(
             screening_identifier)
-        if consent_version_obj.child_version:
+        if getattr(consent_version_obj, 'child_version', None):
             caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
                 subject_consent__subject_identifier=subject_identifier,
                 version=consent_version_obj.child_version)
@@ -220,7 +220,7 @@ class DashboardViewMixin:
                     f'on behalf of child {subject_identifier}.')
                 messages.add_message(self.request, messages.WARNING, msg)
         if (flourish_dashboard_utils.is_delivery_window(subject_identifier)
-                and not consent_version_obj.child_version):
+                and not getattr(consent_version_obj, 'child_version', None)):
             msg = mark_safe(
                 'Please complete the consent version for consent on behalf of child'
                 f' {subject_identifier}.')

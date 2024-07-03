@@ -385,6 +385,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         facet_schedule = self.visit_schedules.get(
             'f_child_visit_schedule', None)
 
+        group_names = self.request.user.groups.values_list('name', flat=True)
+
         if facet_schedule:
             del self.visit_schedules['f_child_visit_schedule']
 
@@ -392,6 +394,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             in_person_visits=['2000D', '2100A', '3000'],
             caregiver_child_consent=self.caregiver_child_consent,
             gender=self.caregiver_child_consent.gender,
+            group_names=group_names,
             child_dataset=self.child_dataset,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],

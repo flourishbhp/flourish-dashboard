@@ -99,8 +99,8 @@ class FlourishDashboardUtils(ModelUtils, ChildUtils):
 
     def is_latest_consent_version(self, screening_identifier=None):
         consent_version_obj = self.consent_version_obj(screening_identifier)
-        return str(consent_version_obj.child_version) == str(
-            caregiver_config.consent_version)
+        child_version = getattr(consent_version_obj, 'child_version', '')
+        return str(child_version) == str(caregiver_config.consent_version)
 
     def get_minor_assents(self, assents):
         return [child_assent for child_assent in assents if
