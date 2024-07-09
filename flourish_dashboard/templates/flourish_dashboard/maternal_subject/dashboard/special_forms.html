@@ -134,20 +134,32 @@
         </tr>
     {% endif %}
 
-    {% if subject_consent.show_facet_screening and 'PI/Coordinator' not in group_names %}
+    {% if subject_consent.facet_screening_obj and subject_consent.show_facet_screening%}
+        <tr>
+            <td>
+                {% facet_screening_button subject_consent %}
+            </td>
+        </tr>
+
+        {% elif 'PI/Coordinator' not in group_names and subject_consent.show_facet_screening %}
         <tr>
             <td>
                 {% facet_screening_button subject_consent %}
             </td>
         </tr>
     {% endif %}
-
-    {% if subject_consent.show_facet_consent and 'PI/Coordinator' not in group_names  %}
+    {% if  subject_consent.facet_consent_obj and subject_consent.show_facet_consent %}
         <tr>
             <td>
                 {% facet_consent_button subject_consent %}
             </td>
         </tr>
+        {% elif 'PI/Coordinator' not in group_names and  subject_consent.show_facet_consent%}
+            <tr>
+                <td>
+                    {% facet_consent_button subject_consent %}
+                </td>
+            </tr>
     {% endif %}
 
     </tbody>
