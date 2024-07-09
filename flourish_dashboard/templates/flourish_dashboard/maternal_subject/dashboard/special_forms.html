@@ -2,18 +2,37 @@
 <table class="table table-condensed">
     <thead></thead>
     <tbody>
+    {% if subject_consent.locator_model_obj%}
+            <tr>
+                <td>
+                    {% locator_button subject_consent %}
+                </td>
+            </tr>
 
-    <tr>
-        <td>
-            {% locator_button subject_consent %}
-        </td>
-    </tr>
-    <tr>
-        <td>{% caregiver_contact_button subject_consent %}</td>
-    </tr>
-    <tr>
-        <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
-    </tr>
+        {% elif  'PI/Coordinator' not in group_names %}
+            <tr>
+                <td>
+                    {% locator_button subject_consent %}
+                </td>
+            </tr>
+        {% endif %}   
+    {% if 'PI/Coordinator' not in group_names %}
+        <tr>
+            <td>{% caregiver_contact_button subject_consent %}</td>
+        </tr>
+     {% endif %}
+     
+     {% if is_latest_consent_version and  'PI/Coordinator' in group_names %}
+        <tr>
+            <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
+        </tr> 
+        {% elif 'PI/Coordinator' not in group_names %}
+        <tr>
+            <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
+        </tr> 
+        
+     {% endif %}
+
     {% if screening_preg_women %}
         <tr>
             <td>
@@ -22,21 +41,52 @@
         </tr>
     {% endif %}
     {% if maternal_dataset %}
-        <tr>
-            <td>
-                {% caregiver_enrolment_info_button subject_consent %}
-            </td>
-        </tr>
+        {% if subject_consent.caregiver_enrolment_info_obj %}
+            <tr>
+                <td>
+                    {% caregiver_enrolment_info_button subject_consent %}
+                </td>
+            </tr>
+        {% elif 'PI/Coordinator' not in group_names %}
+            <tr>
+                <td>
+                    {% caregiver_enrolment_info_button subject_consent %}
+                </td>
+            </tr>
+        {% endif %}
         <tr>
             <td>
                 {% maternal_dataset_button maternal_dataset %}
             </td>
         </tr>
+        {% if maternal_dataset.screening_model_obj %}
+            <tr>
+                <td>
+                    {% screening_button maternal_dataset %}
+                </td>
+            </tr>
+        {% elif 'PI/Coordinator' not in group_names  %}
+            <tr>
+                <td>
+                    {% screening_button maternal_dataset %}
+                </td>
+            </tr>
+        {% endif %}
+
+        {% if subject_consent.bhp_prior_screening_model_obj%}
         <tr>
             <td>
-                {% screening_button maternal_dataset %}
+                {% bhp_prior_screening_button subject_consent%}
             </td>
         </tr>
+        {% elif 'PI/Coordinator' not in group_names %}
+        <tr>
+            <td>
+                {% bhp_prior_screening_button subject_consent%}
+            </td>
+        </tr>
+        
+        {% endif %}
     {% endif %}
     {% if subject_consent.tb_consent_model_obj %}
         <tr>
@@ -46,7 +96,7 @@
         </tr>
     {% endif %}
 
-    {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached %}
+    {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached and 'PI/Coordinator' not in group_names%}
         <tr>
             <td>
                 {% tb_adol_screening_button subject_consent %}
@@ -84,7 +134,7 @@
         </tr>
     {% endif %}
 
-    {% if subject_consent.show_facet_screening %}
+    {% if subject_consent.show_facet_screening and 'PI/Coordinator' not in group_names %}
         <tr>
             <td>
                 {% facet_screening_button subject_consent %}
@@ -92,7 +142,7 @@
         </tr>
     {% endif %}
 
-    {% if subject_consent.show_facet_consent %}
+    {% if subject_consent.show_facet_consent and 'PI/Coordinator' not in group_names  %}
         <tr>
             <td>
                 {% facet_consent_button subject_consent %}
