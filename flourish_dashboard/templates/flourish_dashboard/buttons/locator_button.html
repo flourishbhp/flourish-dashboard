@@ -4,7 +4,7 @@
  	{% if caregiver_locator_obj %}
             class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
             href="{{ add_locator_href }}">
-        {% else %}
+        {% elif  'PI/Coordinator' not in group_names %}
             class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
         href="{{ add_locator_href }}">
         {% endif %}
