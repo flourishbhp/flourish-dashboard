@@ -287,6 +287,15 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
             messages.add_message(self.request, messages.WARNING, msg)
 
+    @property
+    def _sidx_to_ignore(self):
+        """ The following subject identifiers should be ignored for the ultrasound
+            off study trigger, as they were enrolled into the study without being
+            aware of their off study status. EDC did not trigger correctly.
+        """
+        return ['B142-040990625-1', 'B142-040991122-8', 'B142-040991190-5',
+                'B142-040990919-8', 'B142-040990722-6']
+
     def check_ga_outside_range(self):
         subject_identifier = self.kwargs.get('subject_identifier', None)
         ultrasound_cls = django_apps.get_model('flourish_caregiver.ultrasound')
@@ -295,7 +304,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         for ultrasound_obj in ultrasound_objs:
             if (ultrasound_obj.ga_confirmed_after < MIN_GA_LMP_ENROL_WEEKS
                     or ultrasound_obj.ga_confirmed_after > MAX_GA_LMP_ENROL_WEEKS):
-                return True
+                return subject_identifier not in self._sidx_to_ignore
         return False
 
     def require_offstudy(self,  offstudy_visit_obj, subject_identifier):
