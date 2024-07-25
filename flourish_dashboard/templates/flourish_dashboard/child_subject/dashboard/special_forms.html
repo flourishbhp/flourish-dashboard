@@ -11,13 +11,13 @@
         </tr>
     {% endif %}
 
-    {% if caregiver_child_consent.child_birth_model_obj|check_conditions:group_names  %}
-        <tr>
-            <td>
-                {% child_birth_button caregiver_child_consent %}
-            </td>
-        </tr>
-    {% endif %}
+
+    <tr>
+        <td>
+            {% child_birth_button caregiver_child_consent %}
+        </td>
+    </tr>
+
 
     {% if young_adult_locator_wrapper %}
 
@@ -27,23 +27,18 @@
             </td>
         </tr>
     {% endif %}
-    {% if caregiver_child_consent.child_assent|check_conditions:group_names %}
-        <tr>
-            <td>
-                {% assent_button caregiver_child_consent %}
-            </td>
 
-        </tr>
-    {% endif %}
-    
-    {% if caregiver_child_consent.tb_adol_assent|check_conditions:group_names %}
-        <tr>
-            <td>
-                {% tb_adol_assent_button caregiver_child_consent %}
-            </td>
-        </tr>
-    {% endif %}
-    
+    <tr>
+        <td>
+            {% assent_button caregiver_child_consent %}
+        </td>
+
+    </tr>
+    <tr>
+        <td>
+            {% tb_adol_assent_button caregiver_child_consent %}
+        </td>
+    </tr>
     {% if caregiver_child_consent.child_offstudy %}
         <tr>
             <td>
