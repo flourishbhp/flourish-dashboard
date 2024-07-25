@@ -5,7 +5,7 @@
  	{% if maternal_screening_obj %}
             class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
             href="{{ add_screening_href }}">
-         {% elif 'PI/Coordinator' not in group_names %}
+        {% else %}
             class="btn btn-warning btn-sm" data-toggle="tooltip"  data-placement="right"
         href="{{ add_screening_href }}">
         {% endif %}
