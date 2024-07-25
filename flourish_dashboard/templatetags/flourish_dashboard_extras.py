@@ -641,3 +641,10 @@ def facet_consent_button(model_wrapper):
         facet_consent_wrapper=model_wrapper.facet_consent_wrapper,
         title=title,
         status=status)
+
+
+@register.filter(name='check_conditions')
+def check_conditions(obj, group_names):
+    if obj:
+        return True
+    return 'PI/Coordinator' not in group_names
