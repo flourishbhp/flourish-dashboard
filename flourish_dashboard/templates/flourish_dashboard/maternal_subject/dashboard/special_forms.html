@@ -2,28 +2,18 @@
 <table class="table table-condensed">
     <thead></thead>
     <tbody>
-            <tr>
-                <td>
-                    {% locator_button subject_consent %}
-                </td>
-            </tr>
-    {% if 'PI/Coordinator' not in group_names %}
-        <tr>
-            <td>{% caregiver_contact_button subject_consent %}</td>
-        </tr>
-     {% endif %}
-     
-     {% if is_latest_consent_version and  'PI/Coordinator' in group_names %}
-        <tr>
-            <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
-        </tr> 
-        {% elif 'PI/Coordinator' not in group_names %}
-        <tr>
-            <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
-        </tr> 
-        
-     {% endif %}
 
+    <tr>
+        <td>
+            {% locator_button subject_consent %}
+        </td>
+    </tr>
+    <tr>
+        <td>{% caregiver_contact_button subject_consent %}</td>
+    </tr>
+    <tr>
+        <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
+    </tr>
     {% if screening_preg_women %}
         <tr>
             <td>
@@ -56,7 +46,7 @@
         </tr>
     {% endif %}
 
-    {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached and 'PI/Coordinator' not in group_names%}
+    {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached %}
         <tr>
             <td>
                 {% tb_adol_screening_button subject_consent %}
@@ -94,32 +84,20 @@
         </tr>
     {% endif %}
 
-    {% if subject_consent.facet_screening_obj and subject_consent.show_facet_screening%}
-        <tr>
-            <td>
-                {% facet_screening_button subject_consent %}
-            </td>
-        </tr>
-
-        {% elif 'PI/Coordinator' not in group_names and subject_consent.show_facet_screening %}
+    {% if subject_consent.show_facet_screening %}
         <tr>
             <td>
                 {% facet_screening_button subject_consent %}
             </td>
         </tr>
     {% endif %}
-    {% if  subject_consent.facet_consent_obj and subject_consent.show_facet_consent %}
+
+    {% if subject_consent.show_facet_consent %}
         <tr>
             <td>
                 {% facet_consent_button subject_consent %}
             </td>
         </tr>
-        {% elif 'PI/Coordinator' not in group_names and  subject_consent.show_facet_consent%}
-            <tr>
-                <td>
-                    {% facet_consent_button subject_consent %}
-                </td>
-            </tr>
     {% endif %}
 
     </tbody>
