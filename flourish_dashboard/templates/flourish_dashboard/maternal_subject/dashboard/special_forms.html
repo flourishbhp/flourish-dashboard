@@ -46,7 +46,7 @@
         </tr>
     {% endif %}
 
-    {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached %}
+    {% if subject_consent.tb_adol_screening_model_obj and tb_adol_huu_limit_reached %}
         <tr>
             <td>
                 {% tb_adol_screening_button subject_consent %}
