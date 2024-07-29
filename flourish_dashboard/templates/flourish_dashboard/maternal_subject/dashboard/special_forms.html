@@ -22,52 +22,21 @@
         </tr>
     {% endif %}
     {% if maternal_dataset %}
-        {% if subject_consent.caregiver_enrolment_info_obj %}
-            <tr>
-                <td>
-                    {% caregiver_enrolment_info_button subject_consent %}
-                </td>
-            </tr>
-        {% elif 'PI/Coordinator' not in group_names %}
-            <tr>
-                <td>
-                    {% caregiver_enrolment_info_button subject_consent %}
-                </td>
-            </tr>
-        {% endif %}
+        <tr>
+            <td>
+                {% caregiver_enrolment_info_button subject_consent %}
+            </td>
+        </tr>
         <tr>
             <td>
                 {% maternal_dataset_button maternal_dataset %}
             </td>
         </tr>
-        {% if maternal_dataset.screening_model_obj %}
-            <tr>
-                <td>
-                    {% screening_button maternal_dataset %}
-                </td>
-            </tr>
-        {% elif 'PI/Coordinator' not in group_names  %}
-            <tr>
-                <td>
-                    {% screening_button maternal_dataset %}
-                </td>
-            </tr>
-        {% endif %}
-
-        {% if subject_consent.bhp_prior_screening_model_obj%}
         <tr>
             <td>
-                {% bhp_prior_screening_button subject_consent%}
+                {% screening_button maternal_dataset %}
             </td>
         </tr>
-        {% elif 'PI/Coordinator' not in group_names %}
-        <tr>
-            <td>
-                {% bhp_prior_screening_button subject_consent%}
-            </td>
-        </tr>
-        
-        {% endif %}
     {% endif %}
     {% if subject_consent.tb_consent_model_obj %}
         <tr>
@@ -75,13 +44,6 @@
                 {% tb_consent_button subject_consent %}
             </td>
         </tr>
-    {% endif %}
-    {% if subject_consent.prior_screening_obj%}
-            <tr>
-                <td>
-                    {% bhp_prior_screening_button subject_consent%}
-                </td>
-            </tr>
     {% endif %}
 
     {% if result.tb_adol_screening_model_obj or tb_adol_huu_limit_reached %}
@@ -92,7 +54,7 @@
         </tr>
     {% endif %}
 
-    {% if tb_adol_eligibility and subject_consent.tb_adol_consent|check_conditions:group_names%}
+    {% if tb_adol_eligibility %}
     <tr>
        <td>
            {% tb_adol_consent_button subject_consent %}
