@@ -34,11 +34,14 @@
         </td>
 
     </tr>
-    <tr>
-        <td>
-            {% tb_adol_assent_button caregiver_child_consent %}
-        </td>
-    </tr>
+    {% if caregiver_child_consent.show_tb_adol_assent_button %}
+        <tr>
+            <td>
+                {% tb_adol_assent_button caregiver_child_consent %}
+            </td>
+        </tr>
+    {% endif %}
+    
     {% if caregiver_child_consent.child_offstudy %}
         <tr>
             <td>
