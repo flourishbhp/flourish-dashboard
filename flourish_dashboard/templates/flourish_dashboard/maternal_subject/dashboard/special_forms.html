@@ -2,103 +2,78 @@
 <table class="table table-condensed">
     <thead></thead>
     <tbody>
+        <!-- Caregiver Locator button -->
+		{% render_add_conditional 'locator_button' subject_consent 'locator_model_obj' group_names %}
 
-    <tr>
-        <td>
-            {% locator_button subject_consent %}
-        </td>
-    </tr>
-    <tr>
-        <td>{% caregiver_contact_button subject_consent %}</td>
-    </tr>
-    <tr>
-        <td>{% consent_version_button subject_consent is_latest_consent_version %}</td>
-    </tr>
-    {% if screening_preg_women %}
-        <tr>
-            <td>
-                {% screening_button screening_preg_women %}
-            </td>
-        </tr>
-    {% endif %}
-    {% if maternal_dataset %}
-        <tr>
-            <td>
-                {% caregiver_enrolment_info_button subject_consent %}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                {% maternal_dataset_button maternal_dataset %}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                {% screening_button maternal_dataset %}
-            </td>
-        </tr>
-    {% endif %}
-    {% if subject_consent.tb_consent_model_obj %}
-        <tr>
-            <td>
-                {% tb_consent_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
+		<!-- Caregiver Contact button -->
+		{% render_add_conditional 'caregiver_contact_button' subject_consent '' group_names %}
 
-    {% if subject_consent.tb_adol_screening_model_obj and tb_adol_huu_limit_reached %}
-        <tr>
-            <td>
-                {% tb_adol_screening_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
+		<!-- Consent Version button -->
+		{% render_add_conditional 'consent_version_button' subject_consent 'consent_version_model_obj' group_names is_latest_consent_version=is_latest_consent_version %}
 
-    {% if tb_adol_eligibility %}
-    <tr>
-       <td>
-           {% tb_adol_consent_button subject_consent %}
-         </td>
-     </tr>
-     {% endif %}
-    {% if tb_take_off_study %}
-        <tr>
-            <td>
-                {% tb_offstudy_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
+		{% if maternal_dataset %}
+			<!-- BHP Prior Screening button -->
+			{% render_add_conditional 'bhp_prior_screening_button' subject_consent 'bhp_prior_screening_model_obj' group_names %}
 
-    {% if subject_consent.caregiver_offstudy %}
-        <tr>
-            <td>
-                {% caregiver_off_study_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
-    {% if subject_consent.caregiver_death_report %}
-        <tr>
-            <td>
-                {% caregiver_death_report_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
+			<!-- Caregiver Enrolment Info button -->
+			{% render_add_conditional 'caregiver_enrolment_info_button' subject_consent 'caregiver_enrolment_info_obj' group_names %}
 
-    {% if subject_consent.show_facet_screening %}
-        <tr>
-            <td>
-                {% facet_screening_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
+			<!-- Maternal Dataset button -->
+			{% render_add_conditional 'maternal_dataset_button' maternal_dataset 'object' group_names %}
 
-    {% if subject_consent.show_facet_consent %}
-        <tr>
-            <td>
-                {% facet_consent_button subject_consent %}
-            </td>
-        </tr>
-    {% endif %}
+			<!-- ANC Screening button -->
+			{% render_add_conditional 'screening_button' maternal_dataset 'object' group_names %}
+		{% elif screening_preg_women  %}
+			<!-- ANC Screening button -->
+			{% render_add_conditional 'screening_button' screening_preg_women 'object' group_names %}
+		{% endif %}
 
+		<!-- TB Consent button -->
+	    {% if subject_consent.tb_consent_model_obj %}
+			{% render_add_conditional 'tb_consent_button' subject_consent 'tb_consent_model_obj' group_names %}
+	    {% endif %}
+
+		<!-- TB Adol Screening button -->
+	    {% if subject_consent.tb_adol_screening_model_obj %}
+			{% render_add_conditional 'tb_adol_screening_button' subject_consent 'tb_adol_screening_model_obj' group_names %}
+	    {% endif %}
+
+		<!-- TB Adol Consent button -->
+    	{% if tb_adol_eligibility %}
+    		{% render_add_conditional 'tb_adol_consent_button' subject_consent 'tb_adol_consent_model_obj' group_names %}
+	     {% endif %}
+
+		<!-- TB Offstudy button -->
+	    {% if tb_take_off_study %}
+	    	{% render_add_conditional 'tb_offstudy_button' subject_consent 'tb_offstudy_model_obj' group_names %}
+	    {% endif %}
+
+		<!-- Caregiver Offstudy button -->
+	    {% if subject_consent.caregiver_offstudy %}
+	        <tr>
+	            <td>
+	                {% caregiver_off_study_button subject_consent %}
+	            </td>
+	        </tr>
+	    {% endif %}
+
+		<!-- Caregiver Death report button -->
+	    {% if subject_consent.caregiver_death_report %}
+	        <tr>
+	            <td>
+	                {% caregiver_death_report_button subject_consent %}
+	            </td>
+	        </tr>
+	    {% endif %}
+
+		<!-- Facet Screening button -->
+	    {% if subject_consent.show_facet_screening %}
+	    	{% render_add_conditional 'facet_screening_button' subject_consent 'facet_screening_obj' group_names %}
+	    {% endif %}
+
+		<!-- Facet Consent button -->
+        {% if subject_consent.show_facet_consent %}
+        	{% render_add_conditional 'facet_consent_button' subject_consent 'facet_consent_obj' group_names %}
+        {% endif %}
     </tbody>
 </table>
