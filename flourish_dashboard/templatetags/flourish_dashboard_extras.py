@@ -684,10 +684,3 @@ def render_inclusion_tag(context, tag_name, model_wrapper, extra_data):
         return f'Error rendering {tag_name}: {e}'
 
     return ''
-
-
-@register.filter(name='check_conditions')
-def check_conditions(obj, group_names):
-    if obj:
-        return True
-    return 'PI/Coordinator' not in group_names
