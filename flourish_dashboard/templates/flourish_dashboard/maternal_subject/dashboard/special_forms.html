@@ -22,7 +22,7 @@
 			{% render_add_conditional 'maternal_dataset_button' maternal_dataset 'object' group_names %}
 
 			<!-- ANC Screening button -->
-			{% render_add_conditional 'screening_button' maternal_dataset 'object' group_names %}
+			{% render_add_conditional 'screening_button' maternal_dataset 'screening_model_obj' group_names %}
 		{% elif screening_preg_women  %}
 			<!-- ANC Screening button -->
 			{% render_add_conditional 'screening_button' screening_preg_women 'object' group_names %}
