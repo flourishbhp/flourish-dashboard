@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from edc_base.utils import get_utcnow, age
-
+from edc_constants.choices import YES
 from .tb_adol_assent_model_wrapper import TbAdolAssentModelWrapper
 
 
@@ -95,12 +95,13 @@ class TbAdolChildAssentModelWrapperMixin:
                 if not caregiverchildconsent.child_dob:
                     continue
 
-                child_age = age(caregiverchildconsent.child_dob, get_utcnow()).years
+                child_age = age(caregiverchildconsent.child_dob,
+                                get_utcnow()).years
 
                 if 10 <= child_age <= 17:
                     model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
-                                self.tb_adol_assent_model_cls(
-                                    **self.create_tb_adol_assent_options(caregiverchildconsent))
+                        self.tb_adol_assent_model_cls(
+                        **self.create_tb_adol_assent_options(caregiverchildconsent))
 
                     wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
 
@@ -120,8 +121,8 @@ class TbAdolChildAssentModelWrapperMixin:
 
             for caregiverchildconsent in caregiverchildconsents:
                 model_obj = self.get_tb_adol_assent_model_obj(caregiverchildconsent) or \
-                            self.tb_adol_assent_model_cls(
-                                **self.create_tb_adol_assent_options(caregiverchildconsent))
+                    self.tb_adol_assent_model_cls(
+                    **self.create_tb_adol_assent_options(caregiverchildconsent))
                 # create options based on caregiverchildconsent, which is either version 1 or version 2
 
                 wrapped_entries.append(TbAdolAssentModelWrapper(model_obj))
@@ -218,3 +219,18 @@ class TbAdolChildAssentModelWrapperMixin:
     @property
     def tb_adol_assents_ineligible(self):
         return self.tb_adol_assents_qs.filter(is_eligible=False)
+
+    @property
+    def show_tb_adol_assent_button(self):
+        tb_adol_screening_model_cls = django_apps.get_model(
+            'flourish_caregiver.tbadoleligibility')
+
+        if getattr(self, 'consent_model_obj', None):
+            subject_identifier = self.consent_model_obj.subject_identifier
+            try:
+                tb_screening_adol_obj = tb_adol_screening_model_cls.objects.get(
+                    subject_identifier=subject_identifier)
+            except tb_adol_screening_model_cls.DoesNotExist:
+                return False
+            else:
+                return tb_screening_adol_obj.tb_adol_participation == YES
