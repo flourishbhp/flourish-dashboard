@@ -5,6 +5,8 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
+from django.template import Context
+
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
 
@@ -151,18 +153,21 @@ def edit_maternal_dataset_button(model_wrapper):
 @register.inclusion_tag('flourish_dashboard/buttons/screening_button.html')
 def screening_button(model_wrapper):
     options = {}
+    title = 'Subject Screening'
     if hasattr(model_wrapper, 'maternal_screening'):
         options = dict(
             add_screening_href=model_wrapper.maternal_screening.href,
             screening_identifier=model_wrapper.object.screening_identifier,
             maternal_screening_obj=model_wrapper.screening_model_obj,
-            caregiver_locator_obj=model_wrapper.locator_model_obj)
+            caregiver_locator_obj=model_wrapper.locator_model_obj,
+            title=title)
     else:
         options = dict(
             add_screening_href=model_wrapper.href,
             screening_identifier=model_wrapper.object.screening_identifier,
             maternal_screening_obj=model_wrapper.object,
-            caregiver_locator_obj=model_wrapper.locator_model_obj)
+            caregiver_locator_obj=model_wrapper.locator_model_obj,
+            title=title)
 
     return options
 
@@ -643,8 +648,39 @@ def facet_consent_button(model_wrapper):
         status=status)
 
 
-@register.filter(name='check_conditions')
-def check_conditions(obj, group_names):
-    if obj:
-        return True
-    return 'PI/Coordinator' not in group_names
+@register.inclusion_tag('flourish_dashboard/buttons/render_add_conditional.html')
+def render_add_conditional(button_tag_name, model_wrapper, obj_attr_name, group_names, **kwargs):
+    """ Renders the add button only on condition that user does
+        not belong to `PI or Coordinator group`
+    """
+
+    model_obj = getattr(model_wrapper, obj_attr_name, None)
+    render_button_row = 'PI/Coordinator' not in group_names or model_obj
+
+    return dict(
+        button_tag_name=button_tag_name,
+        model_wrapper=model_wrapper,
+        render_button_row=render_button_row,
+        dynamic_kwargs=kwargs)
+
+
+@register.simple_tag(takes_context=True)
+def render_inclusion_tag(context, tag_name, model_wrapper, extra_data):
+    template = context.template.engine.get_template(
+        f'flourish_dashboard/buttons/{tag_name}.html')
+    # Import the tag function dynamically
+
+    try:
+        if tag_name in globals() and callable(globals()[tag_name]):
+            result = globals()[tag_name](model_wrapper, **extra_data)
+
+            return template.render(Context(result))
+        else:
+            raise NameError(
+                f'The function {tag_name} does not exist or is not callable.')
+    except NameError as e:
+        return f'Error importing {tag_name}: {e}'
+    except Exception as e:
+        return f'Error rendering {tag_name}: {e}'
+
+    return ''
