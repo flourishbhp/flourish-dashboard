@@ -4,79 +4,42 @@
     <tbody>
 
     {% if child_dataset %}
-        <tr>
-            <td>
-                {% child_dataset_button child_dataset %}
-            </td>
-        </tr>
+     {% render_add_conditional 'child_dataset_button' child_dataset 'object' group_names%}
     {% endif %}
 
-
-    <tr>
-        <td>
-            {% child_birth_button caregiver_child_consent %}
-        </td>
-    </tr>
-
+     {% render_add_conditional 'child_birth_button' caregiver_child_consent 'child_birth_model_obj' group_names%}
 
     {% if young_adult_locator_wrapper %}
 
-        <tr>
-            <td>
-                {% young_adult_locator_button young_adult_locator_wrapper %}
-            </td>
-        </tr>
+    {% render_add_conditional 'young_adult_locator_button' young_adult_locator_wrapper 'object' group_names%}
+
     {% endif %}
 
-    <tr>
-        <td>
-            {% assent_button caregiver_child_consent %}
-        </td>
+    {% render_add_conditional 'assent_button' caregiver_child_consent 'assent_model_obj' group_names%}
 
-    </tr>
-    <tr>
-        <td>
-            {% tb_adol_assent_button caregiver_child_consent %}
-        </td>
-    </tr>
+    {% if caregiver_child_consent.show_tb_adol_assent_button %}
+    {% render_add_conditional 'tb_adol_assent_button' caregiver_child_consent 'tb_adol_assent_obj' group_names%}
+    {% endif %}
+    
     {% if caregiver_child_consent.child_offstudy %}
-        <tr>
-            <td>
-                {% child_off_study_button caregiver_child_consent %}
-            </td>
-        </tr>
+    {% render_add_conditional 'child_off_study_button' caregiver_child_consent 'child_offstudy_model_obj' group_names %}
     {% endif %}
 
     {% if tb_adol_referal %}
-        <tr>
-            <td>
-                {% tb_adol_referal_button tb_adol_referal %}
-            </td>
-        </tr>
+    {% render_add_conditional 'tb_adol_referal_button' tb_adol_referal 'object' group_names%}
     {% endif %}
 
     {% if caregiver_child_consent.child_death_report %}
-        <tr>
-            <td>
-                {% child_death_report_button caregiver_child_consent %}
-            </td>
-        </tr>
+    {% render_add_conditional 'child_death_report_button' caregiver_child_consent 'child_death_report_model_obj' group_names%}
     {% endif %}
 
     {% if is_tb_off_study %}
-        <tr>
-            <td>
-                {% tb_offstudy_button caregiver_child_consent %}
-            </td>
-        </tr>
+    {% render_add_conditional 'tb_offstudy_button' caregiver_child_consent 'tb_offstudy_model_obj' group_names %}
     {% endif %}
 
+
     {% if caregiver_child_consent.missed_birth_visit %}
-    <tr>
-      <td>
-        {% missed_birth_visit_button caregiver_child_consent %}
-      </td>
-    </tr>
+    {% render_add_conditional 'missed_birth_visit_button' caregiver_child_consent 'missed_birth_visit_model_obj' group_names %}
   {% endif %}
     </tbody>
 </table>

@@ -1,0 +1,9 @@
+{% load flourish_dashboard_extras %}
+
+{% if render_button_row %}
+	<tr>
+		<td>
+			{% render_inclusion_tag button_tag_name model_wrapper dynamic_kwargs %}
+		</td>
+	</tr>
+{% endif %}
