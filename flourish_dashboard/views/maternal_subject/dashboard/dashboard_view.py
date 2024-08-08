@@ -264,6 +264,9 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             # if condition are meet excute the following if
             if subject_identifier and age_adol_range and not msg:
 
+                tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
+                    subject_identifier=subject_identifier).exists()
+
                 tb_consent_exists = self.tb_adol_consent_cls.objects.filter(
                     subject_identifier=subject_identifier).exists()
 
@@ -271,17 +274,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     subject_identifier__in=self.child_subject_identifiers).exists()
 
                 # if a model is deleted or does not exist, show the notification
-
-            tb_screening_exists = self.tb_adol_screening_cls.objects.filter(
-                subject_identifier=subject_identifier).exists()
-
-            if tb_screening_exists:
-                if not tb_consent_exists:
-                    msg = mark_safe(
-                        'Kindly complete TB adol Consent form under special forms.')
-                elif not tb_assent_exists:
-                    msg = mark_safe(
-                        'Kindly complete TB adol Assent form under special forms.')
+                if tb_screening_exists:
+                    if not tb_consent_exists:
+                        msg = mark_safe(
+                            'Kindly complete TB adol Consent form under special forms.')
+                    elif not tb_assent_exists:
+                        msg = mark_safe(
+                            'Kindly complete TB adol Assent form under special forms.')
 
             messages.add_message(self.request, messages.WARNING, msg)
 
