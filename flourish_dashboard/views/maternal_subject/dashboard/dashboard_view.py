@@ -274,16 +274,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                     subject_identifier__in=self.child_subject_identifiers).exists()
 
                 # if a model is deleted or does not exist, show the notification
-                if not tb_screening_exists:
-                    msg = mark_safe(
-                        'Subject is eligible for TB Adolescent study, kindly complete'
-                        'TB adol Screening form under special forms.')
-                elif not tb_consent_exists:
-                    msg = mark_safe(
-                        'Kindly complete TB adol Consent form under special forms.')
-                elif not tb_assent_exists:
-                    msg = mark_safe(
-                        'Kindly complete TB adol Assent form under special forms.')
+                if tb_screening_exists:
+                    if not tb_consent_exists:
+                        msg = mark_safe(
+                            'Kindly complete TB adol Consent form under special forms.')
+                    elif not tb_assent_exists:
+                        msg = mark_safe(
+                            'Kindly complete TB adol Assent form under special forms.')
 
             messages.add_message(self.request, messages.WARNING, msg)
 
@@ -319,7 +316,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 'subject_identifier', flat=True)
         offstudy_diff = set(child_subject_identifiers) - set(offstudy_sidx)
 
-        ultrasound_offstudy = len(child_subject_identifiers) == 1 and self.check_ga_outside_range()
+        ultrasound_offstudy = len(
+            child_subject_identifiers) == 1 and self.check_ga_outside_range()
 
         return not bool(offstudy_diff) or ultrasound_offstudy or offstudy_visit_obj
 
@@ -458,7 +456,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 except appt_cls.DoesNotExist:
                     continue
                 else:
-                    visit_schedule_set = schedule_child_dict.get(child_sidx, set())
+                    visit_schedule_set = schedule_child_dict.get(
+                        child_sidx, set())
                     visit_schedule_set.add(appt.visit_schedule_name)
                     schedule_child_dict[child_sidx] = visit_schedule_set
 
