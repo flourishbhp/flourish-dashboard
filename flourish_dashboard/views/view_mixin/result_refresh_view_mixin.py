@@ -21,6 +21,7 @@ class ResultRefreshViewMixin:
             sample_id='').values_list('sample_id', flat=True)
 
         pending_ids = ', '.join(pending_samples)
+
         try:
             management.call_command(
                 'pull_results', sample_ids=pending_ids, app_label=app_label)
