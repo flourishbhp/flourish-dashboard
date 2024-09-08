@@ -18,7 +18,7 @@
     {% render_add_conditional 'assent_button' caregiver_child_consent 'assent_model_obj' group_names%}
 
     {% if caregiver_child_consent.show_tb_adol_assent_button %}
-    {% render_add_conditional 'tb_adol_assent_button' caregiver_child_consent 'tb_adol_assent_obj' group_names%}
+    {% render_add_conditional 'tb_adol_assent_button' caregiver_child_consent 'tb_adol_assent' group_names%}
     {% endif %}
     
     {% if caregiver_child_consent.child_offstudy %}
