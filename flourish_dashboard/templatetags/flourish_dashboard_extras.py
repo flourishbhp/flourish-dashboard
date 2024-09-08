@@ -3,10 +3,9 @@ from urllib.parse import unquote, urlencode
 from django import template
 from django.apps import apps as django_apps
 from django.conf import settings
+from django.template import Context
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
-from django.template import Context
-
 from edc_base.utils import age, get_utcnow
 from edc_visit_schedule.models import SubjectScheduleHistory
 
@@ -649,7 +648,8 @@ def facet_consent_button(model_wrapper):
 
 
 @register.inclusion_tag('flourish_dashboard/buttons/render_add_conditional.html')
-def render_add_conditional(button_tag_name, model_wrapper, obj_attr_name, group_names, **kwargs):
+def render_add_conditional(button_tag_name, model_wrapper, obj_attr_name, group_names,
+                           **kwargs):
     """ Renders the add button only on condition that user does
         not belong to `PI or Coordinator group`
     """
@@ -682,5 +682,3 @@ def render_inclusion_tag(context, tag_name, model_wrapper, extra_data):
         return f'Error importing {tag_name}: {e}'
     except Exception as e:
         return f'Error rendering {tag_name}: {e}'
-
-    return ''
