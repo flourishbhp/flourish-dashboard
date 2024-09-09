@@ -279,7 +279,7 @@ def caregiver_contact_button(model_wrapper):
 
 
 @register.inclusion_tag(
-    'flourish_dashboard/buttons/child_tb_referal_button.html')
+    'flourish_dashboard/buttons/tb_adol_referal_button.html')
 def tb_adol_referal_button(model_wrapper):
     return dict(
         subject_identifier=model_wrapper.object.subject_identifier,
