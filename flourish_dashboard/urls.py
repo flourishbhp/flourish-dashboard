@@ -21,6 +21,7 @@ from .views import (
     MaternalScreeningListBoardView, MaternalSubjectListboardView,
     MaternalDatasetListBoardView, MaternalDashboardView, LocatorLogReportView)
 from .views import CaregiverResultListboardView, ChildResultListboardView
+from .views import UnscheduledAppointmentView
 
 app_name = 'flourish_dashboard'
 
@@ -90,6 +91,9 @@ child_listboard_result_url_config = UrlConfig(
 urlpatterns = [
     path('locator_logs_report', LocatorLogReportView.as_view(),
          name='locator_report_url'),
+    path('unscheduled_appointment/<subject_identifier>/<visit_schedule_name>'
+         '/<schedule_name>/<visit_code>/<redirect_url>/',
+         UnscheduledAppointmentView.as_view(), name='unscheduled_appointment_url'),
 ]
 
 urlpatterns += child_dashboard_url_config.dashboard_urls
