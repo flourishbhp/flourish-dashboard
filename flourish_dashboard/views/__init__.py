@@ -7,4 +7,5 @@ from .maternal_subject import DashboardView as MaternalDashboardView
 from .maternal_dataset import LocatorLogReportView
 from .maternal_subject import ListboardView as MaternalSubjectListboardView
 from .maternal_subject import ResultListboardView as CaregiverResultListboardView
+from .maternal_subject import UnscheduledAppointmentView
 from .screening import MaternalScreeningListBoardView

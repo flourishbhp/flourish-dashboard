@@ -299,8 +299,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         ultrasound_objs = ultrasound_cls.objects.filter(
             subject_identifier=subject_identifier,)
         for ultrasound_obj in ultrasound_objs:
-            if (ultrasound_obj.ga_confirmed_after < MIN_GA_LMP_ENROL_WEEKS
-                    or ultrasound_obj.ga_confirmed_after > MAX_GA_LMP_ENROL_WEEKS):
+            if (ultrasound_obj.ga_at_consent < MIN_GA_LMP_ENROL_WEEKS
+                    or ultrasound_obj.ga_at_consent > MAX_GA_LMP_ENROL_WEEKS):
                 return subject_identifier not in self._sidx_to_ignore
         return False
 

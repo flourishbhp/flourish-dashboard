@@ -8,6 +8,33 @@ from .maternal_visit_model_wrapper import MaternalVisitModelWrapper
 class AppointmentModelWrapper(BaseAppointmentModelWrapper):
 
     visit_model_wrapper_cls = MaternalVisitModelWrapper
+    unscheduled_appointment_url_name = 'flourish_dashboard:unscheduled_appointment_url'
+
+    @property
+    def next_by_timepoint(self):
+        """ Returns the previous appointment or None of all appointments
+            for this subject for visit_code_sequence=0. Use this instead
+            of attr defined on the base appointment model, to account for
+            visit_schedule setup.
+        """
+        return self.model_cls.objects.filter(
+            subject_identifier=self.subject_identifier,
+            timepoint__gt=self.timepoint,
+            visit_code_sequence=0,
+            schedule_name=self.schedule_name
+        ).order_by('timepoint').first()
+
+    @property
+    def next_visit_code_sequence(self):
+        return getattr(self.object, 'next_visit_code_sequence', None)
+
+    @property
+    def appt_datetime(self):
+        return getattr(self.object, 'appt_datetime', None)
+
+    @property
+    def timepoint_datetime(self):
+        return getattr(self.object, 'timepoint_datetime', None)
 
     @property
     def wrapped_visit(self):
