@@ -26,6 +26,9 @@
 
 {% block other_special_buttons %}
     <table>
+    	<tr>
+			{% offstudy_alert caregiver_child_consent 'child_offstudy_model_obj' %}
+		</tr>
         <tr>
             {% if fu_participant_note %}
                 <td>

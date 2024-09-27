@@ -647,6 +647,13 @@ def facet_consent_button(model_wrapper):
         status=status)
 
 
+@register.inclusion_tag('flourish_dashboard/alerts/offstudy_alert.html')
+def offstudy_alert(model_wrapper, offstudy_attr):
+    is_offstudy = getattr(model_wrapper, offstudy_attr, None)
+    return dict(
+        is_offstudy=is_offstudy)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/render_add_conditional.html')
 def render_add_conditional(button_tag_name, model_wrapper, obj_attr_name, group_names,
                            **kwargs):
