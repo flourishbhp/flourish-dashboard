@@ -7,6 +7,9 @@
 
 {% block other_special_buttons %}
 	<table>
+		<tr>
+			{% offstudy_alert subject_consent 'caregiver_offstudy_obj' %}
+		</tr>
    		<tr>
    			<td>{% assents_button subject_consent %}</td>
             <td style="width: 5px"></td>

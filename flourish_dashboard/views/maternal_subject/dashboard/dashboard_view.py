@@ -291,7 +291,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             aware of their off study status. EDC did not trigger correctly.
         """
         return ['B142-040990625-1', 'B142-040991122-8', 'B142-040991190-5',
-                'B142-040990919-8', 'B142-040990722-6']
+                'B142-040990919-8', 'B142-040990722-6', 'B142-040991156-6',
+                'B142-040990615-2', 'B142-040991176-4']
 
     def check_ga_outside_range(self):
         subject_identifier = self.kwargs.get('subject_identifier', None)
