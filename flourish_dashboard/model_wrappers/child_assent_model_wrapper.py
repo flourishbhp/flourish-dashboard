@@ -9,7 +9,7 @@ class ChildAssentModelWrapper(ModelWrapper):
     querystring_attrs = ['screening_identifier', 'subject_identifier', 'dob',
                          'first_name', 'last_name', 'initials', 'gender',
                          'identity', 'identity_type', 'confirm_identity',
-                         'dob']
+                         'dob', 'version']
     next_url_attrs = ['screening_identifier', 'subject_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'subject_listboard_url')
