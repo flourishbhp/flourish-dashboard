@@ -5,7 +5,6 @@ from django.utils.safestring import mark_safe
 from edc_action_item.site_action_items import site_action_items
 from edc_constants.constants import NEW, OFF_STUDY, POS, OPEN
 
-from flourish_child.action_items import CHILDCONTINUEDCONSENT_STUDY_ACTION
 from flourish_dashboard.utils import flourish_dashboard_utils
 
 
@@ -188,12 +187,7 @@ class DashboardViewMixin:
             try:
                 obj = child_continued_consent_cls.objects.filter(
                     subject_identifier=subject_identifier).latest('consent_datetime')
-            except ObjectDoesNotExist:
-                self.action_cls_item_creator(
-                    trigger=True,
-                    subject_identifier=subject_identifier,
-                    action_cls=child_continued_consent_cls,
-                    action_type=CHILDCONTINUEDCONSENT_STUDY_ACTION)
+            except child_continued_consent_cls.DoesNotExist:
                 msg = mark_safe(
                     f'Please complete the continued consent for child '
                     f'{subject_identifier}.')
