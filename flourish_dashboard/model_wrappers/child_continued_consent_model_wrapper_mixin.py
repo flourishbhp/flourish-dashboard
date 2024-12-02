@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
+from edc_base.utils import age, get_utcnow
 
 from .child_continued_consent_model_wrapper import ChildContinuedConsentModelWrapper
 
@@ -41,19 +42,21 @@ class ChildContinuedConsentModelWrapperMixin:
     def child_continued_consents(self):
         wrapped_entries = []
         if getattr(self, 'consent_model_obj', None):
-            caregiver_child_consents = self.consent_model_obj.caregiverchildconsent_set \
-                .only('child_age_at_enrollment', 'is_eligible') \
-                .filter(is_eligible=True, child_age_at_enrollment__gte=18)
+            caregiver_child_consents = self.consent_model_obj.caregiverchildconsent_set.filter(
+                is_eligible=True, child_dob__isnull=False)
 
-            for caregiver_child_consent in caregiver_child_consents:
-                model_obj = self.get_model_obj_by_version(
-                    caregiver_child_consent) or \
-                            self.child_continued_consent_cls(
-                                **self.create_child_continued_consent_options(
-                                    caregiver_child_consent))
+            for child_consent in caregiver_child_consents:
+                child_dob = getattr(child_consent, 'child_dob', None)
+                _child_age = self._child_current_age(child_dob)
+                if _child_age < 18:
+                    continue
+                model_obj = (self.get_model_obj_by_version(child_consent) or
+                             self.child_continued_consent_cls(
+                                 **self.create_child_continued_consent_options(
+                                    child_consent)))
 
-                wrapped_entries.append(self.child_continued_consent_model_wrapper_cls(
-                    model_obj))
+                wrapped_entries.append(
+                    self.child_continued_consent_model_wrapper_cls(model_obj))
         return wrapped_entries
 
     def create_child_continued_consent_options(self, caregiverchildconsent):
@@ -87,3 +90,7 @@ class ChildContinuedConsentModelWrapperMixin:
         options = dict(
             subject_identifier=self.subject_identifier, )
         return options
+
+    def _child_current_age(self, child_dob):
+        _age = age(child_dob, get_utcnow().date())
+        return _age.years + (_age.months / 12)
