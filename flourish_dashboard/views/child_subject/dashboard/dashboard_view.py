@@ -366,15 +366,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             screening_identifier=self.caregiver_child_consent.subject_consent
             .screening_identifier)
 
+        disclosure_offstudy = self.caregiver_hiv_status_aware()
+
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=self.child_offstudy_cls,
-                                     offstudy_action=CHILDOFF_STUDY_ACTION)
+                                     offstudy_action=CHILDOFF_STUDY_ACTION,
+                                     trigger=disclosure_offstudy)
+
         child_age = ChildBirthValues(
             subject_identifier=self.subject_identifier).child_age
 
         self.check_ageing_out()
-
-        self.caregiver_hiv_status_aware()
 
         self.get_continued_consent_object_or_message(
             subject_identifier=self.subject_identifier, child_age=child_age)
@@ -483,34 +485,6 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 subject_identifier=caregiver_sid)
         return maternal_status_helper.hiv_status
 
-    def hiv_disclosed_or_offstudy(self):
-
-        child_age = ChildBirthValues(
-            subject_identifier=self.subject_identifier).child_age
-
-        child_visit_cls = django_apps.get_model('flourish_child.childvisit')
-
-        try:
-            child_registered_subject = RegisteredSubject.objects.get(
-                subject_identifier=self.subject_identifier)
-        except RegisteredSubject.DoesNotExist:
-            raise ValidationError(
-                "Registered subject for the mother is expected to exist.")
-        else:
-            reg_age = age(child_registered_subject.dob,
-                          child_registered_subject.consent_datetime)
-
-            child_age = float(f'{reg_age.years}.{reg_age.months}')
-
-        if self.maternal_hiv_status == POS and child_age and child_age >= 16:
-            trigger = self.caregiver_hiv_status_aware()
-
-            self.get_offstudy_or_message(
-                visit_cls=child_visit_cls,
-                offstudy_cls=self.child_offstudy_cls,
-                offstudy_action=CHILDOFF_STUDY_ACTION,
-                trigger=trigger)
-
     def set_current_schedule(self, onschedule_model_obj=None,
                              schedule=None, visit_schedule=None,
                              is_onschedule=True):
@@ -576,9 +550,10 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             return True
 
     def caregiver_hiv_status_aware(self):
-        """Returns mother's current hiv status.
+        """ Checks if child has been disclosed to and if not disclosed to at
+            10 years or older, take off-study
         """
-        trigger = None
+        _disclosed = False
         for disclosure_cls in ['hivdisclosurestatusa', 'hivdisclosurestatusb',
                                'hivdisclosurestatusc']:
 
@@ -589,21 +564,41 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                     associated_child_identifier=self.subject_identifier,
                     disclosed_status=YES)
             except hiv_disclosure_cls.DoesNotExist:
-                trigger = True
+                continue
             except MultipleObjectsReturned:
+                _disclosed = True
                 messages.info(
                     self.request,
                     'Please note, this child is aware of the Mother\'s HIV '
                     'status.')
-                trigger = False
-            else:
-                messages.info(
-                    self.request,
-                    'Please note, this child is aware of the Mother\'s HIV '
-                    'status.')
-                trigger = False
                 break
-        return trigger
+            else:
+                _disclosed = True
+                messages.info(
+                    self.request,
+                    'Please note, this child is aware of the Mother\'s HIV '
+                    'status.')
+                break
+
+        if not _disclosed:
+            # Show notification if HEU not disclosed to, at 10 years or older
+            child_age_yrs = self.consent_wrapped.child_age
+            current_cohort = self.consent_wrapped.cohort_model_obj({
+                'subject_identifier': self.subject_identifier,
+                'current_cohort': True, })
+
+            if current_cohort and child_age_yrs:
+                if (current_cohort.exposure_status == 'EXPOSED' and
+                        child_age_yrs >= 10):
+                    messages.warning(
+                        self.request,
+                        'This child is 10 years or older and is NOT aware '
+                        'of the Mother\'s HIV status. Please complete CRF '
+                        'or take off-study.')
+                if child_age_yrs >= 18:
+                    # Return true to take child off-study for HEU undisclosed
+                    # 18 years or older.
+                    return True
 
     @property
     def is_brain_ultrasound_enrolled(self):
