@@ -348,7 +348,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
             self.subject_consent_wrapper.screening_identifier)
 
         self.get_consent_from_version_form_or_message(
-            self.subject_identifier, self.subject_consent_wrapper.screening_identifier)
+            self.subject_identifier,
+            self.subject_consent_wrapper.screening_identifier)
 
         is_latest_consent_version = flourish_dashboard_utils.is_latest_consent_version(
             self.subject_consent_wrapper.screening_identifier)
