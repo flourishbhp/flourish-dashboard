@@ -593,8 +593,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                     messages.warning(
                         self.request,
                         'This child is 10 years or older and is NOT aware '
-                        'of the Mother\'s HIV status. Please complete CRF '
-                        'or take off-study.')
+                        'of the Mother\'s HIV status. Please complete CRF.')
                 if child_age_yrs >= 18:
                     # Return true to take child off-study for HEU undisclosed
                     # 18 years or older.
