@@ -41,7 +41,8 @@ class DashboardViewMixin:
             visit_code__in=sub_study_visit_codes).order_by(
             'report_datetime').last()
 
-        trigger = self.require_offstudy(offstudy_visit_obj, subject_identifier)
+        trigger = self.require_offstudy(
+            offstudy_visit_obj, subject_identifier) or trigger
 
         self.action_cls_item_creator(
             subject_identifier=subject_identifier,

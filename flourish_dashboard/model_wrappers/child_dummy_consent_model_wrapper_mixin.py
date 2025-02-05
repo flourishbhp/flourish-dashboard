@@ -31,7 +31,8 @@ class ChildDummyConsentModelWrapperMixin:
 
         try:
             childconsent = child_consent_cls.objects.filter(
-                subject_identifier=self.object.subject_identifier).latest('consent_datetime')
+                subject_identifier=self.object.subject_identifier).latest(
+                    'consent_datetime')
         except child_consent_cls.DoesNotExist:
             return None
         return childconsent
@@ -98,17 +99,27 @@ class ChildDummyConsentModelWrapperMixin:
             cohort = childconsent.cohort.upper()
             return cohort.replace('_', ' ')
 
+    def cohort_model_obj(self, qs_options={}):
+        try:
+            cohort = self.cohort_model_cls.objects.get(
+                **qs_options)
+        except self.cohort_model_cls.DoesNotExist:
+            return None
+        else:
+            return cohort
+
     @property
     def enrol_cohort(self):
         """Returns an enrollment cohort.
         """
-        try:
-            cohort = self.cohort_model_cls.objects.get(
-                subject_identifier=self.object.subject_identifier,
-                enrollment_cohort=True, )
-        except self.cohort_model_cls.DoesNotExist:
+
+        cohort = self.cohort_model_obj({
+            'subject_identifier': self.object.subject_identifier,
+            'enrollment_cohort': True, })
+        if not cohort:
             raise ValidationError(
-                f"Enrollment Cohort is missing, {self.object.subject_identifier}")
+                'Enrollment Cohort is missing for'
+                f'{self.object.subject_identifier}')
         else:
             return cohort.name
 
