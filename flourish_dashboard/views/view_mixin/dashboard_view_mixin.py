@@ -197,6 +197,8 @@ class DashboardViewMixin:
 
     def get_consent_from_version_form_or_message(self, subject_identifier,
                                                  screening_identifier):
+        """ Updated to consider continued child consent for adolescents >= 18
+        """
 
         caregiver_child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
