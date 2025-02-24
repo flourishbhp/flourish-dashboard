@@ -344,12 +344,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         context = super().get_context_data(**kwargs)
 
-        self.get_consent_version_object_or_message(
-            self.subject_consent_wrapper.screening_identifier)
+        offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
-        self.get_consent_from_version_form_or_message(
-            self.subject_identifier,
-            self.subject_consent_wrapper.screening_identifier)
+        if not offstudy_cls_model:
+            self.get_consent_version_object_or_message(
+                self.subject_consent_wrapper.screening_identifier)
+
+            self.get_consent_from_version_form_or_message(
+                self.subject_identifier,
+                self.subject_consent_wrapper.screening_identifier)
+
+            self.get_assent_continued_consent_obj_or_msg()
 
         is_latest_consent_version = flourish_dashboard_utils.is_latest_consent_version(
             self.subject_consent_wrapper.screening_identifier)
@@ -361,11 +366,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         self.get_tb_enroll_msg()
 
-        self.get_assent_continued_consent_obj_or_msg()
-
         locator_obj = self.get_locator_info()
-
-        offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
 

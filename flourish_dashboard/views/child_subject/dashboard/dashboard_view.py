@@ -360,29 +360,36 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         context = super().get_context_data(**kwargs)
 
+        child_offstudy = self.consent_wrapped.child_offstudy
+
+        child_age = ChildBirthValues(
+            subject_identifier=self.subject_identifier).child_age
+
+        disclosure_offstudy = False
+
+        if not child_offstudy:
+            disclosure_offstudy = self.caregiver_hiv_status_aware()
+
+            self.get_consent_version_object_or_message(
+                screening_identifier=self.caregiver_child_consent.subject_consent.screening_identifier)
+
+            self.get_continued_consent_object_or_message(
+                subject_identifier=self.subject_identifier,
+                child_age=child_age)
+
+            self.get_assent_object_or_message(
+                subject_identifier=self.subject_identifier,
+                child_age=child_age,
+                version=self.latest_consent_version)
+
+            self.check_ageing_out()
+
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
-
-        self.get_consent_version_object_or_message(
-            screening_identifier=self.caregiver_child_consent.subject_consent
-            .screening_identifier)
-
-        disclosure_offstudy = self.caregiver_hiv_status_aware()
 
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
                                      offstudy_cls=self.child_offstudy_cls,
                                      offstudy_action=CHILDOFF_STUDY_ACTION,
                                      trigger=disclosure_offstudy)
-
-        child_age = ChildBirthValues(
-            subject_identifier=self.subject_identifier).child_age
-
-        self.check_ageing_out()
-
-        self.get_continued_consent_object_or_message(
-            subject_identifier=self.subject_identifier, child_age=child_age)
-        self.get_assent_object_or_message(
-            subject_identifier=self.subject_identifier, child_age=child_age,
-            version=self.latest_consent_version)
 
         facet_schedule = self.visit_schedules.get(
             'f_child_visit_schedule', None)
@@ -400,7 +407,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             child_dataset=self.child_dataset,
             schedule_names=[model.schedule_name for model in
                             self.onschedule_models],
-            child_offstudy=self.consent_wrapped.child_offstudy,
+            child_offstudy=child_offstudy,
             cohort=self.consent_wrapped.get_cohort,
             child_version=self.consent_wrapped.child_consent_version,
             fu_participant_note=self.fu_participant_note,
