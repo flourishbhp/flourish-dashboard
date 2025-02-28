@@ -34,16 +34,6 @@
             	{% childcontinuedconsents_button caregiver_child_consent %}
             {% endif %}
 
-            {% if fu_participant_note %}
-                <td>
-                    <button class="btn btn-sm btn-info" onclick="confirm_fu_enrollment(
-                        'follow_up'
-                    )">
-                        Follow Up Enrol
-                    </button>
-                </td>
-            {% endif %}
- 
             {% if is_pf_enrolled %}
                 <td>
                     {% pre_flourish_birth_data_button caregiver_child_consent %}
