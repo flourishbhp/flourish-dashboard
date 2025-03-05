@@ -516,7 +516,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         if is_offschedule:
             messages.warning(
                 self.request,
-                'Please note: This child is off-study.')
+                mark_safe('<b>PLEASE NOTE: This child is off-study.</b'))
             return is_offschedule
 
     def set_current_schedule(self, onschedule_model_obj=None,
