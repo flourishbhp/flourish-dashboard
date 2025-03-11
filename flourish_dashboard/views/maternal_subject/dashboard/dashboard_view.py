@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from edc_base.utils import age, get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_consent.exceptions import NotConsentedError
+from edc_constants.constants import NO
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_navbar import NavbarViewMixin
 from edc_registration.models import RegisteredSubject
@@ -305,11 +306,27 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 return subject_identifier not in self._sidx_to_ignore
         return False
 
+    def check_child_continued_consent(self, child_identifiers=[]):
+        """ Check if all children enrolled with caregiver have signed
+            a continued consent, and wish to not continue alongside
+            the caregiver.
+        """
+        child_continued_consent_cls = django_apps.get_model(
+            'flourish_child.childcontinuedconsent')
+
+        consents = child_continued_consent_cls.objects.filter(
+            subject_identifier__in=child_identifiers,
+            along_side_caregiver=NO).values_list(
+                'subject_identifier', flat=True)
+        return not bool(set(child_identifiers) - set(consents))
+
     def require_offstudy(self,  offstudy_visit_obj, subject_identifier):
         """ Require caregiver off study if all children enrolled with are off study
             else just take off schedule for all child schedules.
             If ANC enrollment with only 1 child, and GA confirmed is outside of the
             eligible range, triggers offstudy.
+            If enrollment with only 1 child, and child does not want to continue
+            on-study with PID, trigger off-study.
         """
         child_subject_identifiers = self.child_subject_identifiers
         offstudy_sidx = self.child_offstudy_cls.objects.filter(
@@ -320,7 +337,11 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
         ultrasound_offstudy = len(
             child_subject_identifiers) == 1 and self.check_ga_outside_range()
 
-        return not bool(offstudy_diff) or ultrasound_offstudy or offstudy_visit_obj
+        child_continued_offstudy = self.check_child_continued_consent(
+            child_subject_identifiers)
+
+        return ((not bool(offstudy_diff)) or ultrasound_offstudy or
+                offstudy_visit_obj or child_continued_offstudy)
 
     def get_context_data(self, **kwargs):
         global offstudy_cls_model_obj
@@ -344,12 +365,17 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         context = super().get_context_data(**kwargs)
 
-        self.get_consent_version_object_or_message(
-            self.subject_consent_wrapper.screening_identifier)
+        offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
-        self.get_consent_from_version_form_or_message(
-            self.subject_identifier,
-            self.subject_consent_wrapper.screening_identifier)
+        if not offstudy_cls_model:
+            self.get_consent_version_object_or_message(
+                self.subject_consent_wrapper.screening_identifier)
+
+            self.get_consent_from_version_form_or_message(
+                self.subject_identifier,
+                self.subject_consent_wrapper.screening_identifier)
+
+            self.get_assent_continued_consent_obj_or_msg()
 
         is_latest_consent_version = flourish_dashboard_utils.is_latest_consent_version(
             self.subject_consent_wrapper.screening_identifier)
@@ -361,11 +387,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
 
         self.get_tb_enroll_msg()
 
-        self.get_assent_continued_consent_obj_or_msg()
-
         locator_obj = self.get_locator_info()
-
-        offstudy_cls_model = self.consent_wrapped.caregiver_offstudy
 
         tb_adol_eligibility = self.consent_wrapped.tb_adol_eligibility
 
