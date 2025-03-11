@@ -367,7 +367,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         disclosure_offstudy = False
 
-        if not child_offstudy:
+        if not child_offstudy and not self.check_anc_offschedule:
             disclosure_offstudy = self.caregiver_hiv_status_aware()
 
             self.get_consent_version_object_or_message(
@@ -491,6 +491,33 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             maternal_status_helper = MaternalStatusHelper(
                 subject_identifier=caregiver_sid)
         return maternal_status_helper.hiv_status
+
+    @property
+    def check_anc_offschedule(self):
+        subject_identifier = self.kwargs.get('subject_identifier')
+        ssh_model_cls = django_apps.get_model(
+            'edc_visit_schedule.subjectschedulehistory')
+
+        child_schedules = ssh_model_cls.objects.filter(
+            subject_identifier=subject_identifier).exists()
+        if child_schedules:
+            return False
+
+        anc_schedule_model_cls = django_apps.get_model(
+            'flourish_caregiver.onschedulecohortaantenatal')
+        onschedule = anc_schedule_model_cls.objects.filter(
+            child_subject_identifier=subject_identifier).values(
+                'subject_identifier', 'schedule_name').first()
+
+        is_offschedule = ssh_model_cls.objects.filter(
+                subject_identifier=onschedule.get('subject_identifier', None),
+                schedule_name=onschedule.get('schedule_name', None),
+                schedule_status='offschedule').exists()
+        if is_offschedule:
+            messages.warning(
+                self.request,
+                mark_safe('<b>PLEASE NOTE: This child is off-study.</b'))
+            return is_offschedule
 
     def set_current_schedule(self, onschedule_model_obj=None,
                              schedule=None, visit_schedule=None,

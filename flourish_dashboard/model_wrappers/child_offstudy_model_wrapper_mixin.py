@@ -21,10 +21,8 @@ class ChildOffstudyModelWrapperMixin:
     def child_offstudy(self):
         """"Returns a wrapped saved or unsaved child offstudy
         """
-        model_obj = self.child_offstudy_model_obj or \
-                    self.child_offstudy_cls(
-                        **self.create_child_offstudy_options
-                    )
+        model_obj = self.child_offstudy_model_obj or self.child_offstudy_cls(
+            **self.create_child_offstudy_options)
         return self.child_offstudy_model_wrapper_cls(model_obj=model_obj)
 
     @property
@@ -39,7 +37,6 @@ class ChildOffstudyModelWrapperMixin:
         options = dict(
             subject_identifier=self.subject_identifier)
         return options
-
 
     @property
     def child_offstudy_options(self):
