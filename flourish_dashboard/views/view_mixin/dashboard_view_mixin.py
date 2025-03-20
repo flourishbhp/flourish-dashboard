@@ -1,8 +1,10 @@
+from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 from edc_action_item.site_action_items import site_action_items
+from edc_base.utils import get_utcnow
 from edc_constants.constants import NEW, OFF_STUDY, POS, OPEN
 
 from flourish_dashboard.utils import flourish_dashboard_utils
@@ -199,18 +201,23 @@ class DashboardViewMixin:
                                                  screening_identifier):
         """ Updated to consider continued child consent for adolescents >= 18
         """
-
+        today_dt = get_utcnow().date()
+        eighteen_years_dt = today_dt - relativedelta(years=18)
         caregiver_child_consent_cls = django_apps.get_model(
             'flourish_caregiver.caregiverchildconsent')
 
         consent_version_obj = flourish_dashboard_utils.consent_version_obj(
             screening_identifier)
         if getattr(consent_version_obj, 'child_version', None):
-            caregiver_child_consent_objs = caregiver_child_consent_cls.objects.filter(
+
+            consents_lt_18 = caregiver_child_consent_cls.objects.filter(
                 subject_consent__subject_identifier=subject_identifier,
+                child_dob__gt=eighteen_years_dt)
+
+            caregiver_child_consent_objs = consents_lt_18.filter(
                 version=consent_version_obj.child_version)
 
-            if not caregiver_child_consent_objs:
+            if consents_lt_18 and not caregiver_child_consent_objs:
                 msg = mark_safe(
                     f'Please complete the v{consent_version_obj.child_version} '
                     f'consent '
