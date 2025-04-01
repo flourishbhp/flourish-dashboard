@@ -1,0 +1,12 @@
+ <a id="childconsentversion_add_{{ subject_identifier }}" 
+ 	title="{{ title }}"
+ 	
+ 	{% if consent_versioned %}
+    	class="btn btn-success btn-sm" data-toggle="tooltip"  data-placement="right"
+        href="{{ href }}">
+    {% else %}
+        class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="right"
+        href="{{ href }}">
+   	{% endif %}
+     	Child Consent Version
+ </a>
