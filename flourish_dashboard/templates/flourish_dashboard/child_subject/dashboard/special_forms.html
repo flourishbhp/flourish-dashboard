@@ -26,7 +26,7 @@
     {% endif %}
 
     {% if tb_adol_referal %}
-    {% render_add_conditional 'tb_adol_referal_button' tb_adol_referal 'object' group_names%}
+    {% render_add_conditional 'tb_adol_referal_button' tb_adol_referal 'object' group_names %}
     {% endif %}
 
     {% if caregiver_child_consent.child_death_report %}
@@ -39,7 +39,11 @@
 
 
     {% if caregiver_child_consent.missed_birth_visit %}
-    {% render_add_conditional 'missed_birth_visit_button' caregiver_child_consent 'missed_birth_visit_model_obj' group_names %}
-  {% endif %}
+    	{% render_add_conditional 'missed_birth_visit_button' caregiver_child_consent 'missed_birth_visit_model_obj' group_names %}
+  	{% endif %}
+
+ 	{% if requires_continued_consent %}
+ 		{% render_add_conditional 'child_consent_version_button' caregiver_child_consent 'child_continued_consent_version_model_obj' group_names %}
+ 	{% endif %}
     </tbody>
 </table>

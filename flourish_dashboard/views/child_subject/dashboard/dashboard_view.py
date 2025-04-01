@@ -73,8 +73,7 @@ class ChildBirthValues(object):
             return registered_subject.relative_identifier
 
     @property
-    def latest_consent_version(self):
-        version = None
+    def get_consent_version_obj(self):
         try:
             consent = self.subject_consent_cls.objects.filter(
                 subject_identifier=self.caregiver_subject_identifier, ).latest(
@@ -87,10 +86,20 @@ class ChildBirthValues(object):
                 consent_version_obj = self.consent_version_cls.objects.get(
                     screening_identifier=screening_identifier)
             except self.consent_version_cls.DoesNotExist:
-                version = '1'
+                return None
             else:
-                version = consent_version_obj.version
-            return version
+                return consent_version_obj
+
+    @property
+    def latest_consent_version(self):
+        version = getattr(self.get_consent_version_obj, 'version', '1')
+        return version
+
+    @property
+    def latest_child_consent_version(self):
+        version = getattr(
+            self.get_consent_version_obj, 'child_version', '1')
+        return version
 
     @property
     def subject_consent_obj(self):
@@ -110,7 +119,7 @@ class ChildBirthValues(object):
         try:
             return self.child_consent_cls.objects.get(
                 subject_identifier=self.subject_identifier,
-                version=self.latest_consent_version)
+                version=self.latest_child_consent_version)
         except ObjectDoesNotExist:
             return None
 
@@ -367,6 +376,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
         disclosure_offstudy = False
 
+        requires_continued_consent = False
+
         if not child_offstudy and not self.check_anc_offschedule:
             disclosure_offstudy = self.caregiver_hiv_status_aware()
 
@@ -376,6 +387,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             self.get_continued_consent_object_or_message(
                 subject_identifier=self.subject_identifier,
                 child_age=child_age)
+
+            requires_continued_consent = (child_age/12) >= 18 if child_age else False
 
             self.get_assent_object_or_message(
                 subject_identifier=self.subject_identifier,
@@ -417,7 +430,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
             is_brain_ultrasound_enrolled=self.is_brain_ultrasound_enrolled,
             show_brain_ultrasound_button=self.brain_ultrasound_helper.show_brain_ultrasound_button(),
             young_adult_locator_wrapper=self.young_adult_locator_wrapper,
-            is_pf_birth_data=self.is_pf_birth_data())
+            is_pf_birth_data=self.is_pf_birth_data(),
+            requires_continued_consent=requires_continued_consent)
 
         context = self.add_url_to_context(
             new_key='dashboard_url_name',
