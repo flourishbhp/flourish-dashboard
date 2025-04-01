@@ -6,6 +6,7 @@ from .caregiver_child_consent_model_wrapper_mixin import \
     CaregiverChildConsentModelWrapperMixin
 from .child_assent_model_wrapper_mixin import ChildAssentModelWrapperMixin
 from .child_birth_model_wrapper_mixin import ChildBirthModelWrapperMixin
+from .child_consent_version_model_wrapper_mixin import ChildConsentVersionModelWrapperMixin
 from .child_continued_consent_model_wrapper_mixin import \
     ChildContinuedConsentModelWrapperMixin
 from .child_death_report_model_wrapper_mixin import ChildDeathReportModelWrapperMixin
@@ -23,6 +24,7 @@ class CaregiverChildConsentModelWrapper(CaregiverChildConsentModelWrapperMixin,
                                         TbAdolChildAssentModelWrapperMixin,
                                         ConsentModelWrapperMixin,
                                         ChildAssentModelWrapperMixin,
+                                        ChildConsentVersionModelWrapperMixin,
                                         ChildContinuedConsentModelWrapperMixin,
                                         ChildBirthModelWrapperMixin,
                                         MaternalDeliveryModelWrapperMixin,
