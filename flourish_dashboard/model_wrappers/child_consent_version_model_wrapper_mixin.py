@@ -14,8 +14,8 @@ class ChildConsentVersionModelWrapperMixin:
             Returns a child consent version model instance or None.
         """
         try:
-            return self.consent_version_cls.objects.get(
-                **self.consent_version_options)
+            return self.child_continued_consent_version_cls.objects.get(
+                **self.child_continued_consent_version_options)
         except ObjectDoesNotExist:
             return None
 
@@ -43,6 +43,6 @@ class ChildConsentVersionModelWrapperMixin:
             unpersisted Child consent version model instance.
         """
         options = dict(
-            subject_identifier=self.object.screening_identifier,
+            subject_identifier=self.object.subject_identifier,
         )
         return options

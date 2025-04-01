@@ -507,8 +507,8 @@ def child_consent_version_button(model_wrapper):
 
     return dict(
         title=title,
-        href=model_wrapper.child_consent_version.href,
-        consent_versioned=model_wrapper.child_consent_version,
+        href=model_wrapper.child_continued_consent_version.href,
+        consent_versioned=model_wrapper.child_continued_consent_version,
         subject_identifier=model_wrapper.object.subject_identifier,)
 
 
