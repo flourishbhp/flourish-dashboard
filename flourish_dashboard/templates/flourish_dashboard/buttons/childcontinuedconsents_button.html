@@ -8,18 +8,18 @@
         </button>
         <ul class="dropdown-menu" role="menu">
             <li class="dropdown-header">{{ title|default:'Continued Consents' }}</li>
-            {% for continued_consents in wrapped_continued_consents %}
+            {% for continued_consent in wrapped_continued_consents %}
                 <li>
-                    <a href="{{ continued_consents.get_absolute_url }}?next={{ continued_consents.next_url }}&{{ continued_consents.querystring }}">
-              			{% if continued_consents.id %}
+                    <a href="{{ continued_consent.href }}">
+              			{% if continued_consent.id %}
               				<small><i class="fa fa-check-circle" aria-hidden="true" style='color:green'></i></small>
               			{% else %}
               				<small><i class="fa fa-times-circle" aria-hidden="true" style='color:red'></i></small>
               			{%endif%}
-                        <small>{{ continued_consents.subject_identifier }},
-                            ID: {{ continued_consents.identity }} (v{{continued_consents.version}})</small>
-                        {% if not continued_consents.is_eligible %}
-                        	<small>{{ continued_consents.ineligibility }}</small>
+                        <small>{{ continued_consent.subject_identifier }},
+                            ID: {{ continued_consent.identity }} (v{{continued_consent.version}})</small>
+                        {% if not continued_consent.is_eligible %}
+                        	<small>{{ continued_consent.ineligibility }}</small>
                         {% endif %}
                     </a>
                 </li>

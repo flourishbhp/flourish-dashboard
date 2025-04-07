@@ -500,6 +500,18 @@ def consent_version_button(model_wrapper, is_latest_consent_version=False):
         title=' '.join(title))
 
 
+@register.inclusion_tag(
+    'flourish_dashboard/buttons/child_consent_version_button.html')
+def child_consent_version_button(model_wrapper):
+    title = 'Add Consent Version.'
+
+    return dict(
+        title=title,
+        href=model_wrapper.child_continued_consent_version.href,
+        consent_versioned=model_wrapper.child_continued_consent_version,
+        subject_identifier=model_wrapper.object.subject_identifier,)
+
+
 @register.inclusion_tag('flourish_dashboard/buttons/child_off_study_button.html')
 def child_off_study_button(model_wrapper):
     title = 'Child Subject Off Study'
