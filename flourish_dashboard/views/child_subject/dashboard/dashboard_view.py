@@ -116,10 +116,12 @@ class ChildBirthValues(object):
     def caregiver_child_consent_obj(self):
         """Returns a caregiver consent on behalf of child model instance or None.
         """
+        version = (self.latest_child_consent_version or
+                   self.latest_consent_version)
         try:
             return self.child_consent_cls.objects.get(
                 subject_identifier=self.subject_identifier,
-                version=self.latest_child_consent_version)
+                version=version)
         except ObjectDoesNotExist:
             return None
 
