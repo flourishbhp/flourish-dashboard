@@ -1,7 +1,6 @@
-# from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper
-# import InfantDeathReportModelWrapper # from flourish_prn.action_items
-# import CHILD_DEATH_REPORT_ACTION
-from dateutil import relativedelta
+from math import modf
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib import messages
@@ -9,10 +8,9 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist, 
     ValidationError
 from django.utils.safestring import mark_safe
 from django.views.generic.base import ContextMixin
-from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_constants.constants import POS, YES
+from edc_constants.constants import YES
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
@@ -21,6 +19,7 @@ from edc_subject_dashboard.view_mixins import SubjectDashboardViewMixin
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
 from flourish_caregiver.helper_classes import MaternalStatusHelper
+from flourish_caregiver.helper_classes.utils import cohort_assigned
 from flourish_child.helper_classes.brain_ultrasound_helper import BrainUltrasoundHelper
 from flourish_child.helper_classes.child_fu_onschedule_helper import \
     ChildFollowUpEnrolmentHelper
@@ -50,7 +49,7 @@ class ChildBirthValues(object):
         self.subject_identifier = subject_identifier
 
     def get_difference(self, birth_date=None):
-        difference = relativedelta.relativedelta(
+        difference = relativedelta(
             get_utcnow().date(), birth_date)
         months = 0
         if difference.years > 0:
@@ -399,6 +398,8 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
 
             self.check_ageing_out()
 
+            self.eligible_for_protocol_completion()
+
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 
         self.get_offstudy_or_message(visit_cls=child_visit_cls,
@@ -654,3 +655,67 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
         """Returns True if the child is enrolled on the brain ultrasound schedule."""
         return (self.brain_ultrasound_helper.is_enrolled_brain_ultrasound() and
                 not self.brain_ultrasound_helper.is_onschedule)
+
+    def has_fu_visit(self, cohort_name):
+        cs_model_cls = django_apps.get_model(
+            'flourish_caregiver.cohortschedules')
+
+        schedule_names = cs_model_cls.objects.filter(
+            cohort_name=cohort_name,
+            schedule_type__in=['followup', 'sq_followup'],
+            child_count__isnull=True).values_list('schedule_name', flat=True)
+
+        visit_model_cls = django_apps.get_model(
+            f'flourish_child.{self.visit_attr}')
+
+        return visit_model_cls.objects.filter(
+            subject_identifier=self.subject_identifier,
+            schedule_name__in=schedule_names).exists()
+
+    def eligible_for_protocol_completion(self):
+        is_eligible = True
+        cohort_upper = {
+            'cohort_a': 5.0833,
+            'cohort_a_sec': 5.0833,
+            'cohort_b': 10.0833,
+            'cohort_b_sec': 10.0833}
+
+        current_cohort = self.consent_wrapped.cohort_model_obj({
+            'subject_identifier': self.subject_identifier,
+            'current_cohort': True, })
+        cohort_name = current_cohort.name
+        study_child_id = self.caregiver_child_consent.study_child_identifier
+        child_dob = self.caregiver_child_consent.object.child_dob
+
+        today = get_utcnow().date()
+        cutoff_date = date(2025, 6, 30)
+
+        _cohort = cohort_assigned(study_child_id, child_dob, today)
+        if (_cohort and 'sec' not in _cohort) and _cohort != cohort_name:
+            cohort_name = _cohort
+
+        age_now = current_cohort.child_age
+        cohort_age = cohort_upper.get(current_cohort.name, None)
+        if cohort_age and age_now < cohort_age:
+            age_diff = cohort_age - age_now
+
+            fractional_year, whole_years = modf(age_diff)
+            whole_years = int(whole_years)
+            months = int(round(fractional_year * 12))
+
+            projected_date = today + relativedelta(years=whole_years, months=months)
+            projected_cohort = None
+            if projected_date > today and projected_date < cutoff_date:
+                projected_cohort = cohort_assigned(study_child_id, child_dob, projected_date)
+
+            if (projected_cohort and 'sec' not in projected_cohort) and projected_cohort != cohort_name:
+                cohort_name = projected_cohort
+
+        if (cohort_name in ['cohort_b', 'cohort_c'] and
+                not self.has_fu_visit(cohort_name)):
+            is_eligible = False
+
+        if is_eligible:
+            messages.info(
+                self.request,
+                'Please note, this child is eligible for off-study/protocol completion.')
