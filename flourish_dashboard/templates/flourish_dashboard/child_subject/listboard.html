@@ -15,6 +15,7 @@
     <th>Assent Date</th>
     <th>Enrollment Cohort</th>
     <th>Current Cohort</th>
+    <th>Off-study Eligible</th>
     <!-- end results header -->
 
 {% endblock listboard_table_header %}
@@ -43,5 +44,6 @@
     <td>{{ result.assent_date }}</td>
     <td>{{ result.enrol_cohort }}</td>
     <td>{{ result.current_cohort }}</td>
+    <td>{{ result.eligible_for_protocol_completion }}</td>
 
 {% endblock listboard_table_columns %}
