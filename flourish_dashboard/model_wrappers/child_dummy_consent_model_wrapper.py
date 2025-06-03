@@ -50,6 +50,8 @@ class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
 
     @property
     def eligible_for_protocol_completion(self):
+        if self.child_offstudy_model_obj:
+            return 'off-study'
         is_eligible = True
         cohort_upper = {
             'cohort_a': 5.0833,
@@ -73,7 +75,7 @@ class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
 
         age_now = current_cohort.child_age
         cohort_age = cohort_upper.get(current_cohort.name, None)
-        if cohort_age and age_now < cohort_age:
+        if (cohort_age and age_now) and age_now < cohort_age:
             age_diff = cohort_age - age_now
 
             fractional_year, whole_years = modf(age_diff)
@@ -91,8 +93,8 @@ class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
 
         if 'sec' not in cohort_name and not self.has_fu_visit(cohort_name):
             is_eligible = False
-            if cohort_name == 'cohort_a':
-                age_at_cutoff = current_cohort.child_age_at_date(cutoff_date)
+            age_at_cutoff = current_cohort.child_age_at_date(cutoff_date)
+            if cohort_name == 'cohort_a' and age_at_cutoff:
                 is_eligible = (age_at_cutoff * 12) < 18
 
         return is_eligible
