@@ -539,7 +539,7 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin,
                 self.current_visit_schedule = visit_schedule
                 self.current_onschedule_model = onschedule_model_obj
             else:
-                model_name = f'flourish_caregiver.{onschedule_model_obj._meta.model_name}'
+                model_name = f'{onschedule_model_obj._meta.app_label}.{onschedule_model_obj._meta.model_name}'
                 visit_schedule, schedule = (
                     site_visit_schedules.get_by_onschedule_model_schedule_name(
                         model_name, onschedule_model_obj.schedule_name))
