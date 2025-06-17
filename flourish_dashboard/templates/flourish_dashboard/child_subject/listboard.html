@@ -3,6 +3,12 @@
 {% load edc_base_extras %}
 {% load flourish_dashboard_extras %}
 
+{% block listboard_panel %}
+	{{ block.super }}
+	<a class='btn btn-primary btn-sm pull-right' href='{% url listboard_filter_url %}{% if querystring %}{{ querystring }}&export=True{% else %}?export=True{% endif %}' style='margin-right:5px'>
+		Export
+	</a>
+{% endblock listboard_panel %}
 
 {% block listboard_table_header %}
 
