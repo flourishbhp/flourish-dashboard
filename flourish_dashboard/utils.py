@@ -106,5 +106,12 @@ class FlourishDashboardUtils(ModelUtils, ChildUtils):
         return [child_assent for child_assent in assents if
                 child_assent.dob and self.is_minor(child_assent.dob)]
 
+    def id_exists_in_disc_file(self, subject_identifier):
+        with open('disc_participants.txt') as file:
+            for line in file:
+                if subject_identifier in line.strip():
+                    return True
+        return False
+
 
 flourish_dashboard_utils = FlourishDashboardUtils()

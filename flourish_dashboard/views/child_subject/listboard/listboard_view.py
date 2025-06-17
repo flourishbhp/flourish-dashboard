@@ -7,11 +7,12 @@ from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
 
 from ....model_wrappers import ChildDummyConsentModelWrapper
+from .export_view_mixin import OffStudyExportViewMixin
 
 
-class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
-                    ListboardFilterViewMixin, SearchFormViewMixin,
-                    ListboardView):
+class ListboardView(OffStudyExportViewMixin, EdcBaseViewMixin,
+                    NavbarViewMixin, ListboardFilterViewMixin,
+                    SearchFormViewMixin, ListboardView):
 
     listboard_template = 'child_listboard_template'
     listboard_url = 'child_listboard_url'

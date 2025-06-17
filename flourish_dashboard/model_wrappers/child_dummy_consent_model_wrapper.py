@@ -18,6 +18,8 @@ from .child_dummy_consent_model_wrapper_mixin import \
 from .child_offstudy_model_wrapper_mixin import ChildOffstudyModelWrapperMixin
 from .consent_model_wrapper_mixin import ConsentModelWrapperMixin
 
+from ..utils import flourish_dashboard_utils
+
 
 class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
                                     ChildAssentModelWrapperMixin,
@@ -52,6 +54,14 @@ class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
     def eligible_for_protocol_completion(self):
         if self.child_offstudy_model_obj:
             return 'off-study'
+
+        subject_identifier = self.object.subject_identifier
+        stripped_identifier = subject_identifier[1:-3]
+        disc_participant = flourish_dashboard_utils.id_exists_in_disc_file(
+            stripped_identifier)
+        if disc_participant:
+            return 'disc'
+
         is_eligible = True
         cohort_upper = {
             'cohort_a': 5.0833,
