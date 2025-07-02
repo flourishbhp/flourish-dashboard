@@ -1,7 +1,4 @@
-# from flourish_dashboard.model_wrappers.infant_death_report_model_wrapper
-# import InfantDeathReportModelWrapper # from flourish_prn.action_items
-# import CHILD_DEATH_REPORT_ACTION
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib import messages
@@ -9,10 +6,9 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist, 
     ValidationError
 from django.utils.safestring import mark_safe
 from django.views.generic.base import ContextMixin
-from edc_base.utils import age
 from edc_base.utils import get_utcnow
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_constants.constants import POS, YES
+from edc_constants.constants import YES
 from edc_dashboard.views import DashboardView as BaseDashboardView
 from edc_data_manager.model_wrappers import DataActionItemModelWrapper
 from edc_navbar import NavbarViewMixin
@@ -50,7 +46,7 @@ class ChildBirthValues(object):
         self.subject_identifier = subject_identifier
 
     def get_difference(self, birth_date=None):
-        difference = relativedelta.relativedelta(
+        difference = relativedelta(
             get_utcnow().date(), birth_date)
         months = 0
         if difference.years > 0:
@@ -398,6 +394,13 @@ class DashboardView(DashboardViewMixin, EdcBaseViewMixin, SubjectDashboardViewMi
                 version=self.latest_consent_version)
 
             self.check_ageing_out()
+
+            offstudy_eligible = self.consent_wrapped.eligible_for_protocol_completion
+            if offstudy_eligible:
+                messages.info(
+                    self.request,
+                    'Please note, this child is eligible for '
+                    'off-study/protocol completion.')
 
         child_visit_cls = django_apps.get_model('flourish_child.childvisit')
 

@@ -3,6 +3,12 @@
 {% load edc_base_extras %}
 {% load flourish_dashboard_extras %}
 
+{% block listboard_panel %}
+	{{ block.super }}
+	<a class='btn btn-primary btn-sm pull-right' href='{% url listboard_filter_url %}{% if querystring %}{{ querystring }}&export=True{% else %}?export=True{% endif %}' style='margin-right:5px'>
+		Export
+	</a>
+{% endblock listboard_panel %}
 
 {% block listboard_table_header %}
 
@@ -15,6 +21,7 @@
     <th>Assent Date</th>
     <th>Enrollment Cohort</th>
     <th>Current Cohort</th>
+    <th>Off-study Eligible</th>
     <!-- end results header -->
 
 {% endblock listboard_table_header %}
@@ -43,5 +50,6 @@
     <td>{{ result.assent_date }}</td>
     <td>{{ result.enrol_cohort }}</td>
     <td>{{ result.current_cohort }}</td>
+    <td>{{ result.eligible_for_protocol_completion }}</td>
 
 {% endblock listboard_table_columns %}
