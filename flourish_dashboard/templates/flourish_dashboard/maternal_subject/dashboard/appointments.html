@@ -3,7 +3,7 @@
 
 <!--begin unscheduled appointment -->
 {% block unscheduled_appt %}
-    {% if wrapped.object.next_by_timepoint or wrapped.object.visit_code in in_person_visits %}
+    {% if wrapped.object or wrapped.object.visit_code in in_person_visits %}
         {% if not wrapped.disabled and wrapped.object.visit_code_sequence == 0 %}
             {% if wrapped.appt_status == INCOMPLETE_APPT or wrapped.appt_status == COMPLETE_APPT %}
                 <a id="uscheduled_appt_btn_{{ wrapped.visit_code }}_{{ wrapped.visit_code_sequence }}"
