@@ -41,7 +41,7 @@ class OffStudyExportViewMixin(ContextMixin):
                 generate_offstudy_csv,
                 object_idx,
                 filename_prefix,
-                user_email,
+                [user_email, ],
                 self.model,
                 retry=Retry(max=5),  # Retry failed tasks up to 5 times
             )

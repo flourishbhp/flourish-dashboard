@@ -49,19 +49,19 @@ def generate_csv_file(data, filename_prefix):
     return filename, buffer.read()
 
 
-def send_export_email(filecontent, filename, email):
+def send_export_email(filecontent, filename, emails):
     subject = 'Off-study Eligible Participants'
     message = ('Please find attached the CSV export for off-study '
                'eligible participants requested')
-    email_msg = EmailMessage(subject, message, to=[email, ])
+    email_msg = EmailMessage(subject, message, to=emails)
     email_msg.attach(filename, filecontent, 'text/csv')
     email_msg.send()
 
 
-def generate_offstudy_csv(object_idx, filename_prefix, email, model_name):
+def generate_offstudy_csv(object_idx, filename_prefix, emails, model_name):
     model_cls = django_apps.get_model(model_name)
     queryset = model_cls.objects.filter(subject_identifier__in=object_idx)
 
     export_data = format_export_data(queryset)
     filename, csv_content = generate_csv_file(export_data, filename_prefix)
-    send_export_email(csv_content, filename, email)
+    send_export_email(csv_content, filename, emails)
