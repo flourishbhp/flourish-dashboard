@@ -4,7 +4,6 @@ from datetime import datetime
 from io import StringIO
 from django.apps import apps as django_apps
 from django.core.mail import EmailMessage
-from django.db.models import Max, Q
 
 from flourish_dashboard.model_wrappers import ChildDummyConsentModelWrapper
 
@@ -12,11 +11,13 @@ from flourish_dashboard.model_wrappers import ChildDummyConsentModelWrapper
 tz = pytz.timezone('Africa/Gaborone')
 
 
-def format_export_data(queryset):
+def format_export_data(model_cls, queryset):
     data = []
     export_fields = ['subject_identifier', 'child_age', 'assent_date',
                      'enrol_cohort', 'current_cohort']
-    for obj in queryset:
+    for _id in queryset:
+        obj = model_cls.objects.filter(
+            subject_identifier=_id).latest('consent_datetime')
         wrapped_obj = ChildDummyConsentModelWrapper(obj)
 
         if wrapped_obj.eligible_for_protocol_completion is not True:
@@ -61,17 +62,9 @@ def send_export_email(filecontent, filename, emails):
 
 def generate_offstudy_csv(filename_prefix, emails, model_name):
     model_cls = django_apps.get_model(model_name)
-    latest_qs = model_cls.objects.values(
-        'subject_identifier').annotate(latest_created_at=Max('created'))
+    idx_qs = set(model_cls.objects.values_list(
+        'subject_identifier', flat=True))
 
-    query = Q()
-    for item in latest_qs:
-        query |= Q(
-            subject_identifier=item['subject_identifier'],
-            created=item['latest_created_at'])
-
-    queryset = model_cls.objects.filter(query)
-
-    export_data = format_export_data(queryset)
+    export_data = format_export_data(model_cls, idx_qs)
     filename, csv_content = generate_csv_file(export_data, filename_prefix)
     send_export_email(csv_content, filename, emails)
