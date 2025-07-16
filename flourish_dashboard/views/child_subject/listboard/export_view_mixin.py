@@ -32,14 +32,11 @@ class OffStudyExportViewMixin(ContextMixin):
                 messages.error(request, 'The email address for user is not valid.')
                 return redirect(request.path)
 
-            object_idx = list(
-                self.object_list.values_list('subject_identifier', flat=True))
             filename_prefix = self.filename
 
             queue = django_rq.get_queue('exports')
             queue.enqueue(
                 generate_offstudy_csv,
-                object_idx,
                 filename_prefix,
                 [user_email, ],
                 self.model,

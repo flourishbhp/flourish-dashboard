@@ -4,6 +4,7 @@ from datetime import datetime
 from io import StringIO
 from django.apps import apps as django_apps
 from django.core.mail import EmailMessage
+from django.db.models import Max, Q
 
 from flourish_dashboard.model_wrappers import ChildDummyConsentModelWrapper
 
@@ -33,7 +34,7 @@ def format_export_data(queryset):
         for key, value in record.items():
             if isinstance(value, datetime):
                 record[key] = value.strftime('%d-%m-%Y %H:%M')
-            if key in ['child_age', ]:
+            if key in ['child_age', ] and value:
                 record[key] = round(value, 2)
         data.append(record)
     return data
@@ -58,9 +59,18 @@ def send_export_email(filecontent, filename, emails):
     email_msg.send()
 
 
-def generate_offstudy_csv(object_idx, filename_prefix, emails, model_name):
+def generate_offstudy_csv(filename_prefix, emails, model_name):
     model_cls = django_apps.get_model(model_name)
-    queryset = model_cls.objects.filter(subject_identifier__in=object_idx)
+    latest_qs = model_cls.objects.values(
+        'subject_identifier').annotate(latest_created_at=Max('created'))
+
+    query = Q()
+    for item in latest_qs:
+        query |= Q(
+            subject_identifier=item['subject_identifier'],
+            created=item['latest_created_at'])
+
+    queryset = model_cls.objects.filter(query)
 
     export_data = format_export_data(queryset)
     filename, csv_content = generate_csv_file(export_data, filename_prefix)
