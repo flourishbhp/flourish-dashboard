@@ -62,6 +62,12 @@ class ChildDummyConsentModelWrapper(ChildDummyConsentModelWrapperMixin,
         if disc_participant:
             return 'disc'
 
+        return True
+
+    def offstudy_criteria(self):
+        """ Code no longer being used as we have reached study close out date.
+            ** Kept for any future references.
+        """
         is_eligible = True
         cohort_upper = {
             'cohort_a': 5.0833,
